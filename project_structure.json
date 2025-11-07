@@ -1,0 +1,72 @@
+{
+  "id": "proj-001",
+  "name": "AI Dashboard Revamp",
+  "key": "AIDB",
+  "avatar": "https://example.com/avatar.png",
+  "startDate": "2025-11-01",
+  "endDate": "2025-12-31",
+  "projectLead": "user-101",
+  "defaultAssignee": "user-104",
+  "platform": "Web",
+  "labels": [
+    "frontend",
+    "urgent",
+    "ui-update"
+  ],
+  "description": "Revamp the AI dashboard with new analytics features and modern UI design.",
+  "status": "Active",
+  "createdAt": "2025-11-04T09:30:00Z",
+  "updatedAt": "2025-11-04T09:30:00Z",
+  "team": [
+    {
+      "id": "user-101",
+      "name": "John Doe",
+      "role": "Project Lead"
+    },
+    {
+      "id": "user-104",
+      "name": "Sara Ali",
+      "role": "Developer"
+    },
+    {
+      "id": "user-110",
+      "name": "Mubarak Mohamed",
+      "role": "UI/UX Designer"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-1",
+      "title": "Setup database schema",
+      "status": "To Do",
+      "assignee": "user-104",
+      "priority": "High",
+      "labels": [
+        "backend",
+        "urgent"
+      ]
+    },
+    {
+      "id": "task-2",
+      "title": "Design main dashboard",
+      "status": "In Progress",
+      "assignee": "user-110",
+      "priority": "Medium",
+      "labels": [
+        "frontend",
+        "design"
+      ]
+    },
+    {
+      "id": "task-3",
+      "title": "Integrate API with dashboard",
+      "status": "Done",
+      "assignee": "user-104",
+      "priority": "High",
+      "labels": [
+        "api",
+        "integration"
+      ]
+    }
+  ]
+}
