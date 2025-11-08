@@ -269,13 +269,13 @@ export default function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="mt-4 m-5 w-fit p-2 rounded bg-blue-400  hover:bg-blue-500">
+      <div className=" absolute w-fit p-2 right-15 rounded-lg  bg-blue-600  hover:bg-blue-700">
         <button className="cursor-pointer" onClick={addColumn}>
-          Add Column
+          + Add Column
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 p-4 overflow-x-auto no-scrollbar">
+      <div className="flex flex-col sm:flex-row gap-3 p-4 pt-17 overflow-x-auto no-scrollbar">
         {selectedProject.columns[0].columns.map((col) => (
           <div
             key={col.id}

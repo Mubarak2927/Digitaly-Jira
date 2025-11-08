@@ -230,14 +230,14 @@ const WhiteBoard = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold capitalize">
                   {selectedProject.name}
                 </h1>
-                {activeTab === "board" && (
+                {/* {activeTab === "board" && (
                   <button
                     onClick={() => setShowAddColumnModal(true)}
                     className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
                   >
                     + Add Column
                   </button>
-                )}
+                )} */}
               </div>
 
               <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />

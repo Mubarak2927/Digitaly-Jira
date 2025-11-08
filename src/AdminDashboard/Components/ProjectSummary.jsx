@@ -13,10 +13,7 @@ import {
   X,
   User,
   FileText,
-  Star,
-  Globe2,
 } from "lucide-react";
-import { p } from "framer-motion/client";
 
 export default function ProjectSummary({ selectedProject }) {
   const [members, setMembers] = useState([]);
@@ -93,80 +90,79 @@ export default function ProjectSummary({ selectedProject }) {
   }
 
   return (
-    <div className="text-white p-6 sm:p-10 space-y-10 bg-[#0b0d15] min-h-screen rounded-3xl shadow-2xl">
-      {/* ⚡ Project Header */}
+    <div className="p-6 sm:p-10 space-y-10 bg-gradient-to-br from-[#0a0d13] to-[#10121a] min-h-screen text-white rounded-3xl shadow-2xl backdrop-blur-xl">
+      {/* 🌟 Project Header */}
       {projectDetails && (
-        <div className="bg-gradient-to-br from-[#111827] to-[#1e293b] rounded-3xl p-8 border border-gray-700 shadow-lg hover:shadow-cyan-500/20 transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Layers className="text-cyan-400" size={32} />
-              <h1 className="text-3xl font-bold tracking-wide bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
+        <div className="bg-gradient-to-r from-[#101626]/70 via-[#151b24]/70 to-[#1a2230]/70 rounded-3xl p-8 border border-gray-700 shadow-xl hover:shadow-cyan-500/30 transition-all duration-500 backdrop-blur-md">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+            <div className="flex items-center gap-4">
+              <Layers className="text-cyan-400 drop-shadow-glow" size={36} />
+              <h1 className="text-3xl font-extrabold tracking-wide bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
                 {projectDetails.name}
               </h1>
             </div>
-            {/* <span className="px-4 py-1 bg-cyan-500/20 text-cyan-300 text-sm rounded-full border border-cyan-600">
-              Active
-            </span> */}
-          </div>
+
             {projectDetails.avatar_url && (
-                <div>
-                  <h1 className="mt-5 mb-3 font-bold text-lg"> Logo</h1>
-                  <img
-                  src={projectDetails.avatar_url}
-                  alt="Logo"
-                  className="w-25 h-25 rounded-full border-2 border-cyan-500 shadow-md hover:scale-105 transition animate-glow"
-                />
-                </div>
+              <img
+                src={projectDetails.avatar_url}
+                alt="Project Logo"
+                className="w-20 h-20 rounded-full border-2 border-cyan-500 shadow-md hover:scale-105 transition-transform duration-300"
+              />
             )}
+          </div>
 
           <div className="mt-8 grid sm:grid-cols-2 gap-6">
-            {/* Info Card */}
-            <div className="bg-[#141826] border border-gray-700 rounded-2xl p-5 hover:border-cyan-400 transition-all duration-300">
+            {/* Lead */}
+            <div className="bg-[#121826]/60 border border-gray-700 rounded-2xl p-6 hover:border-cyan-400 transition-all duration-300 hover:shadow-cyan-500/20">
               <div className="flex items-center gap-3 mb-3">
-                <User className="text-yellow-400" size={18} />
-                <h3 className="text-lg font-semibold text-cyan-300">Project Lead</h3>
+                <User className="text-yellow-400" size={20} />
+                <h3 className="text-lg font-semibold text-cyan-300">
+                  Project Lead
+                </h3>
               </div>
               <p className="text-gray-300">{projectDetails.project_lead || "—"}</p>
             </div>
 
-            {/* Dates Card */}
-            <div className="bg-[#141826] border border-gray-700 rounded-2xl p-5 hover:border-cyan-400 transition-all duration-300">
+            {/* Timeline */}
+            <div className="bg-[#121826]/60 border border-gray-700 rounded-2xl p-6 hover:border-cyan-400 transition-all duration-300 hover:shadow-cyan-500/20">
               <div className="flex items-center gap-3 mb-3">
-                <Calendar className="text-green-400" size={18} />
-                <h3 className="text-lg font-semibold text-cyan-300">Timeline</h3>
+                <Calendar className="text-green-400" size={20} />
+                <h3 className="text-lg font-semibold text-cyan-300">
+                  Timeline
+                </h3>
               </div>
               <p className="text-gray-300">
-                Start Date:{" "}
+                Start:{" "}
                 {projectDetails.start_date
                   ? new Date(projectDetails.start_date).toLocaleDateString()
                   : "—"}
               </p>
               <p className="text-gray-300 mt-1">
-                End Date:{" "}
+                End:{" "}
                 {projectDetails.end_date
                   ? new Date(projectDetails.end_date).toLocaleDateString()
                   : "—"}
               </p>
             </div>
 
-            {/* Description Card */}
-            <div className="bg-[#141826] border border-gray-700 rounded-2xl p-5 sm:col-span-2 hover:border-cyan-400 transition-all duration-300">
+            {/* Description */}
+            <div className="sm:col-span-2 bg-[#121826]/60 border border-gray-700 rounded-2xl p-6 hover:border-cyan-400 transition-all duration-300 hover:shadow-cyan-500/20">
               <div className="flex items-center gap-3 mb-3">
-                <FileText className="text-purple-400" size={18} />
-                <h3 className="text-lg font-semibold text-cyan-300">Description</h3>
+                <FileText className="text-purple-400" size={20} />
+                <h3 className="text-lg font-semibold text-cyan-300">
+                  Description
+                </h3>
               </div>
               <p className="text-gray-400 leading-relaxed">
                 {projectDetails.description || "No description provided."}
               </p>
             </div>
-
-           
           </div>
         </div>
       )}
 
-      {/* ⚡ Members Section */}
-      <div className="bg-gradient-to-br from-[#111827] to-[#1e293b] border border-gray-700 rounded-3xl p-8 shadow-lg hover:shadow-blue-500/20 transition-all">
+      {/* 👥 Team Members */}
+      <div className="bg-gradient-to-br from-[#101626]/80 to-[#151b24]/80 border border-gray-700 rounded-3xl p-8 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 backdrop-blur-md">
         <div className="flex justify-between items-center mb-5">
           <h3 className="text-2xl font-semibold flex items-center gap-2 text-cyan-400">
             <Users size={22} /> Team Members
@@ -174,25 +170,25 @@ export default function ProjectSummary({ selectedProject }) {
           <div className="flex gap-3">
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-4 py-2 rounded-lg text-sm font-medium shadow-md transition"
+              className="flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 rounded-lg text-sm font-medium shadow-md transition-all duration-300"
             >
               <PlusCircle size={16} /> Add
             </button>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 px-4 py-2 rounded-lg text-sm font-medium shadow-md transition"
+              className="flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 rounded-lg text-sm font-medium shadow-md transition-all duration-300"
             >
               <Trash2 size={16} /> Remove
             </button>
           </div>
         </div>
 
-        <ul className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+        <ul className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-700 scrollbar-track-gray-900">
           {members.length > 0 ? (
             members.map((member) => (
               <li
                 key={member.id}
-                className="flex items-center justify-between bg-[#141826] hover:bg-[#1f2332] border border-gray-700 hover:border-cyan-500 transition-all duration-300 p-3 rounded-xl"
+                className="flex items-center justify-between bg-[#131826]/80 border border-gray-700 hover:border-cyan-500 hover:bg-[#182030]/80 transition-all duration-300 p-3 rounded-xl shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -207,9 +203,7 @@ export default function ProjectSummary({ selectedProject }) {
                       )
                     }
                   />
-                  <span className="text-gray-100 font-medium">
-                    {member.id}
-                  </span>
+                  <span className="text-gray-100 font-medium">{member.id}</span>
                 </div>
               </li>
             ))
@@ -219,10 +213,10 @@ export default function ProjectSummary({ selectedProject }) {
         </ul>
       </div>
 
-      {/* ⚡ Add & Delete Modals (Same as before) */}
+      {/* 🧩 Add Member Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-          <div className="bg-[#121420] p-6 rounded-2xl w-80 border border-cyan-700 shadow-xl">
+          <div className="bg-gradient-to-b from-[#141826] to-[#1a1f2b] p-6 rounded-2xl w-80 border border-cyan-700 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-cyan-400">
                 Add Member
@@ -263,14 +257,15 @@ export default function ProjectSummary({ selectedProject }) {
         </div>
       )}
 
+      {/* 🗑️ Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-          <div className="bg-[#121420] p-6 rounded-2xl w-80 border border-red-700 shadow-xl">
-            <h3 className="text-lg font-semibold text-red-400 mb-3">
-              Remove Members?
+          <div className="bg-gray-800 p-6 rounded-2xl w-80 shadow-lg/60">
+            <h3 className="text-lg font-semibold  mb-3">
+              Remove Members
             </h3>
-            <p className="text-gray-400 text-sm mb-5">
-              This action cannot be undone.
+            <p className=" text-sm mb-5">
+              Do you want to Remove the selected Employee from this project
             </p>
 
             <div className="flex justify-end gap-3">
