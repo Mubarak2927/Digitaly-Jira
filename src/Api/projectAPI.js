@@ -10,7 +10,7 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`; 
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -19,7 +19,7 @@ API.interceptors.request.use((config) => {
 export const getAllProjects = async () => {
   const res = await API.get("/projects");
   console.log(res, "response");
-  
+
   return res.data;
 };
 
@@ -113,4 +113,27 @@ export const deleteBoard = async (board_id) => {
   const res = await API.delete(`/boards/${board_id}`);
   return res.data;
 };
+
+
+export const getEpic = async (project_id) => {
+  const res = await API.get(`/epics/?project_id=${project_id}`);
+  return res.data;
+};
+
+
+export const createEpic = async (boardData) => {
+  const res = await API.post(`/epics/`, boardData);
+  return res.data;
+};
+
+
+
+
+
+export const createIssues = async (payload) => {
+  const res = await API.post(`/issues/`, payload);
+  return res.data;
+};
+
+
 
