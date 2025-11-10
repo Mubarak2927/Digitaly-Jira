@@ -60,10 +60,13 @@ export default function ProductBacklog(selectedProject) {
 
   const createTask = async () => {
     try {
+
+      const type = createForm.type.toLowerCase()
+
       const newTask = {
         name: createForm.title,
         project_id: selectedProject.selectedProject.id,
-        type: createForm.type,
+        type: type,
         epic_id: selectedEpic.id
       };
 
@@ -245,10 +248,10 @@ export default function ProductBacklog(selectedProject) {
           <select className="bg-gray-800 px-2 py-1 rounded text-sm"
             value={createForm.type}
             onChange={(e) => setCreateForm(prev => ({ ...prev, type: e.target.value }))}>
-            <option>task</option>
-            <option>story</option>
-            <option>bug</option>
-            <option>subtask</option>
+            <option>Task</option>
+            <option>Story</option>
+            <option>Bug</option>
+            <option>Subtask</option>
           </select>
           <input className="flex-1 bg-gray-800 px-2 py-1 rounded text-sm" placeholder="Title"
             value={createForm.title}
