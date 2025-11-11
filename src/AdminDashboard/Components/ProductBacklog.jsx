@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { createEpic, createIssues, getEpic } from "../../Api/projectAPI";
+import { createEpic, createIssues, getEpic ,getAllUsers } from "../../Api/projectAPI";
 
 /**
  * AmandaJiraFull.jsx
@@ -36,6 +36,9 @@ export default function ProductBacklog(selectedProject) {
   const [showSprintModal, setShowSprintModal] = useState(false);
   const [sprintForm, setSprintForm] = useState({ name: "", startDate: "", endDate: "" });
 
+    // const [users, setUsers] = useState([]);
+  
+  
   // Create item form
   const [createForm, setCreateForm] = useState({ type: "Task", title: "", description: "", epicId: null, assignee: "", name: "" });
 
@@ -43,7 +46,7 @@ export default function ProductBacklog(selectedProject) {
 
   useEffect(() => {
     getEpics()
-  }, [])
+  }, [selectedProject])
 
   const getEpics = async () => {
     try {
@@ -190,7 +193,6 @@ export default function ProductBacklog(selectedProject) {
           onClick={() => setSelectedEpic(null)}
           className={`p-2 rounded-lg cursor-pointer ${selectedEpic === null ? "bg-white/10" : "hover:bg-white/5"}`}
         >
-          <div className="text-sm text-gray-300">No epic</div>
         </div>
 
         {epics.map(e => (
@@ -236,15 +238,15 @@ export default function ProductBacklog(selectedProject) {
   );
 
   const BacklogColumn = () => (
-    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 shadow-sm">
+    <div className="bg-gray-800 p-4 w-[55vw] rounded-2xl  shadow-lg/55">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-yellow-300">Backlog</h3>
         <div className="text-sm text-gray-400">{filteredBacklog.length} items</div>
       </div>
 
       {/* Create Task area */}
-      <div className="bg-gray-900/40 p-3 rounded-md mb-4">
-        <div className="flex gap-2 items-center">
+      <div className="bg-gray-900 p-5 rounded-lg mb-4">
+        <div className="flex gap-5 items-center">
           <select className="bg-gray-800 px-2 py-1 rounded text-sm"
             value={createForm.type}
             onChange={(e) => setCreateForm(prev => ({ ...prev, type: e.target.value }))}>
@@ -442,7 +444,7 @@ export default function ProductBacklog(selectedProject) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-teal-400 tracking-wide">⚡ Amanda Jira - Backlog & Sprint</h1>
+      <h1 className="text-3xl font-bold mb-6 text-teal-400 tracking-wide">Project Backlog Items</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
