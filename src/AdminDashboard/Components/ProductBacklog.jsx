@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { createEpic, createIssues, getEpic ,getAllUsers } from "../../Api/projectAPI";
+import { createEpic, createIssues, getEpic , } from "../../Api/projectAPI";
+import { data } from "react-router-dom";
 
 /**
  * AmandaJiraFull.jsx
@@ -61,25 +62,29 @@ export default function ProductBacklog(selectedProject) {
     }
   }
 
+
+  
+
   const createTask = async () => {
-    try {
+  try {
+    const type = createForm.type.toLowerCase();
 
-      const type = createForm.type.toLowerCase()
+    const newTask = {
+      name: createForm.title,
+      project_id: selectedProject.selectedProject.id,
+      type: type,
+      epic_id: selectedEpic.id,
+       priority: createForm.priority
+    };
 
-      const newTask = {
-        name: createForm.title,
-        project_id: selectedProject.selectedProject.id,
-        type: type,
-        epic_id: selectedEpic.id
-      };
+    const data = await createIssues(newTask);
+    console.log(data, "after create task");
 
-      const data = await createIssues(newTask)
-      console.log(data, "after create task");
-    } catch (error) {
-      console.log(error)
-    }
+    setTasks((prev) => [...prev, data]);
+  } catch (error) {
+    console.error("Error creating task:", error);
   }
-
+};
   // Derived: backlog = tasks not assigned to an active sprint
   const activeSprintIds = useMemo(() => sprints.filter(s => s.status === "Active").flatMap(s => s.tasks), [sprints]);
   const backlogTasks = tasks.filter(t => !activeSprintIds.includes(t.id));
@@ -183,7 +188,7 @@ export default function ProductBacklog(selectedProject) {
 
   // UI Pieces
   const EpicList = () => (
-    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 shadow-sm">
+    <div className="bg-white/5 p-4 rounded-2xl shadow-lg/60 hover:shadow-cyan-500">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-purple-300">Epics</h3>
         {/* <small className="text-xs text-gray-400">{epics.length}</small> */}
@@ -238,7 +243,7 @@ export default function ProductBacklog(selectedProject) {
   );
 
   const BacklogColumn = () => (
-    <div className="bg-gray-800 p-4 w-[55vw] rounded-2xl  shadow-lg/55">
+    <div className="bg-gray-800 p-4 w-[55vw] rounded-2xl  shadow-lg/60 hover:shadow-cyan-500">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-yellow-300">Backlog</h3>
         <div className="text-sm text-gray-400">{filteredBacklog.length} items</div>
@@ -253,7 +258,7 @@ export default function ProductBacklog(selectedProject) {
             <option>Task</option>
             <option>Story</option>
             <option>Bug</option>
-            <option>Subtask</option>
+
           </select>
           <input className="flex-1 bg-gray-800 px-2 py-1 rounded text-sm" placeholder="Title"
             value={createForm.title}
@@ -269,9 +274,24 @@ export default function ProductBacklog(selectedProject) {
             <option value="">No epic</option>
             {epics.map(ep => <option key={ep.id} value={ep.id}>{ep.name}</option>)}
           </select>
-          <input className="w-24 bg-gray-800 px-2 py-1 rounded text-sm" placeholder="Assignee"
+         <select
+  className="bg-gray-800 px-2 py-1 rounded text-sm"
+  value={createForm.priority}
+  onChange={(e) =>
+    setCreateForm((prev) => ({ ...prev, priority: e.target.value }))
+  }
+>
+  <option disabled value="">Priority</option>
+  <option value="highest">Highest</option>
+  <option value="high">High</option>
+  <option value="medium">Medium</option>
+  <option value="low">Low</option>
+  <option value="lowest">Lowest</option>
+</select>
+
+          {/* <input className="w-24 bg-gray-800 px-2 py-1 rounded text-sm" placeholder="Assignee"
             value={createForm.assignee}
-            onChange={(e) => setCreateForm(prev => ({ ...prev, assignee: e.target.value }))} />
+            onChange={(e) => setCreateForm(prev => ({ ...prev, assignee: e.target.value }))} /> */}
           <button className="px-3 py-1 rounded bg-green-400 text-black text-sm" onClick={createTask}>Add</button>
         </div>
         <input className="mt-2 w-full bg-gray-800 px-2 py-1 rounded text-sm" placeholder="Description (optional)"
@@ -291,26 +311,72 @@ export default function ProductBacklog(selectedProject) {
                 <div className="flex items-center gap-3">
                   <input type="checkbox" checked={selectedTasksForSprint.includes(t.id)} onChange={() => toggleSelectTaskForSprint(t.id)} />
                   <div>
-                    <div className="font-medium truncate">{t.title}</div>
+                    <div className="font-medium truncate">{t.name}</div>
                     <div className="text-xs text-gray-400 truncate">
-                      {epic ? <span className="bg-purple-600/30 px-2 py-0.5 rounded text-purple-100 mr-2 text-[11px]">{epic.title}</span> : <span className="bg-gray-700/50 px-2 py-0.5 rounded text-gray-100 text-[11px]">No epic</span>}
+                      {epic ? <span className="bg-purple-600/30 px-2 py-0.5 rounded text-purple-100 mr-2 text-[11px]">{t.name}</span> : <span className="bg-gray-700/50 px-2 py-0.5 rounded text-gray-100 text-[11px]">No epic</span>}
                       <span className="ml-2">• {t.status}</span>
-                      {t.assignee && <span className="ml-3">• Assignee: {t.assignee}</span>}
+                      {/* {t.assignee && <span className="ml-3">• Assignee: {t.assignee}</span>}   */}
+                      {t.priority &&<span className="capitalize ml-15"> <span className="text-sm  text-white">Priority:</span>
+                      <span className="ml-1 bg-gray-700 text-white px-3 rounded-2xl ">{t.priority}</span> 
+                      </span>}
+                      
+                      
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Quick actions */}
-              <div className="flex items-center gap-2 ml-3">
-                <select className="bg-gray-800 px-2 py-1 rounded text-sm" value={t.status}
+              {/* <div className="flex items-center gap-2 ml-3">
+                <select className="bg-gray-800 px-2 py-1 border rounded text-sm" value={t.status}
                   onChange={(e) => updateTask(t.id, { status: e.target.value })}>
                   {STATUS_OPTIONS.map(s => <option value={s} key={s}>{s}</option>)}
                 </select>
                 <input className="w-20 bg-gray-800 px-2 py-1 rounded text-sm" placeholder="Assignee" value={t.assignee || ""} onChange={(e) => updateTask(t.id, { assignee: e.target.value || null })} />
                 <button className="px-2 py-1 rounded bg-blue-500 text-black text-sm" onClick={() => promptAssignEpic(t.id)}>Set Epic</button>
               </div>
-            </div>
+            </div> */}
+            <div className="flex items-center gap-2 ml-3">
+  <select
+    className="bg-gray-800 px-2 py-1 border rounded text-sm"
+    value={t.status}
+    onChange={(e) => updateTask(t.id, { status: e.target.value })}
+  >
+    {STATUS_OPTIONS.map((s) => (
+      <option value={s} key={s}>
+        {s}
+      </option>
+    ))}
+  </select>
+
+  <select
+    className="bg-gray-800  px-2 py-1 border rounded-lg text-sm capitalize"
+    value={t.priority || ""}
+    onChange={(e) => updateTask(t.id, { priority: e.target.value })}
+  >
+    <option value="">Priority</option>
+    <option value="highest">Highest</option>
+    <option value="high">High</option>
+    <option value="medium">Medium</option>
+    <option value="low">Low</option>
+    <option value="lowest">Lowest</option>
+  </select>
+
+  {/* <input
+    className="w-20 bg-gray-800 px-2 py-1 rounded text-sm"
+    placeholder="Assignee"
+    value={t.assignee || ""}
+    onChange={(e) => updateTask(t.id, { assignee: e.target.value || null })}
+  /> */}
+
+  <button
+    className="px-2 py-1 rounded bg-blue-500 text-black text-sm"
+    onClick={() => promptAssignEpic(t.id)}
+  >
+    Set Epic
+  </button>
+</div>
+</div>
           );
         })}
       </div>
@@ -336,7 +402,7 @@ export default function ProductBacklog(selectedProject) {
   }
 
   const SprintColumn = () => (
-    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 shadow-sm">
+    <div className="bg-white/5 p-4 rounded-2xl shadow-lg/60 hover:shadow-cyan-500">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-green-300">Sprints</h3>
         <small className="text-xs text-gray-400">{sprints.length}</small>
@@ -463,5 +529,7 @@ export default function ProductBacklog(selectedProject) {
 
       {showSprintModal && <SprintModal />}
     </div>
+
+    
   );
 }

@@ -126,14 +126,14 @@ export const createEpic = async (boardData) => {
   return res.data;
 };
 
-
-
-
-
 export const createIssues = async (payload) => {
   const res = await API.post(`/issues/`, payload);
   return res.data;
 };
 
+export const getIssues = async (payload) => {
+  const res = await API.get(`/issues/?project_id=project_id&sprint_id=sprint_id&epic_id=epic_id`, payload);
+  return res.data;
+};
 
 
