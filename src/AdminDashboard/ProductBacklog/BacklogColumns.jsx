@@ -1,33 +1,83 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getSprint, sprintTaskMove } from "../../Api/projectAPI";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
 const BacklogColumns = ({
   filteredBacklog = [],
   epics = [],
-  createForm = { title: "", type: "Task", description: "", priority: "", epicId: "" },
+  createForm = {
+    title: "",
+    type: "Task",
+    description: "",
+    priority: "",
+    epicId: "",
+  },
   setCreateForm = () => {},
-  selectedEpic = null,
-  setSelectedEpic = () => {},
   selectedTasksForSprint = [],
   setSelectedTasksForSprint = () => {},
   createTask = () => {},
   toggleSelectTaskForSprint = () => {},
   updateTask = () => {},
   promptAssignEpic = () => {},
-  openSprintModal = () => {},
+  selectedProject,
+  loggedInUserId,
 }) => {
+  const [sprints, setSprints] = useState([]);
+  const [selectedSprintId, setSelectedSprintId] = useState("");
+
+  // 🌀 Load sprints for dropdown
+  useEffect(() => {
+   fetchSprints()
+  }, []);
+
+  const fetchSprints = async () => {
+    try {
+      console.log(selectedProject, "fetch spint");
+      
+      const data = await getSprint(selectedProject.selectedProject.id);
+      setSprints(data || []);
+      console.log(data, "collected Sprint");
+      
+    } catch (err) {
+      console.error("Error fetching sprints:", err);
+    }
+  };
+
+  // ✅ Assign selected tasks to sprint
+  const handleAssignToSprint = async () => {
+    // if (!selectedSprintId) return alert("Please select a sprint");
+    // if (selectedTasksForSprint.length === 0)
+    //   return alert("No tasks selected");
+console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
+
+    try {
+      const payload = { issue_ids: selectedTasksForSprint };
+     const data= await sprintTaskMove(selectedSprintId, payload);
+     console.log(data, "after sprint add");
+     
+      alert("Tasks added to sprint successfully ✅");
+      setSelectedTasksForSprint([]);
+      setSelectedSprintId("");
+      fetchSprints();
+    } catch (error) {
+      console.error("Error assigning tasks:", error);
+    }
+  };
+
   return (
     <div>
-      <div className="bg-gray-800 p-4 w-[55vw] rounded-2xl shadow-lg/60 hover:shadow-cyan-500">
+      <div className="bg-gray-800 p-5 w-[55vw] rounded-2xl shadow-lg/60 hover:shadow-cyan-500">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-yellow-300">Backlog</h3>
-          <div className="text-sm text-gray-400">{filteredBacklog.length} items</div>
+          <div className="text-sm text-gray-400">
+            {filteredBacklog.length} items
+          </div>
         </div>
 
-        {/* Create Task area */}
-        <div className="bg-gray-900 p-5 rounded-lg mb-4">
-          <div className="flex gap-5 items-center">
+        {/* ➕ Create Task Section */}
+        <div className="bg-gray-900 p-4 rounded-lg mb-5">
+          <div className="flex gap-3 items-center flex-wrap">
             <select
               className="bg-gray-800 px-2 py-1 rounded text-sm"
               value={createForm.type}
@@ -39,6 +89,7 @@ const BacklogColumns = ({
               <option>Story</option>
               <option>Bug</option>
             </select>
+
             <input
               className="flex-1 bg-gray-800 px-2 py-1 rounded text-sm"
               placeholder="Title"
@@ -47,6 +98,7 @@ const BacklogColumns = ({
                 setCreateForm((prev) => ({ ...prev, title: e.target.value }))
               }
             />
+
             <select
               className="bg-gray-800 px-2 py-1 rounded text-sm"
               value={createForm.epicId || ""}
@@ -55,12 +107,13 @@ const BacklogColumns = ({
               }
             >
               <option value="">No epic</option>
-              {epics?.map((ep) => (
+              {epics.map((ep) => (
                 <option key={ep.id} value={ep.id}>
                   {ep.name}
                 </option>
               ))}
             </select>
+
             <select
               className="bg-gray-800 px-2 py-1 rounded text-sm"
               value={createForm.priority}
@@ -68,9 +121,7 @@ const BacklogColumns = ({
                 setCreateForm((prev) => ({ ...prev, priority: e.target.value }))
               }
             >
-              <option disabled value="">
-                Priority
-              </option>
+              <option value="">Priority</option>
               <option value="highest">Highest</option>
               <option value="high">High</option>
               <option value="medium">Medium</option>
@@ -87,17 +138,20 @@ const BacklogColumns = ({
           </div>
 
           <input
-            className="mt-2 w-full bg-gray-800 px-2 py-1 rounded text-sm"
+            className="mt-3 w-full bg-gray-800 px-2 py-1 rounded text-sm"
             placeholder="Description (optional)"
             value={createForm.description}
             onChange={(e) =>
-              setCreateForm((prev) => ({ ...prev, description: e.target.value }))
+              setCreateForm((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }))
             }
           />
         </div>
 
-        {/* Tasks */}
-        <div className="space-y-2 max-h-[58vh] overflow-auto pr-2">
+        {/* 🧩 Task List */}
+        <div className="space-y-2 max-h-[55vh] overflow-auto pr-2">
           {filteredBacklog.length === 0 && (
             <div className="text-sm text-gray-500">No tasks in backlog.</div>
           )}
@@ -129,14 +183,6 @@ const BacklogColumns = ({
                           </span>
                         )}
                         <span className="ml-2">• {t.status}</span>
-                        {t.priority && (
-                          <span className="capitalize ml-15">
-                            <span className="text-sm text-white">Priority:</span>
-                            <span className="ml-1 bg-gray-700 text-white px-3 rounded-2xl">
-                              {t.priority}
-                            </span>
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -146,26 +192,15 @@ const BacklogColumns = ({
                   <select
                     className="bg-gray-800 px-2 py-1 border rounded text-sm"
                     value={t.status}
-                    onChange={(e) => updateTask(t.id, { status: e.target.value })}
+                    onChange={(e) =>
+                      updateTask(t.id, { status: e.target.value })
+                    }
                   >
                     {STATUS_OPTIONS.map((s) => (
                       <option value={s} key={s}>
                         {s}
                       </option>
                     ))}
-                  </select>
-
-                  <select
-                    className="bg-gray-800 px-2 py-1 border rounded-lg text-sm capitalize"
-                    value={t.priority || ""}
-                    onChange={(e) => updateTask(t.id, { priority: e.target.value })}
-                  >
-                    <option value="">Priority</option>
-                    <option value="highest">Highest</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                    <option value="lowest">Lowest</option>
                   </select>
 
                   {!t.epic_name && (
@@ -182,23 +217,31 @@ const BacklogColumns = ({
           })}
         </div>
 
-        {/* Sprint controls */}
-        <div className="mt-4 flex items-center justify-between">
+        {/* 🏁 Sprint Assignment Controls */}
+        <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="text-xs text-gray-400">
             Selected: {selectedTasksForSprint.length}
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSelectedTasksForSprint([])}
-              className="px-3 py-1 rounded bg-gray-700 text-sm"
+
+          <div className="flex gap-2 items-center">
+            <select
+              className="bg-gray-700 px-3 py-1 rounded text-sm text-white"
+              value={selectedSprintId}
+              onChange={(e) => setSelectedSprintId(e.target.value)}
             >
-              Clear
-            </button>
+              <option value="">Select Sprint</option>
+              {sprints.map((sp) => (
+                <option key={sp.id} value={sp.id}>
+                  {sp.name}
+                </option>
+              ))}
+            </select>
+
             <button
-              onClick={openSprintModal}
+              onClick={handleAssignToSprint}
               className="px-3 py-1 rounded bg-gradient-to-r from-green-400 to-teal-400 text-black text-sm"
             >
-              Create Sprint
+              Assign to Sprint
             </button>
           </div>
         </div>

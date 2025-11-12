@@ -85,11 +85,11 @@ function Column({
                  transition-all duration-200 z-0"
     >
       <h2 className="text-sm font-bold text-gray-300 mb-3 flex justify-between items-center">
-        <span className="truncate">{col.name.toUpperCase()}</span>
+        <span className="truncate">{col.column_info.name.toUpperCase()}</span>
 
-        {col.id === "todo" && (
+        {col.column_info.id === "todo" && (
           <button
-            onClick={() => onAddTaskClick(col.id)}
+            onClick={() => onAddTaskClick(col.column_info.id)}
             className="text-blue-400 text-lg font-bold hover:text-blue-300 transition"
           >
             + Create
@@ -110,7 +110,7 @@ function Column({
           />
           <div className="flex justify-end gap-2">
             <button
-              onClick={() => onAddTaskInline(col.id)}
+              onClick={() => onAddTaskInline(col.column_info.id)}
               className="px-3 py-1 bg-green-600 hover:bg-green-500 
                          text-sm rounded-md transition"
             >
@@ -276,9 +276,9 @@ export default function BoardView({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 p-4 pt-17 overflow-x-auto no-scrollbar">
-        {selectedProject.columns[0].columns.map((col) => (
+        {selectedProject.columns.board.columns?.map((col) => (
           <div
-            key={col.id}
+            key={col.column_info.id}
             className="flex-shrink-0 w-full sm:w-[300px] md:w-[340px] lg:w-[380px]"
           >
             <Column

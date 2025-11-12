@@ -54,8 +54,8 @@ const WhiteBoard = () => {
     const fetchProjects = async () => {
       try {
         const data = await getAllProjects();
-        console.log(data , "Alll project ");
-        
+        console.log(data, "Alll project ");
+
         setProjects(data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -87,8 +87,8 @@ const WhiteBoard = () => {
       // [newProject.projectLead]: "project_admin",
     };
 
-   newProject.assignedEmployees.forEach((empId) => {
-       member_roles[empId] = "developer";
+    newProject.assignedEmployees.forEach((empId) => {
+      member_roles[empId] = "developer";
     });
 
     const payload = {
@@ -130,32 +130,25 @@ const WhiteBoard = () => {
     }
   };
 
-
-  
-
-
   // ---------------- SELECT PROJECT ----------------
-
 
   const handleSelectProject = async (id) => {
     try {
-  const data = await getProjectById(id);
-     
+      const data = await getProjectById(id);
+
       setSelectedProject(data);
       setActiveEmployeeSection(null);
 
-          const columns = await getBoardById(id);
+      const columns = await getBoardById(id);
       console.log(columns, "columns");
 
       const withColumns = {
-    ...data,
-    // boardId : columns.id,
-   columns
-   
-  };
+        ...data,
+        // boardId : columns.id,
+        columns,
+      };
 
-  console.log(withColumns, "columns added");
-  
+      console.log(withColumns, "columns added");
 
       setSelectedProject(withColumns);
       setActiveTab("summary");
@@ -246,12 +239,12 @@ const WhiteBoard = () => {
                 <ProjectSummary selectedProject={selectedProject} />
               )}
               {activeTab === "board" && selectedProject.columns && (
-  <BoardView
-    selectedProject={selectedProject}
-    setSelectedProject={setSelectedProject}
-    setProjects={setProjects}
-  />
-)}
+                <BoardView
+                  selectedProject={selectedProject}
+                  setSelectedProject={setSelectedProject}
+                  setProjects={setProjects}
+                />
+              )}
 
               {activeTab === "lists" && (
                 <ListsView selectedProject={selectedProject} />

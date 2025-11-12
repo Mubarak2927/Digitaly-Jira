@@ -218,34 +218,33 @@ export default function ProductBacklog(selectedProject) {
 
   // UI Pieces
   const EpicList = () => (
-    <Epic 
-    epics={epics}
-selectedEpic={selectedEpic}
-setSelectedEpic={setSelectedEpic}
-createForm={createForm}
-setCreateForm={setCreateForm}
-handleCreateItem={handleCreateItem}
-/>
+    <Epic
+      epics={epics}
+      selectedEpic={selectedEpic}
+      setSelectedEpic={setSelectedEpic}
+      createForm={createForm}
+      setCreateForm={setCreateForm}
+      handleCreateItem={handleCreateItem}
+    />
   );
 
   const BacklogColumn = () => (
-   <BacklogColumns 
-   
- filteredBacklog={filteredBacklog}
-  epics={epics}
-  createForm={createForm}
-  setCreateForm={setCreateForm}
-  selectedEpic={selectedEpic}
-  setSelectedEpic={setSelectedEpic}
-  selectedTasksForSprint={selectedTasksForSprint}
-  setSelectedTasksForSprint={setSelectedTasksForSprint}
-  createTask={createTask}
-  toggleSelectTaskForSprint={toggleSelectTaskForSprint}
-  updateTask={updateTask}
-  promptAssignEpic={promptAssignEpic}
-  openSprintModal={openSprintModal}
-
-   />
+    <BacklogColumns
+      filteredBacklog={filteredBacklog}
+      epics={epics}
+      createForm={createForm}
+      setCreateForm={setCreateForm}
+      selectedEpic={selectedEpic}
+      setSelectedEpic={setSelectedEpic}
+      selectedTasksForSprint={selectedTasksForSprint}
+      setSelectedTasksForSprint={setSelectedTasksForSprint}
+      createTask={createTask}
+      toggleSelectTaskForSprint={toggleSelectTaskForSprint}
+      updateTask={updateTask}
+      promptAssignEpic={promptAssignEpic}
+      openSprintModal={openSprintModal}
+      selectedProject={selectedProject}
+    />
   );
 
   // small helper to set epic for task
@@ -264,116 +263,114 @@ handleCreateItem={handleCreateItem}
   }
 
   const SprintColumn = () => (
-   <Sprint
-    sprints={sprints}
-        updateTask={updateTask}
-        completeSprint={completeSprint}
-        startSprint={startSprint}
-   tasks={tasks}
-   
-   
-   
-   />
+    <Sprint
+      sprints={sprints}
+      updateTask={updateTask}
+      completeSprint={completeSprint}
+      startSprint={startSprint}
+      tasks={tasks}
+      selectedProject={selectedProject}
+    />
   );
 
   // Sprint modal
-  const SprintModal = () => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-gray-900 rounded-2xl p-6 w-[520px]">
-        <h3 className="text-xl font-semibold mb-3">Create Sprint</h3>
-        <div className="space-y-3">
-          <input
-            className="w-full bg-gray-800 px-3 py-2 rounded"
-            placeholder="Sprint name"
-            value={sprintForm.name}
-            onChange={(e) =>
-              setSprintForm((prev) => ({ ...prev, name: e.target.value }))
-            }
-          />
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="text-xs text-gray-400">Start date</label>
-              <input
-                type="date"
-                className="w-full bg-gray-800 px-3 py-2 rounded"
-                value={sprintForm.startDate}
-                onChange={(e) =>
-                  setSprintForm((prev) => ({
-                    ...prev,
-                    startDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="flex-1">
-              <label className="text-xs text-gray-400">End date</label>
-              <input
-                type="date"
-                className="w-full bg-gray-800 px-3 py-2 rounded"
-                value={sprintForm.endDate}
-                onChange={(e) =>
-                  setSprintForm((prev) => ({
-                    ...prev,
-                    endDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-          </div>
+  // const SprintModal = () => (
+  //   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+  //     <div className="bg-gray-900 rounded-2xl p-6 w-[520px]">
+  //       <h3 className="text-xl font-semibold mb-3">Create Sprint</h3>
+  //       <div className="space-y-3">
+  //         <input
+  //           className="w-full bg-gray-800 px-3 py-2 rounded"
+  //           placeholder="Sprint name"
+  //           value={sprintForm.name}
+  //           onChange={(e) =>
+  //             setSprintForm((prev) => ({ ...prev, name: e.target.value }))
+  //           }
+  //         />
+  //         <div className="flex gap-2">
+  //           <div className="flex-1">
+  //             <label className="text-xs text-gray-400">Start date</label>
+  //             <input
+  //               type="date"
+  //               className="w-full bg-gray-800 px-3 py-2 rounded"
+  //               value={sprintForm.startDate}
+  //               onChange={(e) =>
+  //                 setSprintForm((prev) => ({
+  //                   ...prev,
+  //                   startDate: e.target.value,
+  //                 }))
+  //               }
+  //             />
+  //           </div>
+  //           <div className="flex-1">
+  //             <label className="text-xs text-gray-400">End date</label>
+  //             <input
+  //               type="date"
+  //               className="w-full bg-gray-800 px-3 py-2 rounded"
+  //               value={sprintForm.endDate}
+  //               onChange={(e) =>
+  //                 setSprintForm((prev) => ({
+  //                   ...prev,
+  //                   endDate: e.target.value,
+  //                 }))
+  //               }
+  //             />
+  //           </div>
+  //         </div>
 
-          <div>
-            <label className="text-sm font-medium">Selected tasks</label>
-            <div className="max-h-36 overflow-auto mt-2 space-y-2">
-              {selectedTasksForSprint.length === 0 && (
-                <div className="text-gray-500 text-sm">
-                  No tasks selected. You can still create an empty sprint.
-                </div>
-              )}
-              {selectedTasksForSprint.map((id) => {
-                const t = tasks.find((x) => x.id === id);
-                return t ? (
-                  <div
-                    key={id}
-                    className="flex items-center justify-between bg-gray-800/50 p-2 rounded"
-                  >
-                    <div>
-                      <div className="font-medium">{t.title}</div>
-                      <div className="text-xs text-gray-400">
-                        {t.assignee || "Unassigned"} • {t.status}
-                      </div>
-                    </div>
-                    <div>
-                      <button
-                        className="px-2 py-1 rounded bg-red-500 text-black text-sm"
-                        onClick={() => toggleSelectTaskForSprint(id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ) : null;
-              })}
-            </div>
-          </div>
+  //         <div>
+  //           <label className="text-sm font-medium">Selected tasks</label>
+  //           <div className="max-h-36 overflow-auto mt-2 space-y-2">
+  //             {selectedTasksForSprint.length === 0 && (
+  //               <div className="text-gray-500 text-sm">
+  //                 No tasks selected. You can still create an empty sprint.
+  //               </div>
+  //             )}
+  //             {selectedTasksForSprint.map((id) => {
+  //               const t = tasks.find((x) => x.id === id);
+  //               return t ? (
+  //                 <div
+  //                   key={id}
+  //                   className="flex items-center justify-between bg-gray-800/50 p-2 rounded"
+  //                 >
+  //                   <div>
+  //                     <div className="font-medium">{t.title}</div>
+  //                     <div className="text-xs text-gray-400">
+  //                       {t.assignee || "Unassigned"} • {t.status}
+  //                     </div>
+  //                   </div>
+  //                   <div>
+  //                     <button
+  //                       className="px-2 py-1 rounded bg-red-500 text-black text-sm"
+  //                       onClick={() => toggleSelectTaskForSprint(id)}
+  //                     >
+  //                       Remove
+  //                     </button>
+  //                   </div>
+  //                 </div>
+  //               ) : null;
+  //             })}
+  //           </div>
+  //         </div>
 
-          <div className="flex justify-end gap-2 pt-3">
-            <button
-              className="px-3 py-1 rounded bg-gray-700"
-              onClick={() => setShowSprintModal(false)}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-3 py-1 rounded bg-gradient-to-r from-green-400 to-teal-400 text-black"
-              onClick={createSprint}
-            >
-              Create
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  //         <div className="flex justify-end gap-2 pt-3">
+  //           <button
+  //             className="px-3 py-1 rounded bg-gray-700"
+  //             onClick={() => setShowSprintModal(false)}
+  //           >
+  //             Cancel
+  //           </button>
+  //           <button
+  //             className="px-3 py-1 rounded bg-gradient-to-r from-green-400 to-teal-400 text-black"
+  //             onClick={createSprint}
+  //           >
+  //             Create
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">

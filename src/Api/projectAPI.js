@@ -136,4 +136,23 @@ export const getIssues = async (projectId) => {
   return res.data;
 };
 
+export const getSprint = async (projectId) => {
+  const res = await API.get(`/sprints/?project_id=${projectId}`);
+  return res.data;
+};
+
+export const createSprint = async (payload) => {
+  const res = await API.post(`/sprints/`, payload);
+  return res.data;
+};
+
+export const sprintTaskMove = async (sprintId, payload) => {
+  const res = await API.post(`/issues/move-multiple/${sprintId}`, payload);
+  return res.data;
+};
+
+export const sprintById= async (sprintId) => {
+  const res = await API.get(`/sprints/${sprintId}`);
+  return res.data;
+}
 
