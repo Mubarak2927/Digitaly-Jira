@@ -131,8 +131,8 @@ export const createIssues = async (payload) => {
   return res.data;
 };
 
-export const getIssues = async (payload) => {
-  const res = await API.get(`/issues/?project_id=project_id&sprint_id=sprint_id&epic_id=epic_id`, payload);
+export const getIssues = async (projectId) => {
+  const res = await API.get(`/issues/?project_id=${projectId}`);
   return res.data;
 };
 
