@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getSprint, sprintTaskMove } from "../../Api/projectAPI";
 
+
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
+
+
+
+
 
 const BacklogColumns = ({
   filteredBacklog = [],
@@ -114,7 +119,7 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
               ))}
             </select>
 
-            <select
+            {/* <select
               className="bg-gray-800 px-2 py-1 rounded text-sm"
               value={createForm.priority}
               onChange={(e) =>
@@ -127,7 +132,7 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
               <option value="medium">Medium</option>
               <option value="low">Low</option>
               <option value="lowest">Lowest</option>
-            </select>
+            </select> */}
 
             <button
               className="px-3 py-1 rounded bg-green-400 text-black text-sm"
@@ -165,11 +170,13 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
+                    {!t.sprint_id &&
                     <input
                       type="checkbox"
                       checked={selectedTasksForSprint.includes(t.id)}
                       onChange={() => toggleSelectTaskForSprint(t.id)}
                     />
+          }
                     <div>
                       <div className="font-medium truncate">{t.name}</div>
                       <div className="text-xs text-gray-400 truncate">
@@ -189,7 +196,7 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
                 </div>
 
                 <div className="flex items-center gap-2 ml-3">
-                  <select
+                  {/* <select
                     className="bg-gray-800 px-2 py-1 border rounded text-sm"
                     value={t.status}
                     onChange={(e) =>
@@ -201,7 +208,7 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
                         {s}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
 
                   {!t.epic_name && (
                     <button
@@ -211,6 +218,8 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
                       Set Epic
                     </button>
                   )}
+                    <button className="bg-red-600 px-2 py-1 rounded"> Delete</button>
+
                 </div>
               </div>
             );

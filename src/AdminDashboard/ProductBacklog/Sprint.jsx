@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { createSprint, getSprint, sprintById } from "../../Api/projectAPI";
+import {
+  createSprint,
+  getSprint,
+  sprintById,
+  startSprints,
+} from "../../Api/projectAPI";
 import { s } from "framer-motion/client";
 
 export default function Sprint({
@@ -19,8 +24,7 @@ export default function Sprint({
 
   // Fetch sprints for project
   useEffect(() => {
-      fetchSprints();
-    
+    fetchSprints();
   }, []);
 
   const fetchSprints = async () => {
@@ -33,17 +37,17 @@ export default function Sprint({
     }
   };
 
-const fetchsprintById = async (sprintId) => {
-  setSelectedSprint(sprintId);
-  try {
-    const data = await sprintById(sprintId);
-    console.log(data);
-    
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
+  // const fetchsprintById = async (sprintId) => {
+  //   setSelectedSprint(sprintId);
+  //   try {
+  //     const data = await sprintById(sprintId);
+  //     console.log(data);
+
+  //   } catch (error) {
+  //     console.log(error);
+
+  //   }
+  // }
 
   // Create new sprint
   const handleCreateSprint = async () => {
@@ -66,6 +70,15 @@ const fetchsprintById = async (sprintId) => {
       fetchSprints();
     } catch (err) {
       console.error("Error creating sprint:", err);
+    }
+  };
+
+  const startSprint = async (sprint) => {
+    try {
+      const data = await startSprints(sprint.id);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -95,7 +108,9 @@ const fetchsprintById = async (sprintId) => {
                 ? "bg-green-500/20 border border-green-400"
                 : "bg-gray-800/60"
             }`}
-            onClick={()=>fetchsprintById(s.id)}
+            onClick={() =>
+              setSelectedSprint(selectedSprint?.id === s.id ? null : s)
+            }
           >
             <div className="flex justify-between">
               <div>
@@ -106,23 +121,26 @@ const fetchsprintById = async (sprintId) => {
                 </p>
               </div>
               <span className="text-xs bg-gray-700 px-2 py-1 rounded">
-                {s.status || "Not Started"}
+                <button onClick={() => startSprint(s)}>
+                  Start Sprint
+                </button>
               </span>
             </div>
+
             {selectedSprint?.id === s.id && (
               <div className="mt-3 border-t border-gray-700 pt-3">
                 <h5 className="text-sm font-semibold mb-2">Sprint Tasks</h5>
-                {s.tasks?.length > 0 ? (
-                  s.tasks.map((taskId) => {
-                    const task = tasks.find((t) => t.id === taskId);
+                {s.issues?.length > 0 ? (
+                  s.issues.map((taskId) => {
+                    const task = tasks.find((t) => t.id === taskId.id);
                     return task ? (
                       <div
                         key={task.id}
                         className="bg-gray-900 p-2 rounded mb-2 text-sm"
                       >
-                        <div className="font-medium">{task.title}</div>
+                        <div className="font-medium">{task.name}</div>
                         <div className="text-xs text-gray-400">
-                          {task.status} • {task.assignee || "Unassigned"}
+                          {task.status} • {task.priority || "Unassigned"}
                         </div>
                       </div>
                     ) : (

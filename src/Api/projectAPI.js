@@ -147,12 +147,16 @@ export const createSprint = async (payload) => {
 };
 
 export const sprintTaskMove = async (sprintId, payload) => {
-  const res = await API.post(`/issues/move-multiple/${sprintId}`, payload);
+  const res = await API.post(`/issues/move-multiple?sprint_id=${sprintId}`, payload);
   return res.data;
 };
 
-export const sprintById= async (sprintId) => {
-  const res = await API.get(`/sprints/${sprintId}`);
+export const sprintById= async (project_id) => {
+  const res = await API.get(`/sprints/${project_id}`);
   return res.data;
 }
 
+export const startSprints = async (sprintId) => {
+  const res = await API.post(`/sprints/${sprintId}/start`);
+  return res.data;
+};

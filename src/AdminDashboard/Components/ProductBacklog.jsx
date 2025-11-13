@@ -119,8 +119,8 @@ export default function ProductBacklog(selectedProject) {
   );
   const backlogTasks = tasks.filter((t) => !activeSprintIds.includes(t.id));
   const filteredBacklog = selectedEpic
-    ? backlogTasks.filter((t) => t.epic_id === selectedEpic.id)
-    : backlogTasks;
+    ? backlogTasks.filter((t) => t.epic_id === selectedEpic.id && !t.sprint_id)
+    : backlogTasks.filter((t) => !t.sprint_id);
 
   console.log(filteredBacklog, backlogTasks, selectedEpic);
 
@@ -249,17 +249,17 @@ export default function ProductBacklog(selectedProject) {
 
   // small helper to set epic for task
   function promptAssignEpic(taskId) {
-    const options = ["No epic", ...epics.map((e) => e.name)];
-    const choice = prompt(
-      `Assign epic (type epic title or leave blank to remove). Available:\n${options.join(
-        "\n"
-      )}`
-    );
-    if (choice === null) return;
-    const matched = epics.find(
-      (ep) => ep.name.toLowerCase() === choice?.trim().toLowerCase()
-    );
-    updateTask(taskId, { epicId: matched ? matched.id : null });
+    // const options = ["No epic", ...epics.map((e) => e.name)];
+    // const choice = prompt(
+    //   `Assign epic (type epic title or leave blank to remove). Available:\n${options.join(
+    //     "\n"
+    //   )}`
+    // );
+    // if (choice === null) return;
+    // const matched = epics.find(
+    //   (ep) => ep.name.toLowerCase() === choice?.trim().toLowerCase()
+    // );
+    // updateTask(taskId, { epicId: matched ? matched.id : null });
   }
 
   const SprintColumn = () => (
