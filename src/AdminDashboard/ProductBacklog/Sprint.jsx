@@ -83,7 +83,7 @@ export default function Sprint({
   };
 
   return (
-    <div className="bg-gray-900/60 p-5 rounded-2xl shadow-lg text-white">
+    <div className="bg-gray-900 p-5 rounded-2xl shadow-lg/60 text-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Sprints</h2>
         <button

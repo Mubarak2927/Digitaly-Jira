@@ -107,9 +107,10 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
             <select
               className="bg-gray-800 px-2 py-1 rounded text-sm"
               value={createForm.epicId || ""}
-              onChange={(e) =>
+              onChange={(e) =>{
                 setCreateForm((prev) => ({ ...prev, epicId: e.target.value }))
-              }
+                // selectedEpic((prev) => ({ ...prev, id: e.target.value }))
+              }}
             >
               <option value="">No epic</option>
               {epics.map((ep) => (

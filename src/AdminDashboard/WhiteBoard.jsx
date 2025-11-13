@@ -22,8 +22,10 @@ import {
   manageProjectMember,
   getAllUsers,
   getBoardById,
+  boardData,
 } from "../Api/projectAPI";
 import { Columns, File, Hand } from "lucide-react";
+import { s } from "framer-motion/client";
 
 const WhiteBoard = () => {
   const [projects, setProjects] = useState();
@@ -149,6 +151,10 @@ const WhiteBoard = () => {
       };
 
       console.log(withColumns, "columns added");
+
+      const datas = await boardData(id);
+
+      console.log(datas, "board data 111111111111111");
 
       setSelectedProject(withColumns);
       setActiveTab("summary");
@@ -501,3 +507,137 @@ const WhiteBoard = () => {
 };
 
 export default WhiteBoard;
+
+
+
+// src/Pages/WhiteBoard/WhiteBoard.jsx
+// import React, { useState, useEffect } from "react";
+// import {
+//   getAllProjects,
+//   createProject,
+//   getProjectById,
+//   manageProjectMember,
+//   getAllUsers,
+//   getBoardById,
+//   boardData,
+// } from "../../Api/projectAPI";
+
+// import WhiteboardLayout from "./WhiteboardLayout";
+// import ProjectHandler from "./ProjectHandler";
+// import ProjectModals from "./ProjectModals";
+// import EmployeeSections from "./EmployeeSections";
+
+// const WhiteBoard = () => {
+//   const [projects, setProjects] = useState([]);
+//   const [selectedProject, setSelectedProject] = useState(null);
+//   const [activeTab, setActiveTab] = useState("summary");
+//   const [activeEmployeeSection, setActiveEmployeeSection] = useState(null);
+//   const [showSidebarProjectModal, setShowSidebarProjectModal] = useState(false);
+//   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+//   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
+//   const [users, setUsers] = useState([]);
+
+//   const [newProject, setNewProject] = useState({
+//     name: "",
+//     key: "",
+//     startDate: "",
+//     endDate: "",
+//     projectLead: "",
+//     assignedEmployees: [],
+//     platform: "",
+//     description: "",
+//     avatar: "",
+//     labels: [],
+//   });
+
+//   const [newColumnTitle, setNewColumnTitle] = useState("");
+
+//   // ---------------- FETCH ----------------
+//   useEffect(() => {
+//     (async () => {
+//       try {
+//         const data = await getAllProjects();
+//         setProjects(data);
+//       } catch (error) {
+//         console.error("Error fetching projects:", error);
+//       }
+//     })();
+//   }, []);
+
+//   useEffect(() => {
+//     (async () => {
+//       try {
+//         const data = await getAllUsers();
+//         setUsers(data);
+//       } catch (error) {
+//         console.error("Error fetching users:", error);
+//       }
+//     })();
+//   }, []);
+
+//   // ---------------- HANDLERS ----------------
+//   const projectMethods = ProjectHandler({
+//     projects,
+//     setProjects,
+//     selectedProject,
+//     setSelectedProject,
+//     newProject,
+//     setNewProject,
+//     newColumnTitle,
+//     setNewColumnTitle,
+//     setShowSidebarProjectModal,
+//     setShowAddColumnModal,
+//   });
+
+//   return (
+//     <WhiteboardLayout
+//       {...{
+//         projects,
+//         setProjects,
+//         selectedProject,
+//         setSelectedProject,
+//         activeTab,
+//         setActiveTab,
+//         activeEmployeeSection,
+//         setActiveEmployeeSection,
+//         showSidebarProjectModal,
+//         setShowSidebarProjectModal,
+//         showAddMemberModal,
+//         setShowAddMemberModal,
+//         showAddColumnModal,
+//         setShowAddColumnModal,
+//         users,
+//         newProject,
+//         setNewProject,
+//         newColumnTitle,
+//         setNewColumnTitle,
+//         ...projectMethods,
+//       }}
+//     >
+//       <EmployeeSections
+//         activeEmployeeSection={activeEmployeeSection}
+//         activeTab={activeTab}
+//       />
+//       <ProjectModals
+//         {...{
+//           showSidebarProjectModal,
+//           setShowSidebarProjectModal,
+//           showAddMemberModal,
+//           setShowAddMemberModal,
+//           showAddColumnModal,
+//           setShowAddColumnModal,
+//           handleAddSidebarProject: projectMethods.handleAddSidebarProject,
+//           handleAddMember: projectMethods.handleAddMember,
+//           handleAddColumn: projectMethods.handleAddColumn,
+//           users,
+//           newProject,
+//           setNewProject,
+//           newColumnTitle,
+//           setNewColumnTitle,
+//         }}
+//       />
+//     </WhiteboardLayout>
+//   );
+// };
+
+// export default WhiteBoard;

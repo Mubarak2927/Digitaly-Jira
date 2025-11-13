@@ -160,3 +160,14 @@ export const startSprints = async (sprintId) => {
   const res = await API.post(`/sprints/${sprintId}/start`);
   return res.data;
 };
+
+export const boardData= async (project_id) => {
+  const res = await API.get(`/boards/?project_id=${project_id}`);
+  return res.data;
+}
+
+export const updateColumn = async (issuesID) => {
+  const res = await API.put(`/issues/${issuesID}`,
+  );
+  return res.data;
+};

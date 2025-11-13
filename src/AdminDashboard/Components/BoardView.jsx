@@ -60,7 +60,7 @@ function TaskCard({ task, isDraggingOverlay }) {
         isDraggingOverlay ? "opacity-95 scale-[1.05]" : ""
       }`}
     >
-      <p className="font-medium break-words">{task.title}</p>
+      <p className="font-medium break-words">{task.name}</p>
       <p className="text-xs text-gray-200 font-light mt-1">{task.createdAt}</p>
     </div>
   );
@@ -87,7 +87,7 @@ function Column({
       <h2 className="text-sm font-bold text-gray-300 mb-3 flex justify-between items-center">
         <span className="truncate">{col.column_info.name.toUpperCase()}</span>
 
-        {col.column_info.id === "todo" && (
+        {col.column_info.status === "todo" && (
           <button
             onClick={() => onAddTaskClick(col.column_info.id)}
             className="text-blue-400 text-lg font-bold hover:text-blue-300 transition"
@@ -131,8 +131,8 @@ function Column({
       )}
 
       <div className="overflow-y-auto max-h-[70vh] flex flex-col gap-2 no-scrollbar">
-        {col.tasks?.length ? (
-          col.tasks.map((task) => <TaskCard key={task.id} task={task} />)
+        {col.issues?.length ? (
+          col.issues.map((task) => <TaskCard key={task.id} task={task} />)
         ) : (
           <p className="text-gray-500 text-sm italic text-center py-4">
             No tasks yet

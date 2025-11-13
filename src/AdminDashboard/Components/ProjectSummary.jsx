@@ -97,7 +97,7 @@ export default function ProjectSummary({ selectedProject }) {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
             <div className="flex items-center gap-4">
               <Layers className="text-cyan-400 drop-shadow-glow" size={36} />
-              <h1 className="text-3xl font-extrabold tracking-wide bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
+              <h1 className="text-4xl animate-glow uppercase font-extrabold tracking-wide bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
                 {projectDetails.name}
               </h1>
             </div>
