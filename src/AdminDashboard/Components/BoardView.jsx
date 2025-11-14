@@ -8,7 +8,6 @@ import {
   DragOverlay,
 } from "@dnd-kit/core";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
-import { addColumnToBoard } from "../../Api/projectAPI";
 
 // =================== TaskCard Component ===================
 function TaskCard({ task, isDraggingOverlay }) {
@@ -21,50 +20,34 @@ function TaskCard({ task, isDraggingOverlay }) {
     isDragging,
   } = useDraggable({ id: task.id });
 
-  const clickTimeout = useRef(null);
-
-  const handleClick = (e) => {
-    if (clickTimeout.current) {
-      clearTimeout(clickTimeout.current);
-      clickTimeout.current = null;
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    clickTimeout.current = setTimeout(() => {
-      clickTimeout.current = null;
-    }, 300);
-  };
-
-  if (isDragging && !isDraggingOverlay) {
-    return <div className="opacity-0 h-0" />;
-  }
-
   const style = {
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
     transition,
-    zIndex: isDraggingOverlay ? 9999 : 1,
-    cursor: isDraggingOverlay ? "grabbing" : "grab",
+    // pointerEvents: isDraggingOverlay ? "none" : "auto", // Removed, as the PointerSensor constraint fixes the issue
   };
+
+  // When the original card is dragging AND it's NOT the overlay, hide it
+  if (isDragging && !isDraggingOverlay) {
+    return <div className="opacity-0 h-0" />;
+  }
 
   return (
     <div
       ref={!isDraggingOverlay ? setNodeRef : null}
       {...(!isDraggingOverlay ? attributes : {})}
       {...(!isDraggingOverlay ? listeners : {})}
-      onClick={handleClick}
       style={style}
-      className={`bg-gradient-to-r from-blue-600 to-purple-700 text-white p-3 rounded-lg shadow-lg transition-transform ${
-        isDraggingOverlay ? "opacity-95 scale-[1.05]" : ""
-      }`}
+      className={`bg-gradient-to-r from-blue-600 to-purple-700
+                  text-white p-3 rounded-lg shadow-md cursor-grab`}
     >
-      <p className="font-medium break-words">{task.name}</p>
-      <p className="text-xs text-gray-200 font-light mt-1">{task.createdAt}</p>
+      <p className="font-medium">{task.name}</p>
+      <p className="text-xs text-gray-200">{task.created_at}</p>
     </div>
   );
 }
+
 
 // =================== Column Component ===================
 function Column({
@@ -75,22 +58,20 @@ function Column({
   newTaskTitle,
   setNewTaskTitle,
 }) {
-  const { setNodeRef } = useDroppable({ id: col.id });
+  const { setNodeRef } = useDroppable({ id: col.column_info.id });
 
   return (
     <div
       ref={setNodeRef}
-      className="rounded-2xl w-full sm:w-72 p-4 flex-shrink-0 
-                 border border-gray-700 bg-gray-800/80 shadow-lg 
-                 transition-all duration-200 z-0"
+      className="rounded-2xl w-72 bg-gray-800 p-4 shadow-xl border border-gray-700 flex-shrink-0"
     >
-      <h2 className="text-sm font-bold text-gray-300 mb-3 flex justify-between items-center">
-        <span className="truncate">{col.column_info.name.toUpperCase()}</span>
+      <h2 className="text-sm text-gray-300 font-bold mb-3 flex justify-between">
+        {col.column_info.name}
 
         {col.column_info.status === "todo" && (
           <button
             onClick={() => onAddTaskClick(col.column_info.id)}
-            className="text-blue-400 text-lg font-bold hover:text-blue-300 transition"
+            className="text-blue-400 hover:text-blue-300 transition-colors"
           >
             + Create
           </button>
@@ -98,31 +79,25 @@ function Column({
       </h2>
 
       {isAdding && (
-        <div className="mb-3 animate-fadeIn">
+        <div className="mb-3 p-1 border border-dashed border-gray-600 rounded">
           <textarea
             rows="2"
-            placeholder="Enter task name..."
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            className="w-full p-2 mt-5 rounded-md bg-gray-900 text-gray-200 
-                       border border-gray-700 focus:outline-none 
-                       focus:border-blue-500 mb-2 resize-none text-sm"
+            placeholder="Enter task name..."
+            className="w-full p-2 rounded bg-gray-900 text-gray-200 border border-gray-700 focus:outline-none focus:border-blue-500"
           />
-          <div className="flex justify-end gap-2">
+
+          <div className="flex justify-end gap-2 mt-2">
             <button
               onClick={() => onAddTaskInline(col.column_info.id)}
-              className="px-3 py-1 bg-green-600 hover:bg-green-500 
-                         text-sm rounded-md transition"
+              className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-sm font-medium transition-colors"
             >
               Add
             </button>
             <button
-              onClick={() => {
-                setNewTaskTitle("");
-                onAddTaskClick(null);
-              }}
-              className="px-3 py-1 bg-gray-700 hover:bg-gray-900 
-                         text-sm rounded-md transition"
+              onClick={() => onAddTaskClick(null)}
+              className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -130,18 +105,17 @@ function Column({
         </div>
       )}
 
-      <div className="overflow-y-auto max-h-[70vh] flex flex-col gap-2 no-scrollbar">
-        {col.issues?.length ? (
+      <div className="max-h-[70vh] overflow-y-auto flex flex-col gap-3 pt-1">
+        {col.issues.length > 0 ? (
           col.issues.map((task) => <TaskCard key={task.id} task={task} />)
         ) : (
-          <p className="text-gray-500 text-sm italic text-center py-4">
-            No tasks yet
-          </p>
+          <p className="text-gray-500 text-sm text-center py-4">No tasks</p>
         )}
       </div>
     </div>
   );
 }
+
 
 // =================== BoardView Component ===================
 export default function BoardView({
@@ -153,113 +127,103 @@ export default function BoardView({
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [activeTask, setActiveTask] = useState(null);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  // 🔥 FIX APPLIED HERE: Add distance constraint to PointerSensor
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // A small drag is needed to start dragging, preventing simple clicks from triggering a drag
+      },
+    })
+  );
+
+  const columns = selectedProject?.columns?.board?.columns || [];
 
   const handleAddTaskClick = (colId) => {
     setActiveColumnForNewTask(colId === activeColumnForNewTask ? null : colId);
   };
 
+
+  
   const handleAddTaskInline = (colId) => {
-    if (!newTaskTitle.trim() || !selectedProject) return;
+    if (!newTaskTitle.trim()) return;
 
     const newTask = {
       id: Date.now().toString(),
-      title: newTaskTitle,
-      createdAt: new Date().toLocaleString(),
-      column:
-        selectedProject.columns.find((c) => c.id === colId)?.title || "Unknown",
+      name: newTaskTitle,
+      created_at: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      status: "todo",
     };
 
-    const updatedColumns = selectedProject.columns.map((col) =>
-      col.id === colId
-        ? { ...col, tasks: [...(col.tasks || []), newTask] }
+    const updated = columns.map((col) =>
+      col.column_info.id === colId
+        ? { ...col, issues: [...col.issues, newTask] }
         : col
     );
 
-    const updatedProject = {
-      ...selectedProject,
-      columns: updatedColumns,
-      lists: [...(selectedProject.lists ?? []), newTask],
-      backlogs: [...(selectedProject.backlogs ?? []), newTask], // ✅ IMPORTANT
-    };
-
-    console.log(updatedProject, "updated columns ");
-
-    setSelectedProject(updatedProject);
-    setProjects((prev) =>
-      prev.map((p) => (p.id === selectedProject.id ? updatedProject : p))
-    );
-
+    updateProject(updated);
     setNewTaskTitle("");
     setActiveColumnForNewTask(null);
   };
 
+  const updateProject = (updatedColumns) => {
+    const updatedProject = {
+      ...selectedProject,
+      columns: { board: { columns: updatedColumns } },
+    };
+
+    setSelectedProject(updatedProject);
+    setProjects((p) =>
+      p.map((pr) => (pr.id === selectedProject.id ? updatedProject : pr))
+    );
+  };
+
   const handleDragStart = (event) => {
-    const active = selectedProject.columns
-      .flatMap((col) => col.tasks)
-      .find((t) => t.id === event.active.id);
+    const allTasks = columns.flatMap((c) => c.issues);
+    const active = allTasks.find((t) => t.id === event.active.id);
     setActiveTask(active);
-    document.body.style.overflow = "hidden";
   };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    document.body.style.overflow = "auto";
     setActiveTask(null);
     if (!over) return;
 
-    let sourceCol, destinationCol;
+    // Check if we dropped on a task card (we don't want this)
+    // Only allow dropping on a column
+    const isOverColumn = columns.some(col => col.column_info.id === over.id);
+    if (!isOverColumn) return;
 
-    selectedProject.columns.forEach((col) => {
-      if (col.tasks.find((t) => t.id === active.id)) sourceCol = col;
-      if (col.id === over.id) destinationCol = col;
+
+    let sourceCol, destCol;
+
+    columns.forEach((col) => {
+      if (col.issues.some((t) => t.id === active.id)) sourceCol = col;
+      if (col.column_info.id === over.id) destCol = col;
     });
 
-    if (sourceCol && destinationCol) {
-      const taskToMove = sourceCol.tasks.find((t) => t.id === active.id);
-      const newSourceTasks = sourceCol.tasks.filter((t) => t.id !== active.id);
-      const newDestTasks = [
-        ...destinationCol.tasks,
-        { ...taskToMove, column: destinationCol.title },
-      ];
+    if (!sourceCol || !destCol) return;
 
-      const updatedProject = {
-        ...selectedProject,
-        columns: selectedProject.columns.map((col) =>
-          col.id === sourceCol.id
-            ? { ...col, tasks: newSourceTasks }
-            : col.id === destinationCol.id
-            ? { ...col, tasks: newDestTasks }
-            : col
-        ),
-        lists: selectedProject.lists.map((t) =>
-          t.id === taskToMove.id ? { ...t, column: destinationCol.title } : t
-        ),
-        backlogs: selectedProject.backlogs.map((t) =>
-          t.id === taskToMove.id ? { ...t, column: destinationCol.title } : t
-        ),
-      };
+    // Don't move if dropped back into the same column
+    if (sourceCol.column_info.id === destCol.column_info.id) return;
 
-      setSelectedProject(updatedProject);
-      setProjects((prev) =>
-        prev.map((p) => (p.id === selectedProject.id ? updatedProject : p))
-      );
-    }
-  };
 
-  if (!selectedProject) return null;
+    const task = sourceCol.issues.find((t) => t.id === active.id);
 
-  const addColumn = async () => {
-    const columnData = {
-      name: "New Column",
-      status: "qa_review",
-      position: 3,
-    };
-    
-    console.log(selectedProject, "selected project");
-    
-    const data = await addColumnToBoard(selectedProject.columns[0].id, columnData);
-    console.log(data, "added column");
+    const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
+    const newDest = [
+      ...destCol.issues,
+      { ...task, status: destCol.column_info.status },
+    ];
+
+    const updated = columns.map((col) =>
+      col.column_info.id === sourceCol.column_info.id
+        ? { ...col, issues: newSource }
+        : col.column_info.id === destCol.column_info.id
+          ? { ...col, issues: newDest }
+          : col
+    );
+
+    updateProject(updated);
   };
 
   return (
@@ -269,31 +233,31 @@ export default function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className=" absolute w-fit p-2 right-15 rounded-lg  bg-blue-600  hover:bg-blue-700">
-        <button className="cursor-pointer" onClick={addColumn}>
-          + Add Column
-        </button>
-      </div>
+      <div className="flex flex-col">
 
-      <div className="flex flex-col sm:flex-row gap-3 p-4 pt-17 overflow-x-auto no-scrollbar">
-        {selectedProject.columns.board.columns?.map((col) => (
-          <div
-            key={col.column_info.id}
-            className="flex-shrink-0 w-full sm:w-[300px] md:w-[340px] lg:w-[380px]"
-          >
+        <h1 className="text-white flex justify-end">efew</h1>
+
+        <div className="flex gap-4 p-4 h-fit bg-gray-900 text-white overflow-x-scroll">
+          {columns.map((col) => (
             <Column
+              key={col.column_info.id}
               col={col}
               onAddTaskClick={handleAddTaskClick}
               onAddTaskInline={handleAddTaskInline}
-              isAdding={activeColumnForNewTask === col.id}
+              isAdding={activeColumnForNewTask === col.column_info.id}
               newTaskTitle={newTaskTitle}
               setNewTaskTitle={setNewTaskTitle}
             />
-          </div>
-        ))}
+          ))}
+
+        </div>
+
+
       </div>
+
       <DragOverlay>
-        {activeTask ? <TaskCard task={activeTask} isDraggingOverlay /> : null}
+        {activeTask && <TaskCard task={activeTask} isDraggingOverlay />}
+
       </DragOverlay>
     </DndContext>
   );
