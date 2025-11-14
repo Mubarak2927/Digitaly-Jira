@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/core";
 
 import { useDroppable, useDraggable } from "@dnd-kit/core";
-import { addColumnToBoard } from "../../Api/projectAPI";
+import { sprintTaskMoveColumn } from "../../Api/projectAPI";
 
 // =================== TaskCard Component ===================
 function TaskCard({ task, isDraggingOverlay }) {
@@ -27,10 +27,8 @@ function TaskCard({ task, isDraggingOverlay }) {
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
     transition,
-    // pointerEvents: isDraggingOverlay ? "none" : "auto", // Removed, as the PointerSensor constraint fixes the issue
   };
 
-  // When the original card is dragging AND it's NOT the overlay, hide it
   if (isDragging && !isDraggingOverlay) {
     return <div className="opacity-0 h-0" />;
   }
@@ -41,15 +39,14 @@ function TaskCard({ task, isDraggingOverlay }) {
       {...(!isDraggingOverlay ? attributes : {})}
       {...(!isDraggingOverlay ? listeners : {})}
       style={style}
-      className={`bg-gradient-to-r from-blue-600 to-purple-700
-                  text-white p-3 rounded-lg shadow-md cursor-grab`}
+      className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-3 
+      rounded-lg shadow-md cursor-grab"
     >
       <p className="font-medium">{task.name}</p>
       <p className="text-xs text-gray-200">{task.created_at}</p>
     </div>
   );
 }
-
 
 // =================== Column Component ===================
 function Column({
@@ -87,13 +84,15 @@ function Column({
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder="Enter task name..."
-            className="w-full p-2 rounded bg-gray-900 text-gray-200 border border-gray-700 focus:outline-none focus:border-blue-500"
+            className="w-full p-2 rounded bg-gray-900 text-gray-200 
+            border border-gray-700 focus:outline-none focus:border-blue-500"
           />
 
           <div className="flex justify-end gap-2 mt-2">
             <button
               onClick={() => onAddTaskInline(col.column_info.id)}
-              className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-sm font-medium transition-colors"
+              className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded 
+              text-sm font-medium transition-colors"
             >
               Add
             </button>
@@ -118,23 +117,20 @@ function Column({
   );
 }
 
-
 // =================== BoardView Component ===================
 export default function BoardView({
   selectedProject,
   setSelectedProject,
   setProjects,
+  handleSelectProject,
 }) {
   const [activeColumnForNewTask, setActiveColumnForNewTask] = useState(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [activeTask, setActiveTask] = useState(null);
 
-  // 🔥 FIX APPLIED HERE: Add distance constraint to PointerSensor
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5, // A small drag is needed to start dragging, preventing simple clicks from triggering a drag
-      },
+      activationConstraint: { distance: 5 },
     })
   );
 
@@ -144,15 +140,16 @@ export default function BoardView({
     setActiveColumnForNewTask(colId === activeColumnForNewTask ? null : colId);
   };
 
-
-  
   const handleAddTaskInline = (colId) => {
     if (!newTaskTitle.trim()) return;
 
     const newTask = {
       id: Date.now().toString(),
       name: newTaskTitle,
-      created_at: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      created_at: new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       status: "todo",
     };
 
@@ -179,67 +176,96 @@ export default function BoardView({
     );
   };
 
+  // 🔥 DRAG START LOGS
   const handleDragStart = (event) => {
+    console.log("🔥 DRAG START:", event.active.id);
+
     const allTasks = columns.flatMap((c) => c.issues);
     const active = allTasks.find((t) => t.id === event.active.id);
+
+    console.log("➡️ Dragging Task:", active);
+
     setActiveTask(active);
   };
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    setActiveTask(null);
-    if (!over) return;
+  // 🔥 DRAG END LOGS
+ const handleDragEnd = async (event) => {
+  const { active, over } = event;
 
-    // Check if we dropped on a task card (we don't want this)
-    // Only allow dropping on a column
-    const isOverColumn = columns.some(col => col.column_info.id === over.id);
-    if (!isOverColumn) return;
+  console.log("🔥 DRAG END");
+  console.log("🟦 Active Task ID:", active.id);
+  console.log("🟨 Dropped Over ID:", over?.id);
 
+  setActiveTask(null);
+  if (!over) {
+    console.log("❌ No drop target!");
+    return;
+  }
 
-    let sourceCol, destCol;
+  const isOverColumn = columns.some(
+    (col) => col.column_info.id === over.id
+  );
 
-    columns.forEach((col) => {
-      if (col.issues.some((t) => t.id === active.id)) sourceCol = col;
-      if (col.column_info.id === over.id) destCol = col;
-    });
+  if (!isOverColumn) {
+    console.log("⚠️ Dropped on NON column!");
+    return;
+  }
 
-    if (!sourceCol || !destCol) return;
+  let sourceCol, destCol;
 
-    // Don't move if dropped back into the same column
-    if (sourceCol.column_info.id === destCol.column_info.id) return;
+  columns.forEach((col) => {
+    if (col.issues.some((t) => t.id === active.id)) sourceCol = col;
+    if (col.column_info.id === over.id) destCol = col;
+  });
 
+  console.log("📦 Source Column:", sourceCol?.column_info?.name);
+  console.log("📥 Destination Column:", destCol?.column_info?.name);
 
-    const task = sourceCol.issues.find((t) => t.id === active.id);
+  // ==== API CALL ====
+  try {
+    const payload = { status: destCol?.column_info?.status };
 
-    const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
-    const newDest = [
-      ...destCol.issues,
-      { ...task, status: destCol.column_info.status },
-    ];
-
-    const updated = columns.map((col) =>
-      col.column_info.id === sourceCol.column_info.id
-        ? { ...col, issues: newSource }
-        : col.column_info.id === destCol.column_info.id
-          ? { ...col, issues: newDest }
-          : col
-    );
-
-    updateProject(updated);
-  };
-
-   const addColumn = async () => {
-    const columnData = {
-      name: "New Column",
-      status: "qa_review",
-      position: 3,
-    };
+    console.log(payload, active.id);
     
-    console.log(selectedProject, "selected project");
-    
-    const data = await addColumnToBoard(selectedProject?.columns?.board?.columns, columnData);
-    console.log(data, "added column");
-  };
+
+    const data = await sprintTaskMoveColumn(active.id, payload);
+    console.log(data, "Successfully dragged");
+  } catch (error) {
+    console.log(error);
+    console.log("api not called");
+  }
+
+  if (!sourceCol || !destCol) return;
+
+  if (sourceCol.column_info.id === destCol.column_info.id) {
+    console.log("⚠️ Same column — no move");
+    return;
+  }
+
+  console.log(
+    `✅ MOVING TASK ${active.id} FROM → ${sourceCol.column_info.name} TO → ${destCol.column_info.name}`
+  );
+
+  // Move UI task
+  const task = sourceCol.issues.find((t) => t.id === active.id);
+
+  const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
+  const newDest = [
+    ...destCol.issues,
+    { ...task, status: destCol.column_info.status },
+  ];
+
+  const updated = columns.map((col) =>
+    col.column_info.id === sourceCol.column_info.id
+      ? { ...col, issues: newSource }
+      : col.column_info.id === destCol.column_info.id
+      ? { ...col, issues: newDest }
+      : col
+  );
+
+  updateProject(updated);
+};
+
 
   return (
     <DndContext
@@ -248,40 +274,24 @@ export default function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex justify-end p-2">
-        <button
-         className="bg-blue-600 rounded-lg p-2 hover:bg-blue-700 cursor-pointer mb-5 "
-         onClick={addColumn}>
-           + Add Column</button>
+      {/* ================= Columns ================== */}
+      <div className="flex gap-4 p-4 h-fit bg-gray-900 text-white overflow-x-scroll">
+        {columns.map((col) => (
+          <Column
+            key={col.column_info.id}
+            col={col}
+            onAddTaskClick={handleAddTaskClick}
+            onAddTaskInline={handleAddTaskInline}
+            isAdding={activeColumnForNewTask === col.column_info.id}
+            newTaskTitle={newTaskTitle}
+            setNewTaskTitle={setNewTaskTitle}
+          />
+        ))}
       </div>
-
-        
-
-        <div className="flex gap-4 p-4 h-fit bg-gray-900 text-white overflow-x-scroll">
-          {columns.map((col) => (
-            <Column
-              key={col.column_info.id}
-              col={col}
-              onAddTaskClick={handleAddTaskClick}
-              onAddTaskInline={handleAddTaskInline}
-              isAdding={activeColumnForNewTask === col.column_info.id}
-              newTaskTitle={newTaskTitle}
-              setNewTaskTitle={setNewTaskTitle}
-            />
-          ))}
-
-        </div>
-
-
-      
 
       <DragOverlay>
         {activeTask && <TaskCard task={activeTask} isDraggingOverlay />}
-
       </DragOverlay>
     </DndContext>
   );
 }
-
-
-

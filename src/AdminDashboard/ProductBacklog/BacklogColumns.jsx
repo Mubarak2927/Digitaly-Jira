@@ -26,6 +26,35 @@ const BacklogColumns = ({
   const [sprints, setSprints] = useState([]);
   const [selectedSprintId, setSelectedSprintId] = useState("");
 
+  // -------------------------------
+  // 🔥 NEW: EPIC MODAL STATES
+  // -------------------------------
+  const [showEpicModal, setShowEpicModal] = useState(false);
+  const [taskIdForEpic, setTaskIdForEpic] = useState(null);
+  const [selectedEpicIdForModal, setSelectedEpicIdForModal] = useState("");
+
+  // -------------------------------
+  // 🔥 NEW: Epic Assign Function
+  // -------------------------------
+  const handleEpicAssign = async () => {
+    if (!selectedEpicIdForModal) {
+      alert("Select an Epic first");
+      return;
+    }
+
+    try {
+      await updateTask(taskIdForEpic, { epic_id: selectedEpicIdForModal });
+
+      alert("Epic Assigned Successfully ✔");
+
+      setShowEpicModal(false);
+      setSelectedEpicIdForModal("");
+      setTaskIdForEpic(null);
+    } catch (err) {
+      console.error("Epic assign error:", err);
+    }
+  };
+
   // 🌀 Load sprints for dropdown
   useEffect(() => {
     fetchSprints();
@@ -43,7 +72,6 @@ const BacklogColumns = ({
     }
   };
 
-  // 🔥 VALIDATION WRAPPER (ONLY ADDITION YOU ASKED)
   const handleCreate = () => {
     if (!createForm.title.trim()) {
       alert("Please enter a task title");
@@ -55,12 +83,11 @@ const BacklogColumns = ({
       return;
     }
 
-
-
-    createTask(); 
+    createTask();
+    fetchSprints()
   };
 
-  // ✅ Assign selected tasks to sprint
+  // Assign selected tasks to sprint
   const handleAssignToSprint = async () => {
     console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
 
@@ -129,7 +156,7 @@ const BacklogColumns = ({
 
             <button
               className="px-3 py-1 rounded bg-green-400 text-black text-sm"
-              onClick={handleCreate}  
+              onClick={handleCreate}
             >
               Add
             </button>
@@ -192,7 +219,10 @@ const BacklogColumns = ({
                   {!t.epic_name && (
                     <button
                       className="px-2 py-1 rounded bg-blue-500 text-black text-sm"
-                      onClick={() => promptAssignEpic(t.id)}
+                      onClick={() => {
+                        setTaskIdForEpic(t.id);
+                        setShowEpicModal(true);
+                      }}
                     >
                       Set Epic
                     </button>
@@ -235,6 +265,48 @@ const BacklogColumns = ({
           </div>
         </div>
       </div>
+
+      {/* ----------------------------- */}
+      {/* 🔥 NEW EPIC ASSIGN MODAL UI */}
+      {/* ----------------------------- */}
+      {showEpicModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-5 rounded-xl w-[300px]">
+            <h3 className="text-lg font-semibold mb-3 text-yellow-300">
+              Assign Epic
+            </h3>
+
+            <select
+              className="w-full bg-gray-800 px-3 py-2 rounded text-sm mb-4"
+              value={selectedEpicIdForModal}
+              onChange={(e) => setSelectedEpicIdForModal(e.target.value)}
+            >
+              <option value="">Select Epic</option>
+              {epics.map((ep) => (
+                <option key={ep.id} value={ep.id}>
+                  {ep.name}
+                </option>
+              ))}
+            </select>
+
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-3 py-1 rounded bg-gray-600"
+                onClick={() => setShowEpicModal(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="px-3 py-1 rounded bg-green-400 text-black"
+                onClick={handleEpicAssign}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

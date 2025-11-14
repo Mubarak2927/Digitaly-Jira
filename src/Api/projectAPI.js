@@ -92,7 +92,7 @@ export const updateBoard = async (board_id, updateData) => {
 
 //  Add Column to Board
 export const addColumnToBoard = async (board_id, columnData) => {
-  const res = await API.patch(`/boards/${board_id}/columns`, columnData);
+  const res = await API.post(`/boards/${board_id}/columns`, columnData);
   return res.data;
 };
 
@@ -166,8 +166,7 @@ export const boardData= async (project_id) => {
   return res.data;
 }
 
-export const updateColumn = async (issuesID) => {
-  const res = await API.put(`/issues/${issuesID}`,
-  );
+export const sprintTaskMoveColumn = async (issuesID, payload) => {
+  const res = await API.put(`/issues/${issuesID}`,payload);
   return res.data;
 };

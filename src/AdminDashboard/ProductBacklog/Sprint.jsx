@@ -83,7 +83,7 @@ export default function Sprint({
   };
 
   return (
-    <div className="bg-gray-900 p-5 rounded-2xl shadow-lg/60 text-white">
+    <div className="bg-gray-900 p-5 rounded-2xl shadow-lg/60 hover:shadow-cyan-500 text-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Sprints</h2>
         <button
@@ -105,8 +105,8 @@ export default function Sprint({
             key={s.id}
             className={`p-3 rounded-lg cursor-pointer ${
               selectedSprint?.id === s.id
-                ? "bg-green-500/20 border border-green-400"
-                : "bg-gray-800/60"
+                ? "bg-gray-800  shadow-lg/60"
+                : "bg-gray-800/60 shadow-lg/60"
             }`}
             onClick={() =>
               setSelectedSprint(selectedSprint?.id === s.id ? null : s)
@@ -120,16 +120,16 @@ export default function Sprint({
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
               </div>
-              <span className="text-xs bg-gray-700 px-2 py-1 rounded">
-                <button onClick={() => startSprint(s)}>
+              <span className="text-sm text-black hover:scale-105 bg-cyan-400 shadow-lg/50 p-3 rounded">
+                <button onClick={() => startSprint(s)} className="cursor-pointer">
                   Start Sprint
                 </button>
               </span>
             </div>
 
             {selectedSprint?.id === s.id && (
-              <div className="mt-3 border-t border-gray-700 pt-3">
-                <h5 className="text-sm font-semibold mb-2">Sprint Tasks</h5>
+              <div className="mt-3 border-t border-white pt-3">
+                <h5 className="text-sm font-semibold mb-3">Sprint Tasks</h5>
                 {s.issues?.length > 0 ? (
                   s.issues.map((taskId) => {
                     const task = tasks.find((t) => t.id === taskId.id);

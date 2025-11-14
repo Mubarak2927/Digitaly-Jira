@@ -43,7 +43,7 @@ const WhiteBoard = () => {
     startDate: "",
     endDate: "",
     projectLead: "",
-    assignedEmployees: [], // changed
+    assignedEmployees: [],
     platform: "",
     description: "",
     avatar: "",
@@ -249,7 +249,9 @@ const WhiteBoard = () => {
                   selectedProject={selectedProject}
                   setSelectedProject={setSelectedProject}
                   setProjects={setProjects}
+                  handleAddColumn={handleAddColumn}
                   // addColumnToBoard ={addColumnToBoard }
+                  handleSelectProject={handleSelectProject}
                 />
               )}
 

@@ -97,6 +97,8 @@ export default function ProductBacklog( selectedProject ) {
 
       const data = await createIssues(newTask);
       console.log(data, "after create task");
+      alert("Succesfully Created Task")
+getTasks();
 
       setTasks((prev) => [...prev, data]);
     } catch (error) {
