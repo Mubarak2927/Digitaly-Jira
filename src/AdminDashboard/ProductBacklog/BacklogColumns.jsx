@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getSprint, sprintTaskMove } from "../../Api/projectAPI";
 
-
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
-
-
-
-
 
 const BacklogColumns = ({
   filteredBacklog = [],
@@ -33,34 +28,47 @@ const BacklogColumns = ({
 
   // 🌀 Load sprints for dropdown
   useEffect(() => {
-   fetchSprints()
+    fetchSprints();
   }, []);
 
   const fetchSprints = async () => {
     try {
       console.log(selectedProject, "fetch spint");
-      
+
       const data = await getSprint(selectedProject.selectedProject.id);
       setSprints(data || []);
       console.log(data, "collected Sprint");
-      
     } catch (err) {
       console.error("Error fetching sprints:", err);
     }
   };
 
+  // 🔥 VALIDATION WRAPPER (ONLY ADDITION YOU ASKED)
+  const handleCreate = () => {
+    if (!createForm.title.trim()) {
+      alert("Please enter a task title");
+      return;
+    }
+
+    if (!createForm.type.trim()) {
+      alert("Please choose a task type");
+      return;
+    }
+
+
+
+    createTask(); 
+  };
+
   // ✅ Assign selected tasks to sprint
   const handleAssignToSprint = async () => {
-    // if (!selectedSprintId) return alert("Please select a sprint");
-    // if (selectedTasksForSprint.length === 0)
-    //   return alert("No tasks selected");
-console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
+    console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
 
     try {
       const payload = { issue_ids: selectedTasksForSprint };
-     const data= await sprintTaskMove(selectedSprintId, payload);
-     console.log(data, "after sprint add");
-     
+      const data = await sprintTaskMove(selectedSprintId, payload);
+      console.log(data, "after sprint add");
+
       alert("Tasks added to sprint successfully ✅");
       setSelectedTasksForSprint([]);
       setSelectedSprintId("");
@@ -107,9 +115,8 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
             <select
               className="bg-gray-800 px-2 py-1 rounded text-sm"
               value={createForm.epicId || ""}
-              onChange={(e) =>{
-                setCreateForm((prev) => ({ ...prev, epicId: e.target.value }))
-                // selectedEpic((prev) => ({ ...prev, id: e.target.value }))
+              onChange={(e) => {
+                setCreateForm((prev) => ({ ...prev, epicId: e.target.value }));
               }}
             >
               <option value="">No epic</option>
@@ -120,24 +127,9 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
               ))}
             </select>
 
-            {/* <select
-              className="bg-gray-800 px-2 py-1 rounded text-sm"
-              value={createForm.priority}
-              onChange={(e) =>
-                setCreateForm((prev) => ({ ...prev, priority: e.target.value }))
-              }
-            >
-              <option value="">Priority</option>
-              <option value="highest">Highest</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-              <option value="lowest">Lowest</option>
-            </select> */}
-
             <button
               className="px-3 py-1 rounded bg-green-400 text-black text-sm"
-              onClick={createTask}
+              onClick={handleCreate}  
             >
               Add
             </button>
@@ -171,13 +163,13 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    {!t.sprint_id &&
-                    <input
-                      type="checkbox"
-                      checked={selectedTasksForSprint.includes(t.id)}
-                      onChange={() => toggleSelectTaskForSprint(t.id)}
-                    />
-          }
+                    {!t.sprint_id && (
+                      <input
+                        type="checkbox"
+                        checked={selectedTasksForSprint.includes(t.id)}
+                        onChange={() => toggleSelectTaskForSprint(t.id)}
+                      />
+                    )}
                     <div>
                       <div className="font-medium truncate">{t.name}</div>
                       <div className="text-xs text-gray-400 truncate">
@@ -197,20 +189,6 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
                 </div>
 
                 <div className="flex items-center gap-2 ml-3">
-                  {/* <select
-                    className="bg-gray-800 px-2 py-1 border rounded text-sm"
-                    value={t.status}
-                    onChange={(e) =>
-                      updateTask(t.id, { status: e.target.value })
-                    }
-                  >
-                    {STATUS_OPTIONS.map((s) => (
-                      <option value={s} key={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select> */}
-
                   {!t.epic_name && (
                     <button
                       className="px-2 py-1 rounded bg-blue-500 text-black text-sm"
@@ -219,8 +197,9 @@ console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
                       Set Epic
                     </button>
                   )}
-                    <button className="bg-red-600 px-2 py-1 rounded"> Delete</button>
-
+                  <button className="bg-red-600 px-2 py-1 rounded">
+                    Delete
+                  </button>
                 </div>
               </div>
             );

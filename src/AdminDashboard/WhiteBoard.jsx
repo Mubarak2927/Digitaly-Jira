@@ -249,6 +249,7 @@ const WhiteBoard = () => {
                   selectedProject={selectedProject}
                   setSelectedProject={setSelectedProject}
                   setProjects={setProjects}
+                  // addColumnToBoard ={addColumnToBoard }
                 />
               )}
 

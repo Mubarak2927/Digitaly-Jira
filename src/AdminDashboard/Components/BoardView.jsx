@@ -7,7 +7,9 @@ import {
   useSensors,
   DragOverlay,
 } from "@dnd-kit/core";
+
 import { useDroppable, useDraggable } from "@dnd-kit/core";
+import { addColumnToBoard } from "../../Api/projectAPI";
 
 // =================== TaskCard Component ===================
 function TaskCard({ task, isDraggingOverlay }) {
@@ -226,6 +228,19 @@ export default function BoardView({
     updateProject(updated);
   };
 
+   const addColumn = async () => {
+    const columnData = {
+      name: "New Column",
+      status: "qa_review",
+      position: 3,
+    };
+    
+    console.log(selectedProject, "selected project");
+    
+    const data = await addColumnToBoard(selectedProject?.columns?.board?.columns, columnData);
+    console.log(data, "added column");
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -233,9 +248,14 @@ export default function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex flex-col">
+      <div className="flex justify-end p-2">
+        <button
+         className="bg-blue-600 rounded-lg p-2 hover:bg-blue-700 cursor-pointer mb-5 "
+         onClick={addColumn}>
+           + Add Column</button>
+      </div>
 
-        <h1 className="text-white flex justify-end">efew</h1>
+        
 
         <div className="flex gap-4 p-4 h-fit bg-gray-900 text-white overflow-x-scroll">
           {columns.map((col) => (
@@ -253,7 +273,7 @@ export default function BoardView({
         </div>
 
 
-      </div>
+      
 
       <DragOverlay>
         {activeTask && <TaskCard task={activeTask} isDraggingOverlay />}
@@ -262,3 +282,6 @@ export default function BoardView({
     </DndContext>
   );
 }
+
+
+
