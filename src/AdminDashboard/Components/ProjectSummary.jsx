@@ -188,7 +188,7 @@ export default function ProjectSummary({ selectedProject }) {
             members.map((member) => (
               <li
                 key={member.id}
-                className="flex items-center justify-between bg-[#131826]/80 border border-gray-700  hover:bg-[#182030]/80 transition-all duration-300 p-3 rounded-xl shadow-sm"
+                className="flex items-center justify-between text-black border border-gray-700   transition-all duration-300 p-3 rounded-xl shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -203,7 +203,7 @@ export default function ProjectSummary({ selectedProject }) {
                       )
                     }
                   />
-                  <span className="text-gray-100 font-medium">{member.id}</span>
+                  <span className="text-black font-medium">{member.id}</span>
                 </div>
               </li>
             ))

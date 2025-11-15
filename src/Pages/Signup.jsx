@@ -75,9 +75,9 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <div className="min-h-screen flex text-white items-center justify-center bg-black">
-      <div className="bg-gray-900 p-8 rounded-2xl shadow-lg/60 w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-white mb-6">
+    <div className="min-h-screen flex text-white  items-center justify-center bg-gray-500">
+      <div className="bg-gray-50 p-8 rounded-2xl shadow-lg/60 w-full max-w-md">
+        <h2 className="text-3xl  text-center text-black mb-6">
           Create Account
         </h2>
 
@@ -97,7 +97,7 @@ const handleSubmit = async (e) => {
               placeholder="Enter full name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full bg-white/10 text-white border rounded-lg px-4 py-2 outline-none"
+              className="w-full  text-black border rounded-lg px-4 py-2 outline-none"
             />
             <div className="absolute text-red-500 text-xs mt-1 min-h-[16px]">
               {errors.name}
@@ -112,7 +112,7 @@ const handleSubmit = async (e) => {
               placeholder="Enter email address"
               value={formData.email}
               onChange={handleChange}
-              className="w-full bg-white/10 text-white border rounded-lg px-4 py-2 outline-none"
+              className="w-full  text-black border rounded-lg px-4 py-2 outline-none"
             />
             <div className="absolute text-red-500 text-xs mt-1 min-h-[16px]">
               {errors.email}
@@ -127,7 +127,7 @@ const handleSubmit = async (e) => {
               placeholder="Enter password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full bg-white/10 text-white border rounded-lg px-4 py-2 outline-none"
+              className="w-full  text-black border rounded-lg px-4 py-2 outline-none"
             />
             <button
               type="button"
@@ -137,7 +137,7 @@ const handleSubmit = async (e) => {
                   password: !showPassword.password,
                 })
               }
-              className="absolute right-3 top-2.5 text-gray-300 text-sm"
+              className="absolute right-3 top-2.5 text-black text-sm"
             >
               {showPassword.password ? "Hide" : "Show"}
             </button>
@@ -154,7 +154,7 @@ const handleSubmit = async (e) => {
               placeholder="Confirm password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full bg-white/10 text-white border rounded-lg px-4 py-2 outline-none"
+              className="w-full  text-black border rounded-lg px-4 py-2 outline-none"
             />
             <button
               type="button"
@@ -164,7 +164,7 @@ const handleSubmit = async (e) => {
                   confirm: !showPassword.confirm,
                 })
               }
-              className="absolute right-3 top-2.5 text-gray-300 text-sm"
+              className="absolute right-3 top-2.5 text-black text-sm"
             >
               {showPassword.confirm ? "Hide" : "Show"}
             </button>
@@ -179,7 +179,7 @@ const handleSubmit = async (e) => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full bg-white/10 text-white border rounded-lg px-4 py-2 outline-none"
+              className="w-full  text-black border rounded-lg px-4 py-2 outline-none"
             >
               <option value="" disabled>
                 Select your role
@@ -205,7 +205,7 @@ const handleSubmit = async (e) => {
           </button>
         </form>
 
-        <p className="text-center text-white mt-6 text-sm">
+        <p className="text-center text-black mt-6 text-sm">
           Already have an account?{" "}
           <a
             href="/"

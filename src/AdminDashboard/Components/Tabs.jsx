@@ -4,9 +4,9 @@ import { MoreHorizontal } from "lucide-react";
 const Tabs = ({ activeTab, setActiveTab, onAddMember, onArchive, onDelete }) => {
   const tabs = [
     { id: "summary", label: "Summary" },
-    { id: "lists", label: "Lists" },
-    { id: "board", label: "Board" },
     { id: "product-backlog", label: "Product Backlog Items" },
+    { id: "board", label: "Board" },
+    { id: "lists", label: "Lists" },
     { id: "goals", label: "Goals" },
     { id: "archived", label: "Archived Items" },
   ];

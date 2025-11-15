@@ -107,7 +107,7 @@ const BacklogColumns = ({
 
   return (
     <div>
-      <div className=" bg-white p-5 w-[55vw] rounded-2xl shadow-lg/60">
+      <div className=" bg-white p-5 w-[55vw] border border-black rounded-2xl shadow-lg/60">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">Backlog</h3>
           <div className="text-sm text-black">
@@ -116,10 +116,10 @@ const BacklogColumns = ({
         </div>
 
         {/* ➕ Create Task Section */}
-        <div className="bg-gray-900 p-4 rounded-lg mb-5">
+        <div className=" border border-black p-4 rounded-lg mb-5">
           <div className="flex gap-3 items-center flex-wrap">
             <select
-              className="bg-gray-800 px-2 py-1 rounded text-sm"
+              className=" text-black border px-2 py-1 rounded text-sm"
               value={createForm.type}
               onChange={(e) =>
                 setCreateForm((prev) => ({ ...prev, type: e.target.value }))
@@ -131,7 +131,7 @@ const BacklogColumns = ({
             </select>
 
             <input
-              className="flex-1 bg-gray-800 px-2 py-1 rounded text-sm"
+              className="flex-1 border border-black text-black px-2 py-1 rounded text-sm"
               placeholder="Title"
               value={createForm.title}
               onChange={(e) =>
@@ -140,7 +140,7 @@ const BacklogColumns = ({
             />
 
             <select
-              className="bg-gray-800 px-2 py-1 rounded text-sm"
+              className="border border-black text-black px-2 py-1 rounded text-sm"
               value={createForm.epicId || ""}
               onChange={(e) => {
                 setCreateForm((prev) => ({ ...prev, epicId: e.target.value }));
@@ -155,7 +155,7 @@ const BacklogColumns = ({
             </select>
 
             <button
-              className="px-3 py-1 rounded bg-green-400 text-black text-sm"
+              className="px-3 py-1 rounded bg-green-400 hover:bg-green-700 cursor-pointer text-black text-sm"
               onClick={handleCreate}
             >
               Add
@@ -163,7 +163,7 @@ const BacklogColumns = ({
           </div>
 
           <input
-            className="mt-3 w-full bg-gray-800 px-2 py-1 rounded text-sm"
+            className="mt-3 w-full border border-black text-black px-2 py-1 rounded text-sm"
             placeholder="Description (optional)"
             value={createForm.description}
             onChange={(e) =>
@@ -186,7 +186,7 @@ const BacklogColumns = ({
             return (
               <div
                 key={t.id}
-                className="bg-gray-800/60 p-3 rounded-lg flex items-center justify-between"
+                className="border border-black p-3 rounded-lg flex items-center justify-between"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
@@ -198,19 +198,20 @@ const BacklogColumns = ({
                       />
                     )}
                     <div>
-                      <div className="font-medium truncate">{t.name}</div>
-                      <div className="text-xs text-gray-400 truncate">
+                      <div className="font-medium text-black truncate">{t.name}</div>
+                      <div className="text-xs text-black truncate">
                         {epic ? (
-                          <span className="bg-purple-600/30 px-2 py-0.5 rounded text-purple-100 mr-2 text-[11px]">
+                          <span className="bg-blue-600 px-2 py-0.5 rounded text-white mr-2 text-[11px]">
                             {t.epic_name}
                           </span>
                         ) : (
-                          <span className="bg-gray-700/50 px-2 py-0.5 rounded text-gray-100 text-[11px]">
+                          <span className="bg-gray-700/50 px-2 py-0.5 rounded text-black text-[11px]">
                             No epic
                           </span>
                         )}
                         <span className="ml-2">• {t.status}</span>
                       </div>
+                      <span className="text-black capitalize text-xs">{t.type}</span>
                     </div>
                   </div>
                 </div>
@@ -218,7 +219,7 @@ const BacklogColumns = ({
                 <div className="flex items-center gap-2 ml-3">
                   {!t.epic_name && (
                     <button
-                      className="px-2 py-1 rounded bg-blue-500 text-black text-sm"
+                      className="px-2 py-1 rounded bg-blue-500 text-white text-sm"
                       onClick={() => {
                         setTaskIdForEpic(t.id);
                         setShowEpicModal(true);
@@ -238,13 +239,13 @@ const BacklogColumns = ({
 
         {/* 🏁 Sprint Assignment Controls */}
         <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-black">
             Selected: {selectedTasksForSprint.length}
           </div>
 
           <div className="flex gap-2 items-center">
             <select
-              className="bg-gray-700 px-3 py-1 rounded text-sm text-white"
+              className="border border-black  px-3 py-1 rounded text-sm text-black"
               value={selectedSprintId}
               onChange={(e) => setSelectedSprintId(e.target.value)}
             >
@@ -258,7 +259,7 @@ const BacklogColumns = ({
 
             <button
               onClick={handleAssignToSprint}
-              className="px-3 py-1 rounded bg-gradient-to-r from-green-400 to-teal-400 text-black text-sm"
+              className="px-3 py-1 rounded bg-green-400 text-black text-sm"
             >
               Assign to Sprint
             </button>

@@ -9,9 +9,9 @@ setCreateForm,
 handleCreateItem
 }) => {
   return (
-    <div className="bg-white/5 p-4 rounded-2xl shadow-lg/60 hover:shadow-cyan-500">
+    <div className=" p-4  border border-black rounded-2xl shadow-lg/60 ">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-purple-300">Epics</h3>
+        <h3 className="text-lg font-semibold text-black">Epics</h3>
         {/* <small className="text-xs text-gray-400">{epics.length}</small> */}
       </div>
       <div className="space-y-2">
@@ -31,14 +31,14 @@ handleCreateItem
             }}
             className={`p-3 rounded-lg cursor-pointer ${
               selectedEpic?.id === e.id
-                ? "bg-purple-500/25"
+                ? "bg-white"
                 : "hover:bg-white/5"
             }`}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center border border-black p-2 rounded-2xl bg-gray-300 justify-between">
               <div>
-                <div className="font-medium">{e.name}</div>
-                <div className="text-xs text-gray-400">Epic ID: {e.id}</div>
+                <div className="font-medium text-black">{e.name}</div>
+                <div className="text-xs text-black">Epic ID: {e.id}</div>
               </div>
               <div className="text-xs text-purple-200">●</div>
             </div>
@@ -58,12 +58,12 @@ handleCreateItem
               name: e.target.value,
             }))
           }
-          className="w-full bg-gray-800/60 px-3 py-2 rounded-md text-sm"
+          className="w-full border-black border text-black px-3 py-2 rounded-md text-sm"
         />
         <div className="mt-2 flex justify-end">
           <button
             onClick={handleCreateItem}
-            className="px-3 py-1 rounded bg-purple-500 text-black text-sm"
+            className="px-3 py-1 rounded bg-blue-500 text-white text-sm"
           >
             Add Epic
           </button>

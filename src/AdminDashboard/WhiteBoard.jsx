@@ -226,7 +226,7 @@ const WhiteBoard = () => {
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
-                <h1 className="text-2xl sm:text-3xl font-bold capitalize">
+                <h1 className="text-2xl sm:text-3xl  text-black font-bold capitalize">
                   {selectedProject.name}
                 </h1>
                 {/* {activeTab === "board" && (
@@ -272,19 +272,8 @@ const WhiteBoard = () => {
 
           {!selectedProject && !activeEmployeeSection && (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center text-lg animate-fadeIn">
-              <div className="flex flex-wrap justify-center items-center gap-2 text-white text-2xl">
-                <span className="animate-float text-blue-500 drop-shadow-lg">
-                  <Hand size={50} />
-                </span>
-                <span className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent animate-glow">
-                  Create a
-                </span>
-                <span className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent animate-glow">
-                  New Project
-                </span>
-                <span className="text-purple-400 animate-pulse">
-                  <File size={50} />
-                </span>
+              <div className="flex flex-wrap justify-center items-center gap-2 text-black c  text-4xl">
+                Create a New Project
               </div>
             </div>
           )}
@@ -410,32 +399,31 @@ const WhiteBoard = () => {
 
                 {/* Assigned Employees (Multi-select) */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">
-                    Assigned Employees
-                  </label>
-                  <select
-                    multiple
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 outline-none h-32"
-                    value={newProject.assignedEmployees}
-                    onChange={(e) =>
-                      setNewProject({
-                        ...newProject,
-                        assignedEmployees: Array.from(
-                          e.target.selectedOptions,
-                          (opt) => opt.value
-                        ),
-                      })
-                    }
-                  >
-                    {users
-                      .filter((u) => u.id !== newProject.projectLead) // 👈 Lead should not appear here
-                      .map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.name} {u.full_name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+  <label className="text-sm text-gray-300">Assigned Employees</label>
+
+  <select
+    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 
+               focus:border-blue-500 outline-none"
+    value={newProject.assignedEmployees[0] || ""}
+    onChange={(e) =>
+      setNewProject({
+        ...newProject,
+        assignedEmployees: [e.target.value], // 💥 always array
+      })
+    }
+  >
+    <option value="">Select Employee</option>
+
+    {users
+      .filter((u) => u.id !== newProject.projectLead) // Lead remove
+      .map((u) => (
+        <option key={u.id} value={u.id}>
+          {u.name} {u.full_name}
+        </option>
+      ))}
+  </select>
+</div>
+
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm text-gray-300">Platform</label>
@@ -510,137 +498,3 @@ const WhiteBoard = () => {
 };
 
 export default WhiteBoard;
-
-
-
-// src/Pages/WhiteBoard/WhiteBoard.jsx
-// import React, { useState, useEffect } from "react";
-// import {
-//   getAllProjects,
-//   createProject,
-//   getProjectById,
-//   manageProjectMember,
-//   getAllUsers,
-//   getBoardById,
-//   boardData,
-// } from "../../Api/projectAPI";
-
-// import WhiteboardLayout from "./WhiteboardLayout";
-// import ProjectHandler from "./ProjectHandler";
-// import ProjectModals from "./ProjectModals";
-// import EmployeeSections from "./EmployeeSections";
-
-// const WhiteBoard = () => {
-//   const [projects, setProjects] = useState([]);
-//   const [selectedProject, setSelectedProject] = useState(null);
-//   const [activeTab, setActiveTab] = useState("summary");
-//   const [activeEmployeeSection, setActiveEmployeeSection] = useState(null);
-//   const [showSidebarProjectModal, setShowSidebarProjectModal] = useState(false);
-//   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
-//   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
-//   const [users, setUsers] = useState([]);
-
-//   const [newProject, setNewProject] = useState({
-//     name: "",
-//     key: "",
-//     startDate: "",
-//     endDate: "",
-//     projectLead: "",
-//     assignedEmployees: [],
-//     platform: "",
-//     description: "",
-//     avatar: "",
-//     labels: [],
-//   });
-
-//   const [newColumnTitle, setNewColumnTitle] = useState("");
-
-//   // ---------------- FETCH ----------------
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         const data = await getAllProjects();
-//         setProjects(data);
-//       } catch (error) {
-//         console.error("Error fetching projects:", error);
-//       }
-//     })();
-//   }, []);
-
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         const data = await getAllUsers();
-//         setUsers(data);
-//       } catch (error) {
-//         console.error("Error fetching users:", error);
-//       }
-//     })();
-//   }, []);
-
-//   // ---------------- HANDLERS ----------------
-//   const projectMethods = ProjectHandler({
-//     projects,
-//     setProjects,
-//     selectedProject,
-//     setSelectedProject,
-//     newProject,
-//     setNewProject,
-//     newColumnTitle,
-//     setNewColumnTitle,
-//     setShowSidebarProjectModal,
-//     setShowAddColumnModal,
-//   });
-
-//   return (
-//     <WhiteboardLayout
-//       {...{
-//         projects,
-//         setProjects,
-//         selectedProject,
-//         setSelectedProject,
-//         activeTab,
-//         setActiveTab,
-//         activeEmployeeSection,
-//         setActiveEmployeeSection,
-//         showSidebarProjectModal,
-//         setShowSidebarProjectModal,
-//         showAddMemberModal,
-//         setShowAddMemberModal,
-//         showAddColumnModal,
-//         setShowAddColumnModal,
-//         users,
-//         newProject,
-//         setNewProject,
-//         newColumnTitle,
-//         setNewColumnTitle,
-//         ...projectMethods,
-//       }}
-//     >
-//       <EmployeeSections
-//         activeEmployeeSection={activeEmployeeSection}
-//         activeTab={activeTab}
-//       />
-//       <ProjectModals
-//         {...{
-//           showSidebarProjectModal,
-//           setShowSidebarProjectModal,
-//           showAddMemberModal,
-//           setShowAddMemberModal,
-//           showAddColumnModal,
-//           setShowAddColumnModal,
-//           handleAddSidebarProject: projectMethods.handleAddSidebarProject,
-//           handleAddMember: projectMethods.handleAddMember,
-//           handleAddColumn: projectMethods.handleAddColumn,
-//           users,
-//           newProject,
-//           setNewProject,
-//           newColumnTitle,
-//           setNewColumnTitle,
-//         }}
-//       />
-//     </WhiteboardLayout>
-//   );
-// };
-
-// export default WhiteBoard;

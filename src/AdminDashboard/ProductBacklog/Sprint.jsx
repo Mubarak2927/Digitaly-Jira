@@ -83,9 +83,9 @@ export default function Sprint({
   };
 
   return (
-    <div className="bg-gray-900 p-5 rounded-2xl shadow-lg/60 hover:shadow-cyan-500 text-white">
+    <div className="bg-white border border-black p-5 rounded-2xl shadow-lg/60 text-white">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Sprints</h2>
+        <h2 className="text-lg text-black font-semibold">Sprints</h2>
         <button
           className="bg-green-400 text-black px-3 py-1 rounded-lg text-sm"
           onClick={() => setShowModal(true)}
@@ -96,17 +96,17 @@ export default function Sprint({
 
       {/* Sprint List */}
       {sprints.length === 0 && (
-        <p className="text-gray-400 text-sm">No sprints found.</p>
+        <p className="text-gray-400  text-sm">No sprints found.</p>
       )}
 
       <div className="space-y-3">
         {sprints.map((s) => (
           <div
             key={s.id}
-            className={`p-3 rounded-lg cursor-pointer ${
+            className={`p-3 rounded-lg cursor-pointer border ${
               selectedSprint?.id === s.id
-                ? "bg-gray-800  shadow-lg/60"
-                : "bg-gray-800/60 shadow-lg/60"
+                ? "bg-white text-black  shadow-lg/60"
+                : "bg-white text-black shadow-lg/60"
             }`}
             onClick={() =>
               setSelectedSprint(selectedSprint?.id === s.id ? null : s)
@@ -115,12 +115,12 @@ export default function Sprint({
             <div className="flex justify-between">
               <div>
                 <h4 className="font-medium">{s.name}</h4>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-black">
                   {new Date(s.start_date).toLocaleDateString()} →{" "}
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
               </div>
-              <span className="text-sm text-black hover:scale-105 bg-cyan-400 shadow-lg/50 p-3 rounded">
+              <span className="text-sm text-black hover:scale-105 bg-violet-500 shadow-lg/50 p-3 rounded">
                 <button onClick={() => startSprint(s)} className="cursor-pointer">
                   Start Sprint
                 </button>
@@ -136,10 +136,10 @@ export default function Sprint({
                     return task ? (
                       <div
                         key={task.id}
-                        className="bg-gray-900 p-2 rounded mb-2 text-sm"
+                        className="bg-white border p-2 rounded mb-2 text-sm"
                       >
                         <div className="font-medium">{task.name}</div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-black">
                           {task.status} • {task.priority || "Unassigned"}
                         </div>
                       </div>
@@ -163,13 +163,13 @@ export default function Sprint({
 
       {/* Create Sprint Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-2xl w-[420px]">
-            <h3 className="text-lg font-semibold mb-4">Create Sprint</h3>
+        <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+          <div className="bg-white border border-black shadow-lg/60 p-6 rounded-2xl w-[420px]">
+            <h3 className="text-lg text-black font-semibold mb-4">Create Sprint</h3>
             <div className="space-y-3">
               <input
                 type="text"
-                className="w-full bg-gray-700 px-3 py-2 rounded"
+                className="w-full border text-black px-3 py-2 rounded"
                 placeholder="Sprint Name"
                 value={sprintForm.name}
                 onChange={(e) =>
@@ -177,7 +177,7 @@ export default function Sprint({
                 }
               />
               <textarea
-                className="w-full bg-gray-700 px-3 py-2 rounded"
+                className="w-full border text-black px-3 py-2 rounded"
                 placeholder="Goal (optional)"
                 value={sprintForm.goal}
                 onChange={(e) =>
@@ -187,7 +187,7 @@ export default function Sprint({
               <div className="flex gap-2">
                 <input
                   type="date"
-                  className="flex-1 bg-gray-700 px-3 py-2 rounded"
+                  className="w-full border text-black px-3 py-2 rounded"
                   value={sprintForm.start_date}
                   onChange={(e) =>
                     setSprintForm({ ...sprintForm, start_date: e.target.value })
@@ -195,7 +195,7 @@ export default function Sprint({
                 />
                 <input
                   type="date"
-                  className="flex-1 bg-gray-700 px-3 py-2 rounded"
+                  className="flex-1 w-full border text-black px-3 py-2 rounded  "
                   value={sprintForm.end_date}
                   onChange={(e) =>
                     setSprintForm({ ...sprintForm, end_date: e.target.value })

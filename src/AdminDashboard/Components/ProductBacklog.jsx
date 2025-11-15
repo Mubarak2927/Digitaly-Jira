@@ -213,8 +213,8 @@ getTasks();
   }
 
   return (
-    <div className="min-h-screen bg-white to-text text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-teal-400 tracking-wide">
+    <div className="min-h-screen bg-white to-text border-black border-2 rounded-4xl shadow-lg/60 text-white p-6">
+      <h1 className="text-3xl font-bold mb-6 text-black tracking-wide">
         Project Backlog Items
       </h1>
 

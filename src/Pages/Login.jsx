@@ -58,9 +58,9 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <div className="bg-gray-900 text-white rounded-2xl shadow-lg w-full max-w-md p-8">
-        <h2 className="text-3xl font-extrabold text-center mb-6 text-white">
+    <div className="min-h-screen  flex items-center justify-center  bg-gray-500 text-white">
+      <div className="bg-white  text-black  rounded-2xl shadow-lg/60 w-full max-w-md p-8">
+        <h2 className="text-3xl  border-solid text-center mb-6 text-black">
           Login
         </h2>
 
@@ -76,7 +76,7 @@ const handleSubmit = async (e) => {
               placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
-              className="w-full bg-white/10 text-white placeholder-gray-400 border rounded-lg px-4 py-2 outline-none"
+              className="w-full border-black border rounded-lg px-4 py-2 outline-none"
             />
             <div className="h-5 mt-1">
               {errors.email && (
@@ -96,12 +96,12 @@ const handleSubmit = async (e) => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full bg-white/10 text-white placeholder-gray-400 border rounded-lg px-4 py-2 outline-none"
+                className="w-full border-black border  rounded-lg px-4 py-2 outline-none"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-white text-sm"
+                className="absolute cursor-pointer right-3 top-2.5 text-black text-sm"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -125,7 +125,7 @@ const handleSubmit = async (e) => {
           </button>
         </form>
 
-        <p className="text-center text-white mt-6 text-sm">
+        <p className="text-center text-black mt-6 text-sm">
           Don’t have an account?{" "}
           <a
             href="/signup"
