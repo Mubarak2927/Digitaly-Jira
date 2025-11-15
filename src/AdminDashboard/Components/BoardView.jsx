@@ -39,7 +39,7 @@ function TaskCard({ task, isDraggingOverlay }) {
       {...(!isDraggingOverlay ? attributes : {})}
       {...(!isDraggingOverlay ? listeners : {})}
       style={style}
-      className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-3 
+      className="bg-blue-600 text-white p-3 
       rounded-lg shadow-md cursor-grab"
     >
       <p className="font-medium">{task.name}</p>
@@ -275,7 +275,7 @@ export default function BoardView({
       onDragEnd={handleDragEnd}
     >
       {/* ================= Columns ================== */}
-      <div className="flex gap-4 p-4 h-fit bg-gray-900 text-white overflow-x-scroll">
+      <div className="flex gap-4 p-4 h-fit  text-white overflow-x-scroll">
         {columns.map((col) => (
           <Column
             key={col.column_info.id}

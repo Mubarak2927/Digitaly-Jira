@@ -45,7 +45,7 @@ export default function TaskCard({ task, isDraggingOverlay, activeTaskId }) {
       {...(!isDraggingOverlay ? listeners : {})}
       onClick={handleClick} // 👈 fixes double-click clone
       style={style}
-      className={`bg-gradient-to-r from-blue-600 to-purple-700 text-white p-3 rounded-lg shadow-lg transition-transform ${
+      className={`bg-blue-600 text-white p-3 rounded-lg shadow-lg transition-transform ${
         isDraggingOverlay ? "opacity-95 scale-[1.05]" : ""
       }`}
     >

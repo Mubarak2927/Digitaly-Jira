@@ -213,7 +213,7 @@ getTasks();
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">
+    <div className="min-h-screen bg-white to-text text-white p-6">
       <h1 className="text-3xl font-bold mb-6 text-teal-400 tracking-wide">
         Project Backlog Items
       </h1>

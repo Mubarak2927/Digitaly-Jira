@@ -205,13 +205,13 @@ const WhiteBoard = () => {
   };
 
   return (
-    <div className="flex flex-col bg-black text-white h-screen">
+    <div className="flex flex-col bg-white text-white h-screen">
       <div className="sticky top-0 z-50 w-full">
         <AdminTopBar />
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-64 bg-gray-950 border-r border-gray-800">
+        <div className="w-64 bg-gray-950 text-black border-r border-gray-800">
           <Sidebar
             projects={projects}
             setProjects={setProjects}

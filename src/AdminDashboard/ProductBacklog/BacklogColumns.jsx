@@ -107,10 +107,10 @@ const BacklogColumns = ({
 
   return (
     <div>
-      <div className="bg-gray-800 p-5 w-[55vw] rounded-2xl shadow-lg/60 hover:shadow-cyan-500">
+      <div className=" bg-white p-5 w-[55vw] rounded-2xl shadow-lg/60">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-yellow-300">Backlog</h3>
-          <div className="text-sm text-gray-400">
+          <h3 className="text-lg font-semibold text-black">Backlog</h3>
+          <div className="text-sm text-black">
             {filteredBacklog.length} items
           </div>
         </div>

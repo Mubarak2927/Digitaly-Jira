@@ -5,21 +5,21 @@ const ListsView = ({ selectedProject }) => {
   const tasks = selectedProject?.lists || [];
 
   return (
-    <div className="relative p-4 sm:p-8 bg-gradient-to-br from-[#0a0a0f] via-[#0f111a] to-[#0a0a0f] rounded-2xl shadow-lg/60 overflow-hidden">
+    <div className="relative p-4 sm:p-8 bg-white rounded-2xl shadow-lg border-black border overflow-hidden">
       {/* Background animation */}
-      <div className="absolute inset-0 bg-gray-900 blur-3xl opacity-40 animate-pulse" />
+      <div className="absolute inset-0  blur-3xl opacity-40 animate-pulse" />
 
       {/* Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 text-center sm:text-left">
         <div className="flex items-center justify-center sm:justify-start gap-3">
-          <div className="p-3 bg-blue-500/10 border border-blue-500/40 rounded-xl">
+          <div className="p-3 border border-black rounded-xl">
             <ClipboardList className="w-6 h-6 text-blue-400" />
           </div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-bold text-black">
             Lists Overview
           </h2>
         </div>
-        <span className="text-sm text-white font-medium">
+        <span className="text-sm text-black font-medium">
           Total Tasks:{" "}
           <span className="text-white bg-blue-600 px-2 py-0.5 rounded-md font-semibold">
             {tasks.length}
