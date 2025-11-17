@@ -237,6 +237,7 @@ getTasks();
         <div className="lg:col-span-2">
           <BacklogColumns
             filteredBacklog={filteredBacklog}
+            getTasks={getTasks}
             epics={epics}
             createForm={createForm}
             setCreateForm={setCreateForm}
@@ -262,6 +263,7 @@ getTasks();
           startSprint={startSprint}
           tasks={tasks}
           selectedProject={selectedProject}
+          filteredBacklog={filteredBacklog}
         />
       </div>
 

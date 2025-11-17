@@ -13,15 +13,17 @@ const BacklogColumns = ({
     priority: "",
     epicId: "",
   },
-  setCreateForm = () => {},
+  setCreateForm = () => { },
   selectedTasksForSprint = [],
-  setSelectedTasksForSprint = () => {},
-  createTask = () => {},
-  toggleSelectTaskForSprint = () => {},
-  updateTask = () => {},
-  promptAssignEpic = () => {},
+  setSelectedTasksForSprint = () => { },
+  createTask = () => { },
+  toggleSelectTaskForSprint = () => { },
+  updateTask = () => { },
+  promptAssignEpic = () => { },
   selectedProject,
   loggedInUserId,
+  getTasks,
+  getSprints
 }) => {
   const [sprints, setSprints] = useState([]);
   const [selectedSprintId, setSelectedSprintId] = useState("");
@@ -100,6 +102,8 @@ const BacklogColumns = ({
       setSelectedTasksForSprint([]);
       setSelectedSprintId("");
       fetchSprints();
+      getTasks();
+      getSprints()
     } catch (error) {
       console.error("Error assigning tasks:", error);
     }

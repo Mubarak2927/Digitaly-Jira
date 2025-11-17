@@ -11,6 +11,7 @@ export default function Sprint({
   tasks = [],
   selectedProject,
   loggedInUserId,
+  filteredBacklog
 }) {
   const [sprints, setSprints] = useState([]);
   const [selectedSprint, setSelectedSprint] = useState(null);
@@ -25,7 +26,7 @@ export default function Sprint({
   // Fetch sprints for project
   useEffect(() => {
     fetchSprints();
-  }, []);
+  }, [filteredBacklog]);
 
   const fetchSprints = async () => {
     try {
@@ -51,7 +52,7 @@ export default function Sprint({
 
   // Create new sprint
   const handleCreateSprint = async () => {
-    if (!sprintForm.name || !sprintForm.start_date || !sprintForm.end_date) {
+    if (!sprintForm.name || !sprintForm.start_date || !sprintForm.end_date || !sprintForm.goal) {
       alert("Please fill all fields");
       return;
     }
@@ -103,11 +104,10 @@ export default function Sprint({
         {sprints.map((s) => (
           <div
             key={s.id}
-            className={`p-3 rounded-lg cursor-pointer border ${
-              selectedSprint?.id === s.id
-                ? "bg-white text-black  shadow-lg/60"
-                : "bg-white text-black shadow-lg/60"
-            }`}
+            className={`p-3 rounded-lg cursor-pointer border ${selectedSprint?.id === s.id
+              ? "bg-white text-black  shadow-lg/60"
+              : "bg-white text-black shadow-lg/60"
+              }`}
             onClick={() =>
               setSelectedSprint(selectedSprint?.id === s.id ? null : s)
             }
@@ -178,7 +178,7 @@ export default function Sprint({
               />
               <textarea
                 className="w-full border text-black px-3 py-2 rounded"
-                placeholder="Goal (optional)"
+                placeholder="Goal"
                 value={sprintForm.goal}
                 onChange={(e) =>
                   setSprintForm({ ...sprintForm, goal: e.target.value })
