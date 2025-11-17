@@ -87,12 +87,17 @@ export default function Sprint({
     <div className="bg-white border border-black p-5 rounded-2xl shadow-lg/60 text-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg text-black font-semibold">Sprints</h2>
+
+        <div className="flex gap-3">
+           <button className="bg-red-500 hover:bg-red-700 cursor-pointer px-2 py-0.5 rounded-lg ">
+                Cancel Sprint
+              </button>
         <button
-          className="bg-green-400 text-black px-3 py-1 rounded-lg text-sm"
-          onClick={() => setShowModal(true)}
+          className="bg-green-400 hover:bg-green-500 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
+          onClick={() => setShowModal(true)}  
         >
           + Create Sprint
-        </button>
+        </button></div>
       </div>
 
       {/* Sprint List */}
@@ -205,6 +210,7 @@ export default function Sprint({
             </div>
 
             <div className="flex justify-end gap-2 mt-5">
+             
               <button
                 onClick={() => setShowModal(false)}
                 className="bg-gray-600 px-3 py-1 rounded"

@@ -49,8 +49,13 @@ export default function TaskCard({ task, isDraggingOverlay, activeTaskId }) {
         isDraggingOverlay ? "opacity-95 scale-[1.05]" : ""
       }`}
     >
+      
       <p className="font-medium break-words">{task.title}</p>
       <p className="text-xs text-gray-200 font-light mt-1">{task.createdAt}</p>
+      <div>
+      <p className="text-black bg-white">view details</p>
+
+      </div>
     </div>
   );
 }

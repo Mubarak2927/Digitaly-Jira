@@ -157,6 +157,14 @@ const BacklogColumns = ({
                 </option>
               ))}
             </select>
+            <select name="" id="" 
+            className="border border-black text-black px-2 py-1 rounded text-sm">
+              <option value="">High</option>
+              <option value="">Highest</option>
+              <option value="">Medium</option>
+              <option value="">Low</option>
+              <option value="">Lowest</option>
+            </select>
 
             <button
               className="px-3 py-1 rounded bg-green-400 hover:bg-green-700 cursor-pointer text-black text-sm"

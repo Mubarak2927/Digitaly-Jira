@@ -10,6 +10,7 @@ import {
 
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import { sprintTaskMoveColumn } from "../../Api/projectAPI";
+import { User, User2 } from "lucide-react";
 
 // =================== TaskCard Component ===================
 function TaskCard({ task, isDraggingOverlay }) {
@@ -21,6 +22,10 @@ function TaskCard({ task, isDraggingOverlay }) {
     transition,
     isDragging,
   } = useDraggable({ id: task.id });
+ const [openDetails, setOpenDetails] = useState(false);
+
+
+
 
   const style = {
     transform: transform
@@ -40,10 +45,38 @@ function TaskCard({ task, isDraggingOverlay }) {
       {...(!isDraggingOverlay ? listeners : {})}
       style={style}
       className="bg-blue-600 text-white p-3 
-      rounded-lg shadow-md cursor-grab"
+      rounded-lg shadow-md cursor-grab relative"
     >
       <p className="font-medium">{task.name}</p>
+      <button
+          className="absolute right-2 top-1 text-xs text-white hover:underline hover:text-black cursor-pointer"
+          onClick={() => setOpenDetails(true)}
+        >
+          Details
+        </button> 
       <p className="text-xs text-gray-200">{task.created_at}</p>
+      <button  className="absolute right-2 bg-white  p-1 rounded-full bottom-1 cursor-pointer text-black"><User2 size={13}/></button>
+
+       {openDetails && (
+        <div className="fixed inset-0 flex justify-center items-center bg-white/60 bg-opacity-50 z-50">
+          <div className="bg-white text-black   p-6 rounded-lg shadow-lg/60 border  w-80">
+            <h3 className="text-lg font-bold mb-2">Task Details</h3>
+            <p><span className="font-semibold">Name:</span> {task.name}</p>
+            <p><span className="font-semibold">Type:</span> {task.type}</p>
+            <p><span className="font-semibold">Created At:</span> {task.created_at}</p>
+            <p><span className="font-semibold">Epic:</span> {task.epic_name}</p>
+            <p><span className="font-semibold capitalize">Status:</span> {task.status}</p>
+            <button
+              className="mt-4 px-4 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
+              onClick={() => setOpenDetails(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
