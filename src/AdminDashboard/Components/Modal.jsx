@@ -26,7 +26,7 @@ const Modal = ({ title, children, onCancel, onConfirm }) => {
             onClick={onConfirm}
             className="w-full sm:w-auto px-4 py-2 bg-green-600 font-bold hover:bg-blue-500 rounded-lg text-sm text-white transition-all"
           >
-            Create Project
+            Create 
           </button>
         </div>
       </div>

@@ -72,12 +72,16 @@ export default function ProductBacklog( selectedProject ) {
   const getTasks = async () => {
     try {
       const data = await getIssues(selectedProject.selectedProject.id);
-      console.log(data, "get issues");
+      console.log(data, "get issues232323");
       setTasks(data);
+
     } catch (error) {
       console.log(error);
     }
   };
+
+console.log(tasks, sprints, "total tasks");
+
 
   const createTask = async () => {
     try {

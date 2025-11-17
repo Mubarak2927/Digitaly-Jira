@@ -24,12 +24,12 @@ const AdminTopBar = () => {
       {/* Right Section */}
       <div className="flex items-center gap-4">
         <button className="relative">
-          <Bell size={22} className="text-black hover:text-blue-700 transition" />
+          {/* <Bell size={22} className="text-black hover:text-blue-700 transition" /> */}
           <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full px-1.5 text-white">
             
           </span>
         </button>
-        <Settings size={22} className="text-black hover:text-purple-400 transition cursor-pointer" />
+        {/* <Settings size={22} className="text-black hover:text-purple-400 transition cursor-pointer" /> */}
         <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-800 px-2 py-1 rounded-lg transition">
           <UserCircle2 size={28} className="text-blue-700" />
           <span className="hidden sm:inline text-black text-sm font-medium">Admin</span>

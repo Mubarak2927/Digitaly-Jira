@@ -67,18 +67,18 @@ function Column({
       <h2 className="text-sm text-gray-300 font-bold mb-3 flex justify-between">
         {col.column_info.name}
 
-        {col.column_info.status === "todo" && (
+        {/* {col.column_info.status === "todo" && (
           <button
             onClick={() => onAddTaskClick(col.column_info.id)}
             className="text-blue-400 hover:text-blue-300 transition-colors"
           >
             + Create
           </button>
-        )}
+        )} */}
       </h2>
 
       {isAdding && (
-        <div className="mb-3 p-1 border border-dashed border-gray-600 rounded">
+        <div className="mb-3 p-1  border-gray-600 rounded">
           <textarea
             rows="2"
             value={newTaskTitle}
@@ -110,7 +110,7 @@ function Column({
         {col.issues.length > 0 ? (
           col.issues.map((task) => <TaskCard key={task.id} task={task} />)
         ) : (
-          <p className="text-gray-500 text-sm text-center py-4">No tasks</p>
+          <p className="text-blue-600 text-sm text-center py-4">No tasks</p>
         )}
       </div>
     </div>
@@ -274,8 +274,9 @@ export default function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
+
       {/* ================= Columns ================== */}
-      <div className="flex gap-4 p-4 h-fit  text-white overflow-x-scroll">
+      <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
         {columns.map((col) => (
           <Column
             key={col.column_info.id}

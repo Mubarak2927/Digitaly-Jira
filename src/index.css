@@ -58,7 +58,7 @@ html {
   width: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3b82f6;
+  background: blue;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {

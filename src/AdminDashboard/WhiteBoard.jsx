@@ -53,7 +53,12 @@ const WhiteBoard = () => {
   const [newColumnTitle, setNewColumnTitle] = useState("");
 
   useEffect(() => {
-    const fetchProjects = async () => {
+   
+    fetchProjects();
+    // getColumn()
+  }, []);
+  
+   const fetchProjects = async () => {
       try {
         const data = await getAllProjects();
         console.log(data, "Alll project ");
@@ -63,9 +68,6 @@ const WhiteBoard = () => {
         console.error("Error fetching projects:", error);
       }
     };
-    fetchProjects();
-    // getColumn()
-  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -127,6 +129,7 @@ const WhiteBoard = () => {
         avatar: "",
         labels: [],
       });
+      fetchProjects();
     } catch (error) {
       console.error("Error creating project:", error);
     }
@@ -229,14 +232,14 @@ const WhiteBoard = () => {
                 <h1 className="text-2xl sm:text-3xl  text-black font-bold capitalize">
                   {selectedProject.name}
                 </h1>
-                {/* {activeTab === "board" && (
+                {activeTab === "board" && (
                   <button
                     onClick={() => setShowAddColumnModal(true)}
                     className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
                   >
                     + Add Column
                   </button>
-                )} */}
+                )}
               </div>
 
               <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -479,14 +482,14 @@ const WhiteBoard = () => {
           onCancel={() => setShowAddColumnModal(false)}
           onConfirm={handleAddColumn}
         >
-          <div className="flex flex-col gap-4 text-white">
-            <h2 className="text-center text-xl font-semibold text-purple-400">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-center text-xl font-semibold text-blue-600">
               Add New Column
             </h2>
             <input
               type="text"
               placeholder="Enter column name..."
-              className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-purple-500 outline-none"
+              className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue  -500 outline-none"
               value={newColumnTitle}
               onChange={(e) => setNewColumnTitle(e.target.value)}
             />

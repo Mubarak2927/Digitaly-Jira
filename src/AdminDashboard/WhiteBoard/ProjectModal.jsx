@@ -46,7 +46,7 @@ const ProjectModals = ({
           onCancel={() => setShowAddColumnModal(false)}
           onConfirm={handleAddColumn}
         >
-          <div className="flex flex-col gap-4 text-white">
+          <div className="flex flex-col gap-4 bg-amber-400 text-white">
             <h2 className="text-center text-xl font-semibold text-purple-400">
               Add New Column
             </h2>
