@@ -23,7 +23,8 @@ function TaskCard({ task, isDraggingOverlay }) {
     isDragging,
   } = useDraggable({ id: task.id });
  const [openDetails, setOpenDetails] = useState(false);
-
+ const [openAssignModal, setOpenAssignModal] = useState(false);
+ const [comment, setComment] = useState("");
 
 
 
@@ -37,6 +38,20 @@ function TaskCard({ task, isDraggingOverlay }) {
   if (isDragging && !isDraggingOverlay) {
     return <div className="opacity-0 h-0" />;
   }
+
+  const handleAdd = () => {
+    if (comment.trim()) {
+      console.log("Added Comment:", comment);
+      alert("Comment added!");
+      setComment("");   
+    } else {
+      alert("Please enter a comment before adding.");
+    }
+  };
+
+  const handleCancel = () => {
+    setComment("");
+  };  
 
   return (
     <div
@@ -55,7 +70,12 @@ function TaskCard({ task, isDraggingOverlay }) {
           Details
         </button> 
       <p className="text-xs text-gray-200">{task.created_at}</p>
-      <button  className="absolute right-2 bg-white  p-1 rounded-full bottom-1 cursor-pointer text-black"><User2 size={13}/></button>
+      <button
+  className="absolute right-2 hover:scale-105 bg-white p-1 rounded-full bottom-1 cursor-pointer text-black"
+  onClick={() => setOpenAssignModal(true)}
+>
+  <User2 size={13} />
+</button>
 
        {openDetails && (
         <div className="fixed inset-0 flex justify-center items-center bg-white/60 bg-opacity-50 z-50">
@@ -66,6 +86,29 @@ function TaskCard({ task, isDraggingOverlay }) {
             <p><span className="font-semibold">Created At:</span> {task.created_at}</p>
             <p><span className="font-semibold">Epic:</span> {task.epic_name}</p>
             <p><span className="font-semibold capitalize">Status:</span> {task.status}</p>
+            <div className="flex flex-col">
+              <textarea
+        placeholder="Comments..."
+        className="w-60 border text-black text-xs h-20 mt-3 p-1"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+      />
+
+           <div className="flex justify-end gap-3 mr-8 mt-2">
+        <button
+          onClick={handleCancel}
+          className="bg-gray-600 text-white px-2 rounded-lg"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleAdd}
+          className="bg-blue-600 text-white px-2 rounded-lg"
+        >
+          Add
+        </button>
+      </div>
+      </div>
             <button
               className="mt-4 px-4 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
               onClick={() => setOpenDetails(false)}
@@ -75,7 +118,35 @@ function TaskCard({ task, isDraggingOverlay }) {
           </div>
         </div>
       )}
+      {openAssignModal && (
+  <div className="fixed inset-0 flex justify-center items-center bg-white/70 z-50">
+    <div className="bg-gray-900 px-4 py-10 border-gray-950 rounded-lg shadow-lg/60 w-64">
+      <h3 className="font-semibold text-lg mb-2">Assign User</h3>
 
+      <select className="w-full p-2 border bg-gray-800 rounded-lg">
+        <option value="">Select user...</option>
+        <option value="user_1">Employee</option>
+        <option value="user_2">Employee</option>
+        <option value="user_3">Employee</option>
+      </select>
+
+      <div className="flex justify-end gap-3 mt-4">
+         <button
+          className="px-3 py-1 bg-blue-700  text-black rounded"
+          onClick={() => setOpenAssignModal(false)}
+        >
+          Assign
+        </button> 
+        <button
+          className="px-3 py-1 bg-white text-black rounded"
+          onClick={() => setOpenAssignModal(false)}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );

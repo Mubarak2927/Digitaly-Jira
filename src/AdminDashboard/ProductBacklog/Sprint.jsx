@@ -89,9 +89,6 @@ export default function Sprint({
         <h2 className="text-lg text-black font-semibold">Sprints</h2>
 
         <div className="flex gap-3">
-           <button className="bg-red-500 hover:bg-red-700 cursor-pointer px-2 py-0.5 rounded-lg ">
-                Cancel Sprint
-              </button>
         <button
           className="bg-green-400 hover:bg-green-500 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
           onClick={() => setShowModal(true)}  
@@ -189,7 +186,7 @@ export default function Sprint({
                   setSprintForm({ ...sprintForm, goal: e.target.value })
                 }
               />
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <input
                   type="date"
                   className="w-full border text-black px-3 py-2 rounded"
@@ -206,7 +203,46 @@ export default function Sprint({
                     setSprintForm({ ...sprintForm, end_date: e.target.value })
                   }
                 />
-              </div>
+              </div> */}
+
+              <div className="flex gap-2">
+  {/* START DATE */}
+  <input
+    type="date"
+    className="w-full border text-black px-3 py-2 rounded"
+    value={sprintForm.start_date}
+    onChange={(e) => {
+      const start = e.target.value;
+
+      // Convert start date to Date object
+      const startDate = new Date(start);
+
+      // Add 7 days to start date
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 7);
+
+      // Convert to YYYY-MM-DD format
+      const formattedEndDate = endDate.toISOString().split("T")[0];
+
+      // Update state
+      setSprintForm({
+        ...sprintForm,
+        start_date: start,
+        end_date: formattedEndDate,
+      });
+    }}
+  />
+
+  {/* END DATE - AUTO CALCULATED */}
+  <input
+    type="date"
+    className="flex-1 w-full border text-black px-3 py-2 rounded"
+    value={sprintForm.end_date}
+    disabled
+  />
+</div>
+
+
             </div>
 
             <div className="flex justify-end gap-2 mt-5">
