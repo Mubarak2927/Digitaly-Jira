@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/core";
 
 import { useDroppable, useDraggable } from "@dnd-kit/core";
-import { sprintTaskMoveColumn } from "../../Api/projectAPI";
+import { sprintTaskMoveColumn , getAllUsers} from "../../Api/projectAPI";
 import { User, User2 } from "lucide-react";
 
 // =================== TaskCard Component ===================
@@ -25,7 +25,8 @@ function TaskCard({ task, isDraggingOverlay }) {
  const [openDetails, setOpenDetails] = useState(false);
  const [openAssignModal, setOpenAssignModal] = useState(false);
  const [comment, setComment] = useState("");
-
+ const [selectedUser, setSelectedUser] = useState("");
+  const [users, setUsers] = useState([]);
 
 
   const style = {
@@ -52,6 +53,21 @@ function TaskCard({ task, isDraggingOverlay }) {
   const handleCancel = () => {
     setComment("");
   };  
+useEffect(() => {
+  if (openAssignModal) {
+    fetchUsers();
+  }
+}, [openAssignModal]);
+
+const fetchUsers = async () => {
+  try {
+    const data = await getAllUsers();
+    setUsers(data); // assuming API returns [{ id, name, ... }]
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+  }
+};
+  
 
   return (
     <div
@@ -119,26 +135,39 @@ function TaskCard({ task, isDraggingOverlay }) {
         </div>
       )}
       {openAssignModal && (
-  <div className="fixed inset-0 flex justify-center items-center bg-white/70 z-50">
+   <div className="fixed inset-0 flex justify-center items-center bg-white/70 z-50">
     <div className="bg-gray-900 px-4 py-10 border-gray-950 rounded-lg shadow-lg/60 w-64">
-      <h3 className="font-semibold text-lg mb-2">Assign User</h3>
+      <h3 className="font-semibold text-lg mb-4 text-white">Assign User</h3>
 
-      <select className="w-full p-2 border bg-gray-800 rounded-lg">
+      <select
+        className="w-full p-2 border bg-gray-800 text-white rounded-lg"
+        value={selectedUser}
+        onChange={(e) => setSelectedUser(e.target.value)}
+      >
         <option value="">Select user...</option>
-        <option value="user_1">Employee</option>
-        <option value="user_2">Employee</option>
-        <option value="user_3">Employee</option>
+        {users.map((user) => (
+          <option key={user.id} value={user.id}>
+            {user.full_name}
+          </option>
+        ))}
       </select>
 
-      <div className="flex justify-end gap-3 mt-4">
-         <button
-          className="px-3 py-1 bg-blue-700  text-black rounded"
-          onClick={() => setOpenAssignModal(false)}
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          className="px-4 py-1 bg-blue-700 text-white rounded"
+          onClick={() => {
+            if (selectedUser) {
+              console.log("Assigned to:", selectedUser);
+              setOpenAssignModal(false);
+            } else {
+              alert("Please select a user first");
+            }
+          }}
         >
           Assign
-        </button> 
+        </button>
         <button
-          className="px-3 py-1 bg-white text-black rounded"
+          className="px-4 py-1 bg-white text-black rounded"
           onClick={() => setOpenAssignModal(false)}
         >
           Close

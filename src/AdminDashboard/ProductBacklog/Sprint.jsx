@@ -16,6 +16,8 @@ export default function Sprint({
   const [sprints, setSprints] = useState([]);
   const [selectedSprint, setSelectedSprint] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState("");
+
   const [sprintForm, setSprintForm] = useState({
     name: "",
     goal: "",
@@ -122,7 +124,7 @@ export default function Sprint({
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
               </div>
-              <span className="text-sm text-black hover:scale-105 bg-violet-500 shadow-lg/50 p-3 rounded">
+              <span className="text-sm text-white hover:scale-105 bg-violet-500 shadow-lg/50 p-3 rounded">
                 <button onClick={() => startSprint(s)} className="cursor-pointer">
                   Start Sprint
                 </button>
@@ -205,57 +207,108 @@ export default function Sprint({
                 />
               </div> */}
 
-              <div className="flex gap-2">
-  {/* START DATE */}
-  <input
-    type="date"
-    className="w-full border text-black px-3 py-2 rounded"
-    value={sprintForm.start_date}
-    onChange={(e) => {
-      const start = e.target.value;
+             <div className="flex flex-col gap-3">
+  
 
-      // Convert start date to Date object
-      const startDate = new Date(start);
+ <div className="flex gap-2 mt-2">
+  {[
+    { label: "Week 1", days: 7 },
+    { label: "Week 2", days: 14 },
+    { label: "Week 4", days: 28 },
+  ].map((week) => (
+    <button
+      key={week.label}
+      className={`px-4 py-2  rounded-lg hover:scale-105 shadow-lg/40 cursor-pointer 
+        ${selectedWeek === week.label 
+          ? "bg-green-600 text-white"     // SELECTED COLOR
+          : "bg-blue-600 text-white hover:bg-blue-700"}`} // DEFAULT COLOR
+      onClick={() => {
+        const startDate = new Date();
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + week.days);
 
-      // Add 7 days to start date
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + 7);
+        setSprintForm({
+          ...sprintForm,
+          start_date: startDate.toISOString().split("T")[0],
+          end_date: endDate.toISOString().split("T")[0],
+        });
 
-      // Convert to YYYY-MM-DD format
-      const formattedEndDate = endDate.toISOString().split("T")[0];
-
-      // Update state
-      setSprintForm({
-        ...sprintForm,
-        start_date: start,
-        end_date: formattedEndDate,
-      });
-    }}
-  />
-
-  {/* END DATE - AUTO CALCULATED */}
-  <input
-    type="date"
-    className="flex-1 w-full border text-black px-3 py-2 rounded"
-    value={sprintForm.end_date}
-    disabled
-  />
+        setSelectedWeek(week.label); // SET ACTIVE BUTTON
+      }}
+    >
+      {week.label}
+    </button>
+  ))}
 </div>
 
+  <div className="flex gap-2">
+  <div className="flex flex-col gap-4">
 
-            </div>
+    {/* START DATE FIELD */}
+    <div className="flex flex-col">
+      <label htmlFor="start-date" className="text-black font-medium mb-1">
+        Start Date
+      </label>
+      <input
+        id="start-date"
+        type="date"
+        className="border text-black px-3 py-2 rounded"
+        value={sprintForm.start_date}
+        onChange={(e) => {
+          const start = e.target.value;
+
+          // Auto-calculate 7 days
+          let startDate = new Date(start);
+          let autoEndDate = new Date(startDate);
+          autoEndDate.setDate(startDate.getDate() + 7);
+
+          const formattedEndDate = autoEndDate.toISOString().split("T")[0];
+
+          setSprintForm({
+            ...sprintForm,
+            start_date: start,
+            end_date: formattedEndDate, // AUTO UPDATE END DATE
+          });
+        }}
+      />
+    </div>
+
+    {/* END DATE FIELD (User can edit manually) */}
+    <div className="flex flex-col">
+      <label htmlFor="end-date" className="text-black font-medium mb-1">
+        End Date
+      </label>
+      <input
+        id="end-date"
+        type="date"
+        className="border text-black px-3 py-2 rounded"
+        value={sprintForm.end_date}
+        onChange={(e) =>
+          setSprintForm({
+            ...sprintForm,
+            end_date: e.target.value, // ALLOW MANUAL CHANGE
+          })
+        }
+      />
+    </div>
+
+  </div>
+</div>
+
+</div>
+</div>
 
             <div className="flex justify-end gap-2 mt-5">
              
               <button
                 onClick={() => setShowModal(false)}
-                className="bg-gray-600 px-3 py-1 rounded"
+                className="bg-gray-600 px-3 py-1 rounded-lg"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateSprint}
-                className="bg-green-400 text-black px-3 py-1 rounded"
+                className="bg-green-500 text-black px-3 py-1 rounded-lg"
               >
                 Create
               </button>

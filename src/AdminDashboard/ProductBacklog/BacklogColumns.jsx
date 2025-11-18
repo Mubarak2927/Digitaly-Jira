@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getSprint, sprintTaskMove } from "../../Api/projectAPI";
+import { ClipboardCheck, Bug, BookOpen } from "lucide-react";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
@@ -13,17 +14,17 @@ const BacklogColumns = ({
     priority: "",
     epicId: "",
   },
-  setCreateForm = () => { },
+  setCreateForm = () => {},
   selectedTasksForSprint = [],
-  setSelectedTasksForSprint = () => { },
-  createTask = () => { },
-  toggleSelectTaskForSprint = () => { },
-  updateTask = () => { },
-  promptAssignEpic = () => { },
+  setSelectedTasksForSprint = () => {},
+  createTask = () => {},
+  toggleSelectTaskForSprint = () => {},
+  updateTask = () => {},
+  promptAssignEpic = () => {},
   selectedProject,
   loggedInUserId,
   getTasks,
-  getSprints
+  getSprints,
 }) => {
   const [sprints, setSprints] = useState([]);
   const [selectedSprintId, setSelectedSprintId] = useState("");
@@ -55,9 +56,15 @@ const BacklogColumns = ({
     } catch (err) {
       console.error("Epic assign error:", err);
     }
+   
   };
+  //  handleEpicAssign()
 
   // 🌀 Load sprints for dropdown
+  useEffect(() => {
+    fetchSprints();
+  }, []);
+  
   useEffect(() => {
     fetchSprints();
   }, []);
@@ -86,7 +93,7 @@ const BacklogColumns = ({
     }
 
     createTask();
-    fetchSprints()
+    fetchSprints();
   };
 
   // Assign selected tasks to sprint
@@ -103,9 +110,24 @@ const BacklogColumns = ({
       setSelectedSprintId("");
       fetchSprints();
       getTasks();
-      getSprints()
+      getSprints();
     } catch (error) {
       console.error("Error assigning tasks:", error);
+    }
+  };
+
+  //icons task,bug,story
+
+  const getTypeIcon = (type) => {
+    switch (type.toLowerCase()) {
+      case "task":
+        return <ClipboardCheck size={16} className="text-blue-500" />;
+      case "bug":
+        return <Bug size={16} className="text-red-500" />;
+      case "story":
+        return <BookOpen size={16} className="text-green-500" />;
+      default:
+        return null;
     }
   };
 
@@ -157,13 +179,19 @@ const BacklogColumns = ({
                 </option>
               ))}
             </select>
-            <select name="" id="" 
-            className="border border-black text-black px-2 py-1 rounded text-sm">
-              <option value="">High</option>
-              <option value="">Highest</option>
-              <option value="">Medium</option>
-              <option value="">Low</option>
-              <option value="">Lowest</option>
+            <select
+              className="border border-black text-black px-2 py-1 rounded text-sm"
+              value={createForm.priority || ""}
+              onChange={(e) =>
+                setCreateForm((prev) => ({ ...prev, priority: e.target.value }))
+              }
+            >
+              <option value="">Priority</option>
+              <option value="highest">Highest</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+              <option value="lowest">Lowest</option>
             </select>
 
             <button
@@ -210,7 +238,14 @@ const BacklogColumns = ({
                       />
                     )}
                     <div>
-                      <div className="font-medium text-black truncate">{t.name}</div>
+                      <div className="font-medium text-black capitalize truncate flex items-center gap-1">
+                        {getTypeIcon(t.type)}
+                        {t.type}
+                      </div>
+                      <div className="text-black capitalize flex ">
+                        {t.name}
+                      </div>
+
                       <div className="text-xs text-black truncate">
                         {epic ? (
                           <span className="bg-blue-600 px-2 py-0.5 rounded text-white mr-2 text-[11px]">
@@ -221,9 +256,27 @@ const BacklogColumns = ({
                             No epic
                           </span>
                         )}
-                        <span className="ml-2">• {t.status}</span>
+                        <span className="ml-2 capitalize">• {t.status}</span>
                       </div>
-                      <span className="text-black capitalize text-xs">{t.type}</span>
+                      <span className="text-black capitalize text-xs">
+                        <span
+                          className={`px-2 py-0.5 rounded  ${
+                            t.priority.toLowerCase() === "highest"
+                              ? "bg-red-600 text-white"
+                              : t.priority.toLowerCase() === "high"
+                              ? "bg-orange-500 text-white"
+                              : t.priority.toLowerCase() === "medium"
+                              ? "bg-yellow-300 text-black"
+                              : t.priority.toLowerCase() === "low"
+                              ? "bg-green-300 text-white"
+                              : t.priority.toLowerCase() === "lowest"
+                              ? "bg-green-500 text-white"
+                              : "bg-gray-300"
+                          }`}
+                        >
+                          {t.priority || "No Priority"}
+                        </span>
+                      </span>
                     </div>
                   </div>
                 </div>

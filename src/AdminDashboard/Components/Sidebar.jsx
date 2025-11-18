@@ -118,7 +118,7 @@ const Sidebar = ({
                 : "bg-gray-200 hover:bg-blue-300"
             }`}
           >
-            <User2 size={18} /> Employee Profile
+            <User2 size={18} /> Employee Details
           </div>
 
           <div

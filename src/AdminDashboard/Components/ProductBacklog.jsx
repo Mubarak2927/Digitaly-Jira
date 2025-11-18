@@ -264,6 +264,7 @@ getTasks();
           tasks={tasks}
           selectedProject={selectedProject}
           filteredBacklog={filteredBacklog}
+          
         />
       </div>
 
