@@ -1,236 +1,436 @@
+import { Circle } from "lucide-react";
 import React, { useState } from "react";
-import { X, User, Mail, MapPin, Phone } from "lucide-react";
 
-const EmployeeProfile = () => {
+const EmployeeProfilePage = () => {
   const [showModal, setShowModal] = useState(false);
-  const [employees, setEmployees] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    role: "",
+  const [employeeList, setEmployeeList] = useState([]);
+  const submitEmployee = () => {
+  setEmployeeList((prev) => [...prev, employee]);   // SAVE to list
+  setShowModal(false);
+
+  // form reset
+  setEmployee({
+    emp_id: "",
+    first_name: "",
+    last_name: "",
     email: "",
-    phone: "",
-    blood_group: "",
-    experience: "",
-    address: "",
-  });
-
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSave = () => {
-    if (
-      !formData.name ||
-      !formData.role ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.blood_group ||
-      !formData.experience ||
-      !formData.address
-    ) {
-      alert("Please fill out all fields");
-      return;
-    }
-
-    // Save profile
-    setEmployees([...employees, formData]);
-    setShowModal(false);
-    setFormData({
-      name: "",
-      role: "",
-      email: "",
-      phone: "",
-      blood_group: "",
-      experience: "",
+    personal_info: {
+      date_of_birth: "",
+      phone_number: "",
       address: "",
-    });
+      gender: "",
+      marital_status: "",
+      emergency_contact: {
+        name: "",
+        phone_number: "",
+        relationship: "",
+      },
+      profile_image: "",
+    },
+    work_info: {
+      department: "",
+      designation: "",
+      date_joined: "",
+      manager_id: "",
+      employment_type: "",
+      experience_level: "",
+      skills: [],
+    },
+    payroll_group: "MONTHLY",
+  });
+};
+
+
+  const [employee, setEmployee] = useState({
+    emp_id: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    personal_info: {
+      date_of_birth: "",
+      phone_number: "",
+      address: "",
+      gender: "",
+      marital_status: "",
+      emergency_contact: {
+        name: "",
+        phone_number: "",
+        relationship: "",
+      },
+      profile_image: "",
+    },
+    work_info: {
+      department: "",
+      designation: "",
+      date_joined: "",
+      manager_id: "",
+      employment_type: "",
+      experience_level: "",
+      skills: [],
+    },
+    payroll_group: "MONTHLY",
+  });
+  
+
+  const handleChange = (e, parent, child, subChild) => {
+    const value = e.target.value;
+
+    if (parent && child && subChild) {
+      setEmployee((prev) => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: {
+            ...prev[parent][child],
+            [subChild]: value,
+          },
+        },
+      }));
+    } else if (parent && child) {
+      setEmployee((prev) => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value,
+        },
+      }));
+    } else {
+      setEmployee((prev) => ({
+        ...prev,
+        [e.target.name]: value,
+      }));
+    }
   };
 
+  // const submitEmployee = () => {
+  //   console.log("EMPLOYEE DATA:", employee);
+
+  //   // 🔥 API CALL Example
+  //   // axios.post("/api/employees", employee)
+
+  //   setShowModal(false);
+  // };
+
   return (
-    <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-lg w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h2 className="text-2xl font-semibold text-blue-400 text-center sm:text-left">
-          Employee Profiles
-        </h2>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition text-white"
-        >
-          + Create Profile
-        </button>
-      </div>
 
-      {employees.length === 0 ? (
-        <p className="text-gray-400 text-center py-10">No profiles yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {employees.map((emp, idx) => (
-            <div
-              key={idx}
-              className="bg-gray-800 border border-gray-700 p-4 rounded-xl hover:shadow-lg hover:border-blue-500 transition"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="bg-blue-600/20 p-3 rounded-full flex items-center justify-center">
-                  <User className="text-blue-400" size={22} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white break-words">
-                    {emp.name}
-                  </h3>
-                  <p className="text-sm text-gray-400">{emp.role}</p>
-                </div>
-              </div>
 
-              <div className="space-y-2 text-white text-sm">
-                <p className="flex items-center gap-2">
-                  <Mail size={16} className="text-blue-400" />: {emp.email}
-                </p>
-                <p className="flex items-center gap-2"><Phone size={16}/>: {emp.phone}</p>
-                <p className="flex items-center gap-2 text-sm text-white">Blood group: <span>{emp.blood_group}</span></p>
-                <p className="flex items-center gap-2">
-                  💼 :{emp.experience} years
-                </p>
-                <p className="flex items-center gap-2">
-                  <MapPin size={16} className="text-blue-400" />    : {emp.address}
-                </p>
-              </div>
-            </div>
-          ))}
+    
+    <div className="">
+      <div className="flex justify-between">
+      <h1 className="text-3xl text-black font-bold mb-4">Employee Profile</h1>
+        <div>
+           <button
+        className="px-4 py-2 bg-blue-600 text-white rounded shadow"
+        onClick={() => setShowModal(true)}
+      >
+        Create Profile
+      </button>
         </div>
-      )}
-
-      {/* Modal */}
+      </div>
+      {/* ====================== MODAL ======================= */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 px-3">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-lg relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-white transition"
-            >
-              <X size={22} />
-            </button>
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-gray-900 w-full max-w-3xl rounded-2xl shadow-xl p-6 overflow-y-auto max-h-[90vh]">
 
-            <h3 className="text-xl font-semibold text-blue-400 mb-4 text-center">
-              Add Employee Profile
-            </h3>
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold ">Create Employee Profile</h2>
+        <button
+          onClick={() => setShowModal(false)}
+          className="cursor-pointer font-bold border rounded-full hover:bg-red-600 px-2 text-2xl hover:scale-105"
+        >
+          X
+        </button>
+        
+      </div>
+      {/* SECTION CARD */}
+      <div className="space-y-6">
 
-            {/* Form */}
-            <div className="space-y-3">
-  {/* Name */}
-  <div>
-    <label className="text-sm text-gray-300">Name</label>
-    <input
-      type="text"
-      name="name"
-      value={formData.name}
-      onChange={handleChange}
-      placeholder="Enter name"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
+        {/* BASIC INFO */}
+        <div className="border rounded-xl p-4 shadow-md">
+          <h3 className="font-semibold text-lg mb-3 text-blue-700">Basic Information</h3>
 
-  {/* Email */}
-  <div>
-    <label className="text-sm text-gray-300">Email</label>
-    <input
-      type="email"
-      name="email"
-      value={formData.email}
-      onChange={handleChange}
-      placeholder="Enter email"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Employee ID</label>
+              <input
+                type="text"
+                name="emp_id"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.emp_id}
+                onChange={handleChange}
+              />
+            </div>
 
-  {/* Role */}
-  <div>
-    <label className="text-sm text-gray-300">Role</label>
-    <input
-      type="text"
-      name="role"
-      value={formData.role}
-      onChange={handleChange}
-      placeholder="Enter role"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
+            <div>
+              <label className="text-sm font-medium">First Name</label>
+              <input
+                type="text"
+                name="first_name"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.first_name}
+                onChange={handleChange}
+              />
+            </div>
 
-  {/* Phone */}
-  <div>
-    <label className="text-sm text-gray-300">Phone</label>
-    <input
-      type="tel"
-      name="phone"
-      value={formData.phone}
-      onChange={(e) => {
-        const value = e.target.value.replace(/[^0-9]/g, ""); // restrict to numbers
-        handleChange({ target: { name: "phone", value } });
-      }}
-      placeholder="Enter phone number"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
+            <div>
+              <label className="text-sm font-medium">Last Name</label>
+              <input
+                type="text"
+                name="last_name"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.last_name}
+                onChange={handleChange}
+              />
+            </div>
 
-  {/* Blood Group */}
-  <div>
-    <label className="text-sm text-gray-300">Blood Group</label>
-    <input
-      type="text"
-      name="blood_group"
-      value={formData.blood_group}
-      onChange={handleChange}
-      placeholder="Enter blood group"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
-
-  {/* Experience */}
-  <div>
-    <label className="text-sm text-gray-300">Experience (years)</label>
-    <input
-      type="number"
-      name="experience"
-      value={formData.experience}
-      onChange={handleChange}
-      placeholder="Enter years of experience"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
-
-  {/* Address */}
-  <div>
-    <label className="text-sm text-gray-300">Address</label>
-    <input
-      type="text"
-      name="address"
-      value={formData.address}
-      onChange={handleChange}
-      placeholder="Enter address"
-      className="w-full mt-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:outline-none"
-    />
-  </div>
-</div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-800 rounded-md text-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
-              >
-                Add Profile
-              </button>
+            <div>
+              <label className="text-sm font-medium">Email</label>
+              <input
+                type="email"
+                name="email"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.email}
+                onChange={handleChange}
+              />
             </div>
           </div>
         </div>
-      )}
+
+        {/* PERSONAL INFO */}
+        <div className="border rounded-xl p-4 shadow-md">
+          <h3 className="font-semibold text-lg mb-3 text-blue-700">Personal Information</h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Date of Birth</label>
+              <input
+                type="date"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.personal_info.date_of_birth}
+                onChange={(e) => handleChange(e, "personal_info", "date_of_birth")}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Phone Number</label>
+              <input
+                type="text"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.personal_info.phone_number}
+                onChange={(e) => handleChange(e, "personal_info", "phone_number")}
+              />
+            </div>
+
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Address</label>
+              <input
+                type="text"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.personal_info.address}
+                onChange={(e) => handleChange(e, "personal_info", "address")}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Gender</label>
+              <select
+                className="mt-1 border bg-gray-900   p-2 rounded w-full"
+                value={employee.personal_info.gender}
+                onChange={(e) => handleChange(e, "personal_info", "gender")}
+              >
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Others</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Marital Status</label>
+              <select
+                className="mt-1 border bg-gray-900 p-2 rounded w-full"
+                value={employee.personal_info.marital_status}
+                onChange={(e) => handleChange(e, "personal_info", "marital_status")}
+              >
+                <option value="">Select</option>
+                <option>Single</option>
+                <option>Married</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* WORK INFO */}
+        <div className="border rounded-xl p-4 shadow-md">
+          <h3 className="font-semibold text-lg mb-3 text-blue-700">Work Information</h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Department</label>
+              <input
+                type="text"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.work_info.department}
+                onChange={(e) => handleChange(e, "work_info", "department")}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Designation</label>
+              <input
+                type="text"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.work_info.designation}
+                onChange={(e) => handleChange(e, "work_info", "designation")}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Date Joined</label>
+              <input
+                type="date"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.work_info.date_joined}
+                onChange={(e) => handleChange(e, "work_info", "date_joined")}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Manager ID</label>
+              <input
+                type="text"
+                className="mt-1 border p-2 rounded w-full"
+                value={employee.work_info.manager_id}
+                onChange={(e) => handleChange(e, "work_info", "manager_id")}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Employment Type</label>
+              <select
+                className="mt-1 bg-gray-900  border p-2 rounded w-full"
+                value={employee.work_info.employment_type}
+                onChange={(e) => handleChange(e, "work_info", "employment_type")}
+              >
+                <option value="">Select</option>
+                <option>Full-Time</option>
+                <option>Part-Time</option>
+                <option>Internship</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Experience Level</label>
+              <select
+                className="mt-1 border bg-gray-900  p-2 rounded w-full"
+                value={employee.work_info.experience_level}
+                onChange={(e) => handleChange(e, "work_info", "experience_level")}
+              >
+                <option value="">Select</option>
+                <option>Junior</option>
+                <option>Mid</option>
+                <option>Senior</option>
+              </select>
+            </div>
+
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Skills</label>
+              <input
+                type="text"
+                className="mt-1 border p-2 rounded w-full"
+                placeholder="e.g., React, Node, SQL"
+                onChange={(e) =>
+                  setEmployee((prev) => ({
+                    ...prev,
+                    work_info: {
+                      ...prev.work_info,
+                      skills: e.target.value.split(","),
+                    },
+                  }))
+                }
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* PAYROLL */}
+        <div className="border rounded-xl p-4 shadow-md">
+          <h3 className="font-semibold text-lg mb-3 text-blue-700">Payroll</h3>
+
+          <select
+            className="border p-2 bg-gray-900  rounded w-full"
+            value={employee.payroll_group}
+            onChange={(e) =>
+              setEmployee((prev) => ({
+                ...prev,
+                payroll_group: e.target.value,
+              }))
+            }
+          >
+            <option value="MONTHLY">MONTHLY</option>
+            <option value="WEEKLY">WEEKLY</option>
+          </select>
+        </div>
+      </div>
+
+      {/* BUTTONS */}
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          className="px-4 py-2 border rounded hover:bg-gray-100"
+          onClick={() => setShowModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={submitEmployee}
+        >
+          Save Employee
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+<div className="mt-6">
+  <h2 className="text-xl font-bold mb-3">Employee List</h2>
+
+  {employeeList.length === 0 ? (
+    <p className="text-gray-400 text-center">No employees found.</p>
+  ) : (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {employeeList.map((emp, index) => (
+        <div
+          key={index}
+          className="bg-gray-800 backdrop-blur-md border border-gray-700 p-4 rounded-xl shadow hover:shadow-xl transition"
+        >
+          <div className="flex items-center gap-3">
+           
+            <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+              {emp.first_name.charAt(0)}{emp.last_name.charAt(0)}
+            </div>
+            <div>
+              <p className="font-semibold text-lg">{emp.first_name} {emp.last_name}</p>
+            <p className="text-xs ">{emp.work_info.designation }</p>
+            </div>
+             <button className="absolute right-5 bottom-5 text-sm">view details</button>
+          </div>
+
+          <div className="mt-3 text-sm text-gray-300 space-y-1">
+            <p><strong>ID:</strong> {emp.emp_id}</p>
+            <p><strong>Email:</strong> {emp.email}</p>
+            <p><strong>Department:</strong> {emp.work_info.department}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
+
+
     </div>
   );
 };
 
-export default EmployeeProfile;
+export default EmployeeProfilePage;

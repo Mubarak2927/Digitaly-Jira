@@ -10,7 +10,7 @@ import {
 
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import { sprintTaskMoveColumn , getAllUsers} from "../../Api/projectAPI";
-import { User, User2 } from "lucide-react";
+import {   User2 } from "lucide-react";
 
 // =================== TaskCard Component ===================
 function TaskCard({ task, isDraggingOverlay }) {
@@ -35,10 +35,12 @@ function TaskCard({ task, isDraggingOverlay }) {
       : undefined,
     transition,
   };
+  const isGhost = isDragging && !isDraggingOverlay;
 
-  if (isDragging && !isDraggingOverlay) {
-    return <div className="opacity-0 h-0" />;
-  }
+
+  // if (isDragging && !isDraggingOverlay) {
+  //   return <div className="opacity-0 h-0" />;
+  // }
 
   const handleAdd = () => {
     if (comment.trim()) {
@@ -322,28 +324,108 @@ export default function BoardView({
   };
 
   // 🔥 DRAG END LOGS
- const handleDragEnd = async (event) => {
+//  const handleDragEnd = async (event) => {
+//   const { active, over } = event;
+
+//   console.log("🔥 DRAG END");
+//   console.log("🟦 Active Task ID:", active.id);
+//   console.log("🟨 Dropped Over ID:", over?.id);
+
+//   setActiveTask(null);
+//   if (!over) {
+//     console.log("❌ No drop target!");
+//     return;
+//   }
+
+//   const isOverColumn = columns.some(
+//     (col) => col.column_info.id === over.id
+//   );
+
+//   if (!isOverColumn) {
+//     console.log("⚠️ Dropped on NON column!");
+//     return;
+//   }
+
+//   let sourceCol, destCol;
+
+//   columns.forEach((col) => {
+//     if (col.issues.some((t) => t.id === active.id)) sourceCol = col;
+//     if (col.column_info.id === over.id) destCol = col;
+//   });
+
+//   console.log("📦 Source Column:", sourceCol?.column_info?.name);
+//   console.log("📥 Destination Column:", destCol?.column_info?.name);
+
+//   // ==== API CALL ====
+//   try {
+//     const payload = { status: destCol?.column_info?.status };
+
+//     console.log(payload, active.id);
+    
+
+//     const data = await sprintTaskMoveColumn(active.id, payload);
+//     console.log(data, "Successfully dragged");
+//   } catch (error) {
+//     console.log(error);
+//     console.log("api not called");
+//   }
+
+//   if (!sourceCol || !destCol) return;
+
+//   if (sourceCol.column_info.id === destCol.column_info.id) {
+//     console.log("⚠️ Same column — no move");
+//     return;
+//   }
+
+//   console.log(
+//     `✅ MOVING TASK ${active.id} FROM → ${sourceCol.column_info.name} TO → ${destCol.column_info.name}`
+//   );
+
+//   // Move UI task
+//   const task = sourceCol.issues.find((t) => t.id === active.id);
+
+//   const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
+//   const newDest = [
+//     ...destCol.issues,
+//     { ...task, status: destCol.column_info.status },
+//   ];
+
+//   const updated = columns.map((col) =>
+//     col.column_info.id === sourceCol.column_info.id
+//       ? { ...col, issues: newSource }
+//       : col.column_info.id === destCol.column_info.id
+//       ? { ...col, issues: newDest }
+//       : col
+//   );
+
+//   updateProject(updated);
+// };
+const handleDragEnd = async (event) => {
   const { active, over } = event;
 
   console.log("🔥 DRAG END");
-  console.log("🟦 Active Task ID:", active.id);
+  console.log("🟦 Active Task ID:", active?.id);
   console.log("🟨 Dropped Over ID:", over?.id);
 
   setActiveTask(null);
-  if (!over) {
-    console.log("❌ No drop target!");
+
+  // ❗ OVER NULL CHECK — prevents white screen
+  if (!over || !over.id) {
+    console.log("❌ No drop target or invalid drop!");
     return;
   }
 
+  // Check if dropped over a column
   const isOverColumn = columns.some(
     (col) => col.column_info.id === over.id
   );
 
   if (!isOverColumn) {
-    console.log("⚠️ Dropped on NON column!");
+    console.log("⚠️ Dropped outside any column");
     return;
   }
 
+  // Find source/destination
   let sourceCol, destCol;
 
   columns.forEach((col) => {
@@ -351,42 +433,30 @@ export default function BoardView({
     if (col.column_info.id === over.id) destCol = col;
   });
 
-  console.log("📦 Source Column:", sourceCol?.column_info?.name);
-  console.log("📥 Destination Column:", destCol?.column_info?.name);
-
-  // ==== API CALL ====
-  try {
-    const payload = { status: destCol?.column_info?.status };
-
-    console.log(payload, active.id);
-    
-
-    const data = await sprintTaskMoveColumn(active.id, payload);
-    console.log(data, "Successfully dragged");
-  } catch (error) {
-    console.log(error);
-    console.log("api not called");
-  }
-
-  if (!sourceCol || !destCol) return;
-
-  if (sourceCol.column_info.id === destCol.column_info.id) {
-    console.log("⚠️ Same column — no move");
+  if (!sourceCol || !destCol) {
+    console.log("❌ Source or Destination column not found!");
     return;
   }
 
-  console.log(
-    `✅ MOVING TASK ${active.id} FROM → ${sourceCol.column_info.name} TO → ${destCol.column_info.name}`
-  );
+  if (sourceCol.column_info.id === destCol.column_info.id) {
+    console.log("⚠️ Same column drop → no move");
+    return;
+  }
 
-  // Move UI task
+  // API call
+  try {
+    const payload = { status: destCol.column_info.status };
+    const data = await sprintTaskMoveColumn(active.id, payload);
+    console.log("API Success:", data);
+  } catch (err) {
+    console.error("API Error", err);
+  }
+
+  // UI Move
   const task = sourceCol.issues.find((t) => t.id === active.id);
 
   const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
-  const newDest = [
-    ...destCol.issues,
-    { ...task, status: destCol.column_info.status },
-  ];
+  const newDest = [...destCol.issues, { ...task, status: destCol.column_info.status }];
 
   const updated = columns.map((col) =>
     col.column_info.id === sourceCol.column_info.id
@@ -400,7 +470,8 @@ export default function BoardView({
 };
 
 
-  return (
+
+  return (  
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
