@@ -172,3 +172,43 @@ export const sprintTaskMoveColumn = async (issuesID, payload) => {
   const res = await API.put(`/issues/${issuesID}`,payload);
   return res.data;
 };
+
+//create Employee profile
+export const createEmployee = async (payload) => {
+  const res = await API.post("/employees/admin/create", payload);
+  return res.data;
+};
+// list employee profile
+export const getAllEmployeesList = async (page = 1, limit = 50) => {
+  const res = await API.get(`/employees/admin/list`, {
+    params: { page, limit }
+  });
+  return res.data;
+};
+export const checkInAttendance = async (note = "") => {
+  try {
+    const res = await API.post("/employees/me/attendance/checkin", note ? { note } : {});
+    return res.data;
+  } catch (err) {
+    console.error("Check-in failed", err);
+    throw err;
+  }
+};
+
+// Check-out API
+export const checkOutAttendance = async (note = "") => {
+  try {
+    const res = await API.post("/employees/me/attendance/checkout", note ? { note } : {});
+    return res.data;
+  } catch (err) {
+    console.error("Check-out failed", err);
+    throw err;
+  }
+};
+// projectAPI.js (add this at the bottom or with other employee APIs)
+
+// Create a leave request
+export const createLeaveRequest = async (payload) => {
+  const res = await API.post("/employees/me/leaves", payload);
+  return res.data;
+};
