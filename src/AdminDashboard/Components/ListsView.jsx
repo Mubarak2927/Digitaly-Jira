@@ -105,8 +105,7 @@ const ListsView = ({ selectedProject }) => {
                   </td>
                   <td className="px-3 py-2 text-center text-gray-400 border-b border-gray-700 whitespace-nowrap">
                     <div className="flex justify-center items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-blue-400" />
-                      <span>{task.createdAt}</span>
+                      <span className="text-white">{task.created_at}</span>
                     </div>
                   </td>
                 </tr>

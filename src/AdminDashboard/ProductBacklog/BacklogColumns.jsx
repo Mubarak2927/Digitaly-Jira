@@ -268,9 +268,9 @@ const BacklogColumns = ({
                               : t.priority.toLowerCase() === "medium"
                               ? "bg-yellow-300 text-black"
                               : t.priority.toLowerCase() === "low"
-                              ? "bg-green-300 text-white"
+                              ? "bg-green-300 text-black"
                               : t.priority.toLowerCase() === "lowest"
-                              ? "bg-green-500 text-white"
+                              ? "bg-green-500 text-black"
                               : "bg-gray-300"
                           }`}
                         >

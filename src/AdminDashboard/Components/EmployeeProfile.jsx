@@ -434,3 +434,4 @@ const EmployeeProfilePage = () => {
 };
 
 export default EmployeeProfilePage;
+
