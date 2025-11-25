@@ -142,55 +142,59 @@ const EmployeePage = () => {
             </button>
           </div>
         ))}
-      </div>
-
+      </div>  
       {/* Create Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 w-full max-w-lg rounded-xl shadow-xl overflow-y-auto max-h-[90vh]">
-            <h2 className="text-lg font-semibold mb-4">Create Employee</h2>
+          <div className="bg-white p-6 w-full max-w-lg rounded-xl shadow-xl overflow-y-auto max-h-[90vh]">
+            <h2 className="text-lg text-black font-semibold mb-4">Create Employee</h2>
 
             <div className="grid grid-cols-1 gap-3 text-black">
+              <label htmlFor="">Employee ID</label>
               <input
                 type="text"
                 placeholder="Employee ID"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.emp_id}
                 onChange={(e) =>
                   setEmployee({ ...employee, emp_id: e.target.value })
                 }
               />
+              <label htmlFor="">Full Name</label>
               <input
                 type="text"
                 placeholder="Full Name"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.full_name}
                 onChange={(e) =>
                   setEmployee({ ...employee, full_name: e.target.value })
                 }
               />
+              <label htmlFor="">Email</label>
               <input
                 type="email"
                 placeholder="Email"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.email}
                 onChange={(e) =>
                   setEmployee({ ...employee, email: e.target.value })
                 }
               />
+              <label htmlFor="">Password</label>
               <input
                 type="password"
                 placeholder="Password"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.password}
                 onChange={(e) =>
                   setEmployee({ ...employee, password: e.target.value })
                 }
               />
+              <label htmlFor="">Date of Birth</label>
               <input
                 type="date"
                 placeholder="Date of Birth"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.date_of_birth}
                 onChange={(e) =>
                   setEmployee({
@@ -202,10 +206,11 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Phone Number</label>
               <input
                 type="text"
                 placeholder="Phone Number"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.phone_number}
                 onChange={(e) =>
                   setEmployee({
@@ -217,10 +222,11 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Address</label>
               <input
                 type="text"
                 placeholder="Address"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.address}
                 onChange={(e) =>
                   setEmployee({
@@ -232,8 +238,9 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Gender</label>
               <select
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.gender}
                 onChange={(e) =>
                   setEmployee({
@@ -250,8 +257,9 @@ const EmployeePage = () => {
                 <option>Female</option>
                 <option>Others</option>
               </select>
+              <label htmlFor="">Marital Status</label>
               <select
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.marital_status}
                 onChange={(e) =>
                   setEmployee({
@@ -267,11 +275,11 @@ const EmployeePage = () => {
                 <option>Single</option>
                 <option>Married</option>
               </select>
-
+<label htmlFor="">Emergency Contact Name</label>
               <input
                 type="text"
                 placeholder="Emergency Contact Name"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.emergency_contact.name}
                 onChange={(e) =>
                   setEmployee({
@@ -286,10 +294,11 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Emergency Contact Phone</label>
               <input
                 type="text"
                 placeholder="Emergency Contact Phone"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.emergency_contact.phone_number}
                 onChange={(e) =>
                   setEmployee({
@@ -304,10 +313,11 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Emergency Contact Relationship</label>
               <input
                 type="text"
                 placeholder="Emergency Contact Relationship"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.emergency_contact.relationship}
                 onChange={(e) =>
                   setEmployee({
@@ -322,11 +332,11 @@ const EmployeePage = () => {
                   })
                 }
               />
-
+              <label htmlFor="">Profile Image</label>
               <input
                 type="text"
                 placeholder="Profile Image URL"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.personal_info.profile_image}
                 onChange={(e) =>
                   setEmployee({
@@ -338,11 +348,11 @@ const EmployeePage = () => {
                   })
                 }
               />
-
+              <label htmlFor="">Department</label>
               <input
                 type="text"
                 placeholder="Department"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.work_info.department}
                 onChange={(e) =>
                   setEmployee({
@@ -351,10 +361,11 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Designation</label>
               <input
                 type="text"
                 placeholder="Designation"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.work_info.designation}
                 onChange={(e) =>
                   setEmployee({
@@ -363,10 +374,11 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Date Joined</label>
               <input
                 type="date"
                 placeholder="Date Joined"
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.work_info.date_joined}
                 onChange={(e) =>
                   setEmployee({
@@ -375,8 +387,9 @@ const EmployeePage = () => {
                   })
                 }
               />
+              <label htmlFor="">Work Type</label>
               <select
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.work_info.employment_type}
                 onChange={(e) =>
                   setEmployee({
@@ -390,8 +403,10 @@ const EmployeePage = () => {
                 <option>Part-Time</option>
                 <option>Internship</option>
               </select>
+
+              <label htmlFor="">Experience</label>
               <select
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.work_info.experience_level}
                 onChange={(e) =>
                   setEmployee({
@@ -406,10 +421,11 @@ const EmployeePage = () => {
                 <option>Senior</option>
               </select>
 
+              <label htmlFor="">Skills</label>
               <input
                 type="text"
-                placeholder="Skills (comma separated)"
-                className="px-3 py-2 rounded"
+                placeholder="Skills"
+                className="px-3 py-2 border rounded"
                 value={employee.work_info.skills.join(", ")}
                 onChange={(e) =>
                   setEmployee({
@@ -422,8 +438,9 @@ const EmployeePage = () => {
                 }
               />
 
+              <label htmlFor="">Payroll</label>
               <select
-                className="px-3 py-2 rounded"
+                className="px-3 py-2 border rounded"
                 value={employee.payroll_group}
                 onChange={(e) =>
                   setEmployee({ ...employee, payroll_group: e.target.value })
@@ -457,7 +474,7 @@ const EmployeePage = () => {
   <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
     <div className="bg-gray-800 w-full max-w-lg rounded-xl shadow-xl overflow-y-auto max-h-[90vh] p-6">
       {/* Header with profile image */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-6">  
         {/* <img
           src={selectedEmployee.personal_info?.profile_image}
           alt="Profile"

@@ -212,3 +212,8 @@ export const createLeaveRequest = async (payload) => {
   const res = await API.post("/employees/me/leaves", payload);
   return res.data;
 };
+
+export const getMyProfile = async () => {
+  const res = await API.get("/employees/me");
+  return res.data;
+};

@@ -185,6 +185,8 @@ const WhiteBoard = () => {
     }
   };
 
+  const role = localStorage.getItem("role");  // admin or employee
+
   // ---------------- ADD COLUMN ----------------
   const handleAddColumn = () => {
     if (!newColumnTitle.trim() || !selectedProject) return;
@@ -222,6 +224,7 @@ const WhiteBoard = () => {
             onSelectProject={handleSelectProject}
             selectedId={selectedProject?.id}
             onSelectEmployeeSection={setActiveEmployeeSection}
+            role={role}
           />
         </div>
 
