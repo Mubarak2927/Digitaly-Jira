@@ -65,9 +65,6 @@ const BacklogColumns = ({
     fetchSprints();
   }, []);
   
-  useEffect(() => {
-    fetchSprints();
-  }, []);
 
   const fetchSprints = async () => {
     try {
@@ -97,24 +94,26 @@ const BacklogColumns = ({
   };
 
   // Assign selected tasks to sprint
-  const handleAssignToSprint = async () => {
-    console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
+ const handleAssignToSprint = async () => {
+  if (!selectedSprintId || selectedTasksForSprint.length === 0) return;
 
-    try {
-      const payload = { issue_ids: selectedTasksForSprint };
-      const data = await sprintTaskMove(selectedSprintId, payload);
-      console.log(data, "after sprint add");
+  try {
+    const movedTasks = await sprintTaskMove(selectedSprintId, selectedTasksForSprint);
 
-      alert("Tasks added to sprint successfully ✅");
-      setSelectedTasksForSprint([]);
-      setSelectedSprintId("");
-      fetchSprints();
-      getTasks();
-      getSprints();
-    } catch (error) {
-      console.error("Error assigning tasks:", error);
-    }
-  };
+    console.log(movedTasks, "Tasks moved successfully");
+    alert("Tasks added to sprint successfully ✅");
+
+    setSelectedTasksForSprint([]);
+    setSelectedSprintId("");
+    fetchSprints();
+    getTasks();
+    getSprints();
+  } catch (error) {
+    console.error("Error assigning tasks:", error);
+  }
+};
+
+
 
   //icons task,bug,story
 

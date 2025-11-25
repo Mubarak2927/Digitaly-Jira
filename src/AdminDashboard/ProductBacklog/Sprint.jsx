@@ -25,7 +25,6 @@ export default function Sprint({
     end_date: "",
   });
 
-  // Fetch sprints for project
   useEffect(() => {
     fetchSprints();
   }, [filteredBacklog]);

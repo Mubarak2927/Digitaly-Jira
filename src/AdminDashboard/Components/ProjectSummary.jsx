@@ -24,17 +24,17 @@ export default function ProjectSummary({ selectedProject }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectDetails, setProjectDetails] = useState(null);
 
+  // Load project and members
   async function loadProject() {
     try {
       const data = await getProjectById(selectedProject.id);
       setProjectDetails(data);
 
-      const memberList = Object.keys(data.member_roles || {}).map((userId) => {
-        const user = users.find((u) => u.id === userId);
-        return user
-          ? { id: userId, name: user.full_name }
-          : { id: userId, name: userId };
-      });
+      // Map API members array directly
+      const memberList = (data.members || []).map((member) => ({
+        id: member.id,
+        name: member.name,
+      }));
 
       setMembers(memberList);
     } catch (error) {
@@ -52,14 +52,10 @@ export default function ProjectSummary({ selectedProject }) {
         const projectData = await getProjectById(selectedProject.id);
         setProjectDetails(projectData);
 
-        const memberList = Object.keys(projectData.member_roles || {}).map(
-          (userId) => {
-            const user = finalUsers.find((u) => u.id === userId);
-            return user
-              ? { id: userId, name: user.full_name }
-              : { id: userId, name: userId };
-          }
-        );
+        const memberList = (projectData.members || []).map((member) => ({
+          id: member.id,
+          name: member.name,
+        }));
 
         setMembers(memberList);
       } catch (err) {
@@ -70,6 +66,7 @@ export default function ProjectSummary({ selectedProject }) {
     if (selectedProject) fetchData();
   }, [selectedProject]);
 
+  // Add member
   async function handleAddMember() {
     if (!newMember.trim()) return;
 
@@ -88,6 +85,7 @@ export default function ProjectSummary({ selectedProject }) {
     }
   }
 
+  // Delete selected members
   async function handleDelete() {
     try {
       for (let member of selectedMembers) {
@@ -134,7 +132,7 @@ export default function ProjectSummary({ selectedProject }) {
                 <User className="text-black" size={20} />
                 <h3 className="text-lg font-semibold">Project Lead</h3>
               </div>
-              <p>{projectDetails.project_lead.name || "—"}</p>
+              <p>{projectDetails.project_lead?.name || "—"}</p>
             </div>
 
             {/* Timeline */}
@@ -213,7 +211,9 @@ export default function ProjectSummary({ selectedProject }) {
                       )
                     }
                   />
-                  <span className="font-medium">{member.name}</span>
+                  <div>
+                    <p className="font-medium">{member.name}</p>
+                  </div>
                 </div>
               </li>
             ))
@@ -242,7 +242,7 @@ export default function ProjectSummary({ selectedProject }) {
               <option value="">Select Employee</option>
               {users.map((u) => (
                 <option key={u.id} value={u.id}>
-                  {u.full_name}
+                  {u.name || u.full_name}
                 </option>
               ))}
             </select>
