@@ -149,7 +149,7 @@ export const createSprint = async (payload) => {
 };
 
 export const sprintTaskMove = async (sprintId, payload) => {
-  const res = await API.post(`/issues/move-multiple?sprint_id=${sprintId}`, payload);
+  const res = await API.post(`/issues/move-multiple?to=sprint&sprint_id=${sprintId}`, payload);
   return res.data;
 };
 

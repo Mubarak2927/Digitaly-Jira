@@ -91,17 +91,18 @@ const BacklogColumns = ({
 
     createTask();
     fetchSprints();
-  };
+  }; 
 
   // Assign selected tasks to sprint
  const handleAssignToSprint = async () => {
-  if (!selectedSprintId || selectedTasksForSprint.length === 0) return;
+    console.log(selectedTasksForSprint, selectedSprintId, "select tasks");
 
-  try {
-    const movedTasks = await sprintTaskMove(selectedSprintId, selectedTasksForSprint);
-
-    console.log(movedTasks, "Tasks moved successfully");
-    alert("Tasks added to sprint successfully ✅");
+    try {
+      const payload = { issue_ids: selectedTasksForSprint };
+      const data = await sprintTaskMove(selectedSprintId, payload);
+      console.log(data, "after sprint add");
+    // console.log(movedTasks, "Tasks moved successfully");
+    // alert("Tasks added to sprint successfully ✅");
 
     setSelectedTasksForSprint([]);
     setSelectedSprintId("");
