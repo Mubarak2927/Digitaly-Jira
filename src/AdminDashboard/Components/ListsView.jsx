@@ -4,6 +4,7 @@ import { getIssues } from "../../Api/projectAPI";
 
 const ListsView = ({ selectedProject }) => {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true); // ⬅️ ADDED
 
   useEffect(() => {
     getTasks();
@@ -13,11 +14,14 @@ const ListsView = ({ selectedProject }) => {
     console.log(selectedProject, "12344");
 
     try {
+      setLoading(true); // ⬅️ ADDED
       const data = await getIssues(selectedProject.id);
       console.log(data, "get issues");
       setTasks(data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // ⬅️ ADDED
     }
   };
 
@@ -42,8 +46,16 @@ const ListsView = ({ selectedProject }) => {
         </span>
       </div>
 
-      {/* No tasks */}
-      {tasks.length === 0 ? (
+      {/* LOADING STATE */}
+      {loading ? (
+        <div className="relative z-10 flex flex-col items-center justify-center py-16 sm:py-20 text-gray-500">
+          <Clock className="w-8 h-8 animate-spin text-blue-600 mb-3" />
+          <p className="italic text-gray-600 text-sm sm:text-base">
+            Loading tasks...
+          </p>
+        </div>
+      ) : tasks.length === 0 ? (
+        /* No tasks */
         <div className="relative z-10 flex flex-col items-center justify-center py-16 sm:py-20 text-gray-500">
           <ClipboardList className="w-10 sm:w-12 h-10 sm:h-12 mb-3 opacity-40" />
           <p className="italic text-gray-400 text-sm sm:text-base">
@@ -53,7 +65,7 @@ const ListsView = ({ selectedProject }) => {
       ) : (
         /* Task Table */
         <div className="relative z-10 max-h-[70vh] overflow-y-auto scrollbar-thin pr-2">
-          <table className="w-full text-sm  rounded-lg overflow-hidden">
+          <table className="w-full text-sm rounded-lg overflow-hidden">
             <thead className="bg-gray-900 text-gray-300">
               <tr>
                 <th className="px-3 py-2 border-b border-gray-700 text-center">

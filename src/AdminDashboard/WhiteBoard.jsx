@@ -167,6 +167,8 @@ const WhiteBoard = () => {
     } catch (error) {
       console.error("Error fetching project details:", error);
     }
+    
+
   };
 
   // ---------------- ADD MEMBER ----------------
