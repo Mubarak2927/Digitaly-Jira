@@ -158,6 +158,11 @@ export const sprintById= async (project_id) => {
   return res.data;
 }
 
+export const fetchIssuesbySprintId = async (sprintId) => {
+  const res = await API.get(`/sprints/${sprintId}`);
+  return res.data;
+};
+
 export const startSprints = async (sprintId) => {
   const res = await API.post(`/sprints/${sprintId}/start`);
   return res.data;

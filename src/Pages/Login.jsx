@@ -12,6 +12,7 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -40,6 +41,8 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 px-4">
@@ -95,7 +98,9 @@ const LoginPage = () => {
               {errorMsg}
             </p>
           )}
-          <p className="  w-fit hover:underline cursor-pointer hover:text-blue-500">Forget Password ?</p>
+          <a href="/ForgetPassword" 
+         
+          className="  w-fit hover:underline cursor-pointer hover:text-blue-500">Forget Password ?</a>
           <button
             type="submit"
             className="w-full mt-4 bg-blue-600 hover:bg-blue-700 transition text-white p-3 rounded-lg font-semibold"

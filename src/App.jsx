@@ -3,26 +3,18 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import WhiteBoard from "./AdminDashboard/WhiteBoard";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
-import EmployeeDashboard from './EmployeeDashboard/EmployeeDashboard'
-// import ProtectedRoute from "./Components/ProtectedRoute";
-
+import ForgetPassword from "./Pages/ForgetPassword";
+import ResetPassword from "./Pages/ResetPassword";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-             <WhiteBoard/>
-            </ProtectedRoute>
-          }
-        /> */}
         <Route path="/dashboard" element={<WhiteBoard/>}/>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path='/EmployeeDashboard'element={<EmployeeDashboard/>}/>
+        <Route path="/ForgetPassword" element={<ForgetPassword/>}/>
+        <Route path="/ResetPassword" element={<ResetPassword/>}/>
       </Routes>
     </BrowserRouter>
   );
