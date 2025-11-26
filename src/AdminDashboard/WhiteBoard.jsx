@@ -14,6 +14,9 @@ import ProductBacklog from "./Components/ProductBacklog";
 import ArchivedPage from "./Components/ArchivedPage";
 import GoalsPage from "./Components/GoalsPage";
 import AdminTopBar from "./Components/AdminTopBar";
+import MyAttendance from "./Components/MyAttendance";
+import MyLeave from "./Components/MyLeave";
+import MyProfile from "./Components/MyProfile";
 
 import {
   getAllProjects,
@@ -273,6 +276,10 @@ const WhiteBoard = () => {
           {activeEmployeeSection === "profile" && <EmployeeProfile />}
           {activeEmployeeSection === "leave" && <LeaveManagement />}
           {activeEmployeeSection === "attendance" && <Attendance />}
+          {activeEmployeeSection==='myattendance' && <MyAttendance/>}
+          {activeEmployeeSection==='myprofile' && <MyProfile/>}
+          {activeEmployeeSection==='myleave' && <MyLeave/>}
+
           {activeTab === "goals" && <GoalsPage />}
           {activeTab === "archived" && <ArchivedPage />}
 

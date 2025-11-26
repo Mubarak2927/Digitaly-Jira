@@ -28,6 +28,12 @@ const Sidebar = ({
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [activeEmployeeSection, setActiveEmployeeSection] = useState(null);
 
+  const loginRole=localStorage.getItem("role")
+
+  console.log(loginRole, "1234424");
+  
+
+
   const handleLogout = () => {
     navigate("/");
   };
@@ -58,13 +64,16 @@ const Sidebar = ({
 
         {showProjectMenu && (
           <div className="mt-2 rounded-lg p-2 space-y-2 overflow-y-auto max-h-48">
-
-            <button
+            {
+              loginRole === "admin" &&
+              <button
               onClick={onAddProjectClick}
               className="flex items-center gap-2 w-full py-2 px-3 rounded-md transition-all"
             >
               <Plus size={16} /> Add Project
             </button>
+            }
+           
 
             <div className="space-y-1 mt-2">
               {projects?.length === 0 ? (
@@ -107,43 +116,97 @@ const Sidebar = ({
         </h1>
         {showEmployeeMenu ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </div>
+     
 
-      {showEmployeeMenu && (
-        <div className="pl-6 mt-2 space-y-2 text-sm">
-          <div
-            onClick={() => handleEmployeeClick("profile")}
-            className={`flex items-center  border font-semibold mt-5 gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
-              activeEmployeeSection === "profile"
-                ? "bg-blue-300 text-black shadow-md"
-                : "bg-gray-200 hover:bg-blue-300"
-            }`}
-          >
-            <User2 size={18} /> Employee Details
-          </div>
+     {showEmployeeMenu && (
+  <div className="pl-6 mt-2 space-y-2 text-sm">
 
-          <div
-            onClick={() => handleEmployeeClick("leave")}
-            className={`flex items-center font-semibold border gap-2 mt-5 px-3 py-2 rounded-lg cursor-pointer transition-all ${
-              activeEmployeeSection === "leave"
-                ? "bg-blue-300 text-black shadow-md"
-                : "bg-gray-200 hover:bg-blue-300"
-            }`}
-          >
-            <Calendar size={18} /> Leave Management
-          </div>
+    {/* ADMIN → Employee Details */}
+    {loginRole === "admin" && (
+      <div
+        onClick={() => handleEmployeeClick("profile")}
+        className={`flex items-center border font-semibold mt-5 gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+          activeEmployeeSection === "profile"
+            ? "bg-blue-300 text-black shadow-md"
+            : "bg-gray-200 hover:bg-blue-300"
+        }`}
+      >
+        <User2 size={18} /> Employee Details
+      </div>
+    )}
 
-          <div
-            onClick={() => handleEmployeeClick("attendance")}
-            className={`flex items-center font-semibold mt-5 border gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
-              activeEmployeeSection === "attendance"
-                ? "bg-blue-300 text-black shadow-md"
-                : "bg-gray-200 hover:bg-blue-300"
-            }`}
-          >
-            <Clock size={18} /> Attendance
-          </div>
-        </div>
-      )}
+    {/* EMPLOYEE → My Profile */}
+    {loginRole === "employee" && (
+      <div
+        onClick={() => handleEmployeeClick("myprofile")}
+        className={`flex items-center border font-semibold mt-5 gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+          activeEmployeeSection === "profile"
+            ? "bg-blue-300 text-black shadow-md"
+            : "bg-gray-200 hover:bg-blue-300"
+        }`}
+      >
+        <User2 size={18} /> My Profile
+      </div>
+    )}
+
+    {/* ADMIN → Leave Management */}
+    {loginRole === "admin" && (
+      <div
+        onClick={() => handleEmployeeClick("leave")}
+        className={`flex items-center font-semibold border gap-2 mt-5 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+          activeEmployeeSection === "leave"
+            ? "bg-blue-300 text-black shadow-md"
+            : "bg-gray-200 hover:bg-blue-300"
+        }`}
+      >
+        <Calendar size={18} /> Leave Management
+      </div>
+    )}
+
+    {/* EMPLOYEE → Apply Leave */}
+    {loginRole === "employee" && (
+      <div
+        onClick={() => handleEmployeeClick("myleave")}
+        className={`flex items-center font-semibold border gap-2 mt-5 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+          activeEmployeeSection === "leave"
+            ? "bg-blue-300 text-black shadow-md"
+            : "bg-gray-200 hover:bg-blue-300"
+        }`}
+      >
+        <Calendar size={18} /> Apply Leave
+      </div>
+    )}
+
+    {/* ADMIN → Attendance */}
+    {loginRole === "admin" && (
+      <div
+        onClick={() => handleEmployeeClick("attendance")}
+        className={`flex items-center font-semibold mt-5 border gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+          activeEmployeeSection === "attendance"
+            ? "bg-blue-300 text-black shadow-md"
+            : "bg-gray-200 hover:bg-blue-300"
+        }`}
+      >
+        <Clock size={18} /> Attendance
+      </div>
+    )}
+
+    {/* EMPLOYEE → My Attendance */}
+    {loginRole === "employee" && (
+      <div
+        onClick={() => handleEmployeeClick("myattendance")}
+        className={`flex items-center font-semibold mt-5 border gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+          activeEmployeeSection === "attendance"
+            ? "bg-blue-300 text-black shadow-md"
+            : "bg-gray-200 hover:bg-blue-300"
+        }`}
+      >
+        <Clock size={18} /> My Attendance
+      </div>
+    )}
+  </div>
+)}
+
 
       {/* Logout */}
       <div className="absolute bottom-5  pt-4 px-2">

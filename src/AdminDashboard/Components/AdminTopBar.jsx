@@ -7,7 +7,7 @@ const AdminTopBar = () => {
       {/* Left Section */}
       <div className="flex items-center gap-3">
         <h1 className="text-xl items-center gap-2 flex md:text-2xl font-bold text-blue-600">
-          <span className="text-blue-600"><User/></span>Admin Dashboard
+          <span className="text-blue-600"><User/></span>Dashboard
         </h1>
       </div>
 
@@ -32,7 +32,7 @@ const AdminTopBar = () => {
         {/* <Settings size={22} className="text-black hover:text-purple-400 transition cursor-pointer" /> */}
         <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-800 px-2 py-1 rounded-lg transition">
           <UserCircle2 size={28} className="text-blue-700" />
-          <span className="hidden sm:inline text-black text-sm font-medium">Admin</span>
+          <span className="hidden sm:inline text-black text-sm font-medium"></span>
         </div>
       </div>
     </div>
