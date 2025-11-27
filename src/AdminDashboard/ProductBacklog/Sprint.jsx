@@ -473,6 +473,9 @@ export default function Sprint({
                         <div className="text-xs text-black">
                           {task.status} • {task.priority || "Unassigned"}
                         </div>
+                        <div>
+                          <button className="bg-red-500 hover:bg-red-600 cursor-pointer rounded p-1  mt-3">remove</button>
+                        </div>
                       </div>
                     ) : (
                       <div

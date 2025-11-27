@@ -419,7 +419,6 @@ export default function ProjectSummary({ selectedProject }) {
   return (
     <div className="p-6 sm:p-10 space-y-10 bg-white min-h-screen text-black rounded-3xl shadow-2xl backdrop-blur-xl relative">
 
-      {/* 🔥 Full Screen Loading Overlay */}
       {loading && (
         <div className="absolute inset-0 bg-white flex flex-col items-center h-full justify-center z-50 backdrop-blur-sm">
           <div className="absolute top-70">
@@ -429,7 +428,6 @@ export default function ProjectSummary({ selectedProject }) {
         </div>
       )}
 
-      {/* 🌟 Project Header */}
       {projectDetails && (
         <div className="bg-white rounded-3xl p-8 border pb-10 shadow-xl transition-all duration-500">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
