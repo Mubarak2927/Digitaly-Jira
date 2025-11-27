@@ -222,3 +222,10 @@ export const getMyProfile = async () => {
   const res = await API.get("/employees/me");
   return res.data;
 };
+
+
+// Delete Issue from Sprint
+export const deleteIssueFromSprint = async (sprintId, issueId) => {
+  const res = await API.delete(`/issues/sprints/${sprintId}/issues/${issueId}`);
+  return res.data;
+};
