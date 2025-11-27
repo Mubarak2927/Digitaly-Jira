@@ -230,16 +230,9 @@ export const deleteIssueFromSprint = async (sprintId, issueId) => {
   return res.data;
 };
 export const completeSprint = async (sprintId) => {
-  const res = await API.put(
-    `/sprints/${sprintId}/complete`,
-    {},
-    {
-      params: {
-        auto_move_incomplete_to: "backlog",
-        allow_incomplete_threshold: 0,
-        force: true,
-      },
-    }
+  const res = await API.post(
+    `/sprints/${sprintId}/complete?auto_move_incomplete_to=backlog&allow_incomplete_threshold=0&force=true`
   );
   return res.data;
 };
+

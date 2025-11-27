@@ -6,6 +6,7 @@ import {
   sprintById,
   startSprints,
   deleteIssueFromSprint,
+  completeSprint,
 } from "../../Api/projectAPI";
 import { AwardIcon, Trash, Trash2 } from "lucide-react";
 
@@ -15,7 +16,7 @@ export default function Sprint({
   loggedInUserId,
   filteredBacklog,
   getTasks,
-  getSprints
+  getSprints,
 }) {
   const [sprints, setSprints] = useState([]);
   const [selectedSprint, setSelectedSprint] = useState(null);
@@ -91,36 +92,50 @@ export default function Sprint({
     }
   };
 
-//  const handleDeleteIssue = async (sprintId, issueId) => {
-//   if (!window.confirm("Are you sure you want to delete this issue?")) return;
+  const handleCompleteSprint = async (sprintId) => {
+    if (!window.confirm("Complete this sprint?")) return;
 
-//   try {
-//     await deleteIssueFromSprint(sprintId, issueId);
-//     alert("Issue removed from sprint!");
+    try {
+      await completeSprint(sprintId);
 
-//     fetchSprints();        // sprint tasks reload
-//     sprintfetch(sprintId); // tasks reload
-//   } catch (err) {
-//     console.error(err);
-//     alert("Failed to delete issue!");
-//   }
-// };
-const handleDeleteIssue = async (sprintId, issueId) => {
-  if (!window.confirm("Are you sure?")) return;
+      await fetchSprints(); // refresh sprint list
+      await getTasks(); // refresh backlog tasks
 
-  try {
-    await deleteIssueFromSprint(sprintId, issueId);
+      alert("Sprint completed successfully!");
+    } catch (error) {
+      console.error("Failed to complete sprint:", error);
+      alert("Error completing sprint");
+    }
+  };
 
-    await fetchSprints();   // reload sprint issues
-    await getTasks();       // reload backlog tasks
+  //  const handleDeleteIssue = async (sprintId, issueId) => {
+  //   if (!window.confirm("Are you sure you want to delete this issue?")) return;
 
-    alert("Issue moved to backlog!");
-  } catch (err) {
-    console.error(err);
-  }
-};
+  //   try {
+  //     await deleteIssueFromSprint(sprintId, issueId);
+  //     alert("Issue removed from sprint!");
 
+  //     fetchSprints();        // sprint tasks reload
+  //     sprintfetch(sprintId); // tasks reload
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Failed to delete issue!");
+  //   }
+  // };
+  const handleDeleteIssue = async (sprintId, issueId) => {
+    if (!window.confirm("Are you sure?")) return;
 
+    try {
+      await deleteIssueFromSprint(sprintId, issueId);
+
+      await fetchSprints(); // reload sprint issues
+      await getTasks(); // reload backlog tasks
+
+      alert("Issue moved to backlog!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="bg-white border border-black p-5 rounded-2xl shadow-lg/60 text-white">
@@ -181,15 +196,15 @@ const handleDeleteIssue = async (sprintId, issueId) => {
                       Start Sprint
                     </button>
 
-                    {/* <button
+                    <button
                       className="text-sm cursor-pointer text-black hover:scale-105 bg-green-500 shadow-lg/50 p-3 rounded"
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log("Complete Sprint");
+                        handleCompleteSprint(s.id);
                       }}
                     >
                       Complete Sprint
-                    </button> */}
+                    </button>
                   </>
                 )}
               </div>
@@ -198,45 +213,46 @@ const handleDeleteIssue = async (sprintId, issueId) => {
             {selectedSprint?.id === s.id && (
               <div className="mt-3 border-t border-white pt-3">
                 <h5 className="text-sm font-semibold mb-3">Sprint Tasks</h5>
-               {s.issues?.length > 0 ? (
-  s.issues.map((taskId) => {
-    const task = tasks.find((t) => t.id === taskId.id);
+                {s.issues?.length > 0 ? (
+                  s.issues.map((taskId) => {
+                    const task = tasks.find((t) => t.id === taskId.id);
 
-    return task ? (
-      <div
-        key={task.id}
-        className="bg-gray-300 p-2 rounded mb-2 text-sm"
-      >
-        <div className="flex justify-between">
-          <div>
-            <h1 className="font-bold text-black">{task.name}</h1>
-            <p className="text-black">
-              {task.status} • {task.priority || "Unassigned"}
-            </p>
-          </div>
+                    return task ? (
+                      <div
+                        key={task.id}
+                        className="bg-gray-300 p-2 rounded mb-2 text-sm"
+                      >
+                        <div className="flex justify-between">
+                          <div>
+                            <h1 className="font-bold text-black">
+                              {task.name}
+                            </h1>
+                            <p className="text-black">
+                              {task.status} • {task.priority || "Unassigned"}
+                            </p>
+                          </div>
 
-          {/* DELETE BUTTON FIXED */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteIssue(s.id, task.id);
-            }}
-            className="text-red-600 cursor-pointer rounded-full px-3 py-1 mt-3"
-          >
-            <Trash2 size={18} />
-          </button>
-        </div>
-      </div>
-    ) : (
-      <div key={taskId} className="text-white text-xs italic">
-        Task not found
-      </div>
-    );
-  })
-) : (
-  <p className="text-xs text-gray-500">No tasks in sprint.</p>
-)}
-
+                          {/* DELETE BUTTON FIXED */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteIssue(s.id, task.id);
+                            }}
+                            className="text-red-600 cursor-pointer rounded-full px-3 py-1 mt-3"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div key={taskId} className="text-white text-xs italic">
+                        Task not found
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-xs text-gray-500">No tasks in sprint.</p>
+                )}
               </div>
             )}
           </div>
