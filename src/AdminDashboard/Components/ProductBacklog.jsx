@@ -282,7 +282,8 @@ export default function ProductBacklog(selectedProject) {
           tasks={tasks}
           selectedProject={selectedProject}
           filteredBacklog={filteredBacklog}
-          getTasks={getTasks}       
+          getTasks={getTasks}  
+            // getSprints={getSprints}     
         />
       </div>
 

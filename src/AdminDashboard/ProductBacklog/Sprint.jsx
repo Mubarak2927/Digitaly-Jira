@@ -181,33 +181,7 @@ export default function Sprint({
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
               </div>
-
-              {/* ✅ SHOW BUTTONS ONLY IF TASKS EXIST */}
-              <div className="flex gap-4">
-                {s.issues?.length > 0 && (
-                  <>
-                    <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 p-3 rounded"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startSprint(s);
-                      }}
-                    >
-                      Start Sprint
-                    </button>
-
-                    <button
-                      className="text-sm cursor-pointer text-black hover:scale-105 bg-green-500 shadow-lg/50 p-3 rounded"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCompleteSprint(s.id);
-                      }}
-                    >
-                      Complete Sprint
-                    </button>
-                  </>
-                )}
-              </div>
+              
             </div>
 
             {selectedSprint?.id === s.id && (
@@ -231,9 +205,29 @@ export default function Sprint({
                               {task.status} • {task.priority || "Unassigned"}
                             </p>
                           </div>
-
-                          {/* DELETE BUTTON FIXED */}
-                          <button
+                          <div className="flex gap-4">
+                {s.issues?.length > 0 && (
+                  <>
+                    <button
+                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1  rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startSprint(s);
+                      }}
+                    >
+                      Start Sprint
+                    </button>
+                    
+                      <button
+                      className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1  rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCompleteSprint(s.id);
+                      }}
+                    >
+                      Complete Sprint
+                    </button>
+                    <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteIssue(s.id, task.id);
@@ -242,6 +236,14 @@ export default function Sprint({
                           >
                             <Trash2 size={18} />
                           </button>
+          
+                    
+                  </>
+                )}
+              </div>
+
+
+                          
                         </div>
                       </div>
                     ) : (
