@@ -308,7 +308,7 @@ import {
   sprintById,
   startSprints,
 } from "../../Api/projectAPI";
-import { AwardIcon } from "lucide-react";
+import { AwardIcon, Trash, Trash2 } from "lucide-react";
 
 export default function Sprint({
   tasks = [],
@@ -469,12 +469,12 @@ export default function Sprint({
                         key={task.id}
                         className="bg-gray-300  p-2 rounded mb-2 text-sm"
                       >
-                        <div className="font-medium text-black">{task.name}</div>
-                        <div className="text-xs text-black">
-                          {task.status} • {task.priority || "Unassigned"}
+                        <div className="flex justify-between">
+                          <div>
+                        <h1 className="font-bold text-black">{task.name}</h1>
+                         <p className="text-black">{task.status} • {task.priority || "Unassigned"}   </p> 
                         </div>
-                        <div>
-                          <button className="bg-red-500 hover:bg-red-600 cursor-pointer rounded p-1  mt-3">remove</button>
+                          <button className="text-red-600 cursor-pointer rounded-full px-3 py-1 mt-3"><Trash2/></button>
                         </div>
                       </div>
                     ) : (
