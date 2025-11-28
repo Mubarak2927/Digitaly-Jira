@@ -204,13 +204,6 @@ export default function ProductBacklog(selectedProject) {
     alert("Sprint started!");
   };
 
-  const completeSprint = (sprintId) => {
-    setSprints((prev) =>
-      prev.map((s) => (s.id === sprintId ? { ...s, status: "Completed" } : s))
-    );
-    alert("Sprint completed!");
-  };
-
   const todayISO = () => new Date().toISOString().slice(0, 10);
 
   const updateTask = (taskId, patch) => {
@@ -277,7 +270,6 @@ export default function ProductBacklog(selectedProject) {
         <Sprint
           sprints={sprints}
           updateTask={updateTask}
-          completeSprint={completeSprint}
           startSprint={startSprint}
           tasks={tasks}
           selectedProject={selectedProject}

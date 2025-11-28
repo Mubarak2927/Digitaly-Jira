@@ -127,12 +127,19 @@ export default function ProjectSummary({ selectedProject }) {
       console.log("Error fetching sprints:", error);
     }
   };
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+//   if (loadingProjectData) {
+//   return (
+//     <div className="w-full h-full flex justify-center items-center">
+//       <p className="text-lg font-semibold animate-pulse">Loading...</p>
+//     </div>
+//   );
+// }
+
 
   return (
     <div className="p-6 sm:p-10 space-y-10 bg-white min-h-screen text-black rounded-3xl shadow-2xl backdrop-blur-xl relative">
       {loading && (
-        <div className="absolute inset-0 bg-white flex flex-col items-center h-full justify-center z-50 backdrop-blur-sm">
+        <div className="absolute inset-0 bg-white flex flex-col items-center h-screen justify-center z-50 backdrop-blur-sm">
           <div className="absolute top-70">
             <div className="w-10  h-10 border-4 border-gray-400 border-t-black rounded-full animate-spin"></div>
             <p className="mt-3 text-gray-800 font-semibold">Loading...</p>
@@ -208,7 +215,7 @@ export default function ProjectSummary({ selectedProject }) {
             <Users size={22} /> Team Members
           </h3>
 
-          {projectDetails?.project_lead?.id === loggedInUser?.id && (
+         
             <div className="flex gap-3">
               <button
                 onClick={() => setShowAddModal(true)}
@@ -224,7 +231,7 @@ export default function ProjectSummary({ selectedProject }) {
                 <Trash2 size={16} /> Remove
               </button>
             </div>
-          )}
+      
         </div>
 
         <ul className="space-y-3 max-h-64 overflow-y-auto">

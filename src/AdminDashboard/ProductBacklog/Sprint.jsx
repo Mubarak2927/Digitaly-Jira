@@ -181,32 +181,8 @@ export default function Sprint({
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
               </div>
-              
-            </div>
-
-            {selectedSprint?.id === s.id && (
-              <div className="mt-3 border-t border-white pt-3">
-                <h5 className="text-sm font-semibold mb-3">Sprint Tasks</h5>
-                {s.issues?.length > 0 ? (
-                  s.issues.map((taskId) => {
-                    const task = tasks.find((t) => t.id === taskId.id);
-
-                    return task ? (
-                      <div
-                        key={task.id}
-                        className="bg-gray-300 p-2 rounded mb-2 text-sm"
-                      >
-                        <div className="flex justify-between">
-                          <div>
-                            <h1 className="font-bold text-black">
-                              {task.name}
-                            </h1>
-                            <p className="text-black">
-                              {task.status} • {task.priority || "Unassigned"}
-                            </p>
-                          </div>
-                          <div className="flex gap-4">
-                {s.issues?.length > 0 && (
+              <div className="flex  gap-3 ">
+                 {s.issues?.length > 0 && (
                   <>
                     <button
                       className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1  rounded"
@@ -240,6 +216,68 @@ export default function Sprint({
                     
                   </>
                 )}
+              </div>
+             
+              
+            </div>
+
+            {selectedSprint?.id === s.id && (
+              <div className="mt-3 border-t border-white pt-3">
+                <h5 className="text-sm font-semibold mb-3">Sprint Tasks</h5>
+                {s.issues?.length > 0 ? (
+                  s.issues.map((taskId) => {
+                    const task = tasks.find((t) => t.id === taskId.id);
+
+                    return task ? (
+                      <div
+                        key={task.id}
+                        className="bg-gray-300 p-2 rounded mb-2 text-sm"
+                      >
+                        <div className="flex justify-between">
+                          <div>
+                            <h1 className="font-bold text-black">
+                              {task.name}
+                            </h1>
+                            <p className="text-black">
+                              {task.status} • {task.priority || "Unassigned"}
+                            </p>
+                            
+                          </div>
+                          <div className="flex gap-4">
+                {/* {s.issues?.length > 0 && (
+                  <>
+                    <button
+                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1  rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startSprint(s);
+                      }}
+                    >
+                      Start Sprint
+                    </button>
+                    
+                      <button
+                      className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1  rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCompleteSprint(s.id);
+                      }}
+                    >
+                      Complete Sprint
+                    </button>
+                    <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteIssue(s.id, task.id);
+                            }}
+                            className="text-red-600 cursor-pointer rounded-full px-3 py-1 mt-3"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+          
+                    
+                  </>
+                )} */}
               </div>
 
 

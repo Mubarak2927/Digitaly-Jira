@@ -26,9 +26,10 @@ import {
   getAllUsers,
   getBoardById,
   boardData,
+  
 } from "../Api/projectAPI";
 import { Columns, File, Hand } from "lucide-react";
-import { s } from "framer-motion/client";
+import { div, s } from "framer-motion/client";
 
 const WhiteBoard = () => {
   const [projects, setProjects] = useState();
@@ -39,6 +40,8 @@ const WhiteBoard = () => {
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
   const [users, setUsers] = useState([]);
+
+  const [load, setLoad] = useState(false)
 
   const [newProject, setNewProject] = useState({
     name: "",
@@ -63,12 +66,14 @@ const WhiteBoard = () => {
   
    const fetchProjects = async () => {
       try {
+        setLoad(true)
         const data = await getAllProjects();
         console.log(data, "Alll project ");
-
         setProjects(data);
       } catch (error) {
         console.error("Error fetching projects:", error);
+      }finally{
+        setLoad(false)
       }
     };
 
@@ -114,6 +119,7 @@ const WhiteBoard = () => {
     };
 
     try {
+      // setLoad(true)
       const created = await createProject(payload);
       // setProjects((prev) => [...prev, created]);
       setSelectedProject(created);
@@ -132,16 +138,20 @@ const WhiteBoard = () => {
         avatar: "",
         labels: [],
       });
-      fetchProjects();
+
     } catch (error) {
       console.error("Error creating project:", error);
     }
+
+    fetchProjects()
   };
 
   // ---------------- SELECT PROJECT ----------------
 
   const handleSelectProject = async (id) => {
     try {
+      setLoad(true)
+    
       const data = await getProjectById(id);
 
       setSelectedProject(data);
@@ -166,10 +176,14 @@ const WhiteBoard = () => {
       setActiveTab("summary");
     } catch (error) {
       console.error("Error fetching project details:", error);
+    }finally{
+      setLoad(false)
     }
     
 
   };
+
+  
 
   // ---------------- ADD MEMBER ----------------
   const handleAddMember = async (newMemberId) => {
@@ -214,6 +228,8 @@ const WhiteBoard = () => {
     setShowAddColumnModal(false);
   };
 
+  
+
   return (
     <div className="flex flex-col bg-white text-white h-screen">
       <div className="sticky top-0 z-50 w-full">
@@ -230,10 +246,18 @@ const WhiteBoard = () => {
             selectedId={selectedProject?.id}
             onSelectEmployeeSection={setActiveEmployeeSection}
             role={role}
+            setLoad={setLoad}
+            load={load}
           />
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+  {load && (
+    <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
+      <div className="animate-spin h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+    </div>
+  )}
+          
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
@@ -241,16 +265,20 @@ const WhiteBoard = () => {
                   {selectedProject.name}
                 </h1>
                 {activeTab === "board" && (
-                  <button
+                 <div className="flex gap-3">
+                   <button
                     onClick={() => setShowAddColumnModal(true)}
                     className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
                   >
                     + Add Column
                   </button>
+                 
+                 </div>
                 )}
               </div>
-
+             
               <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+             
 
               {activeTab === "summary" && (
                 <ProjectSummary selectedProject={selectedProject} />

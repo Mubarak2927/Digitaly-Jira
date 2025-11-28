@@ -229,10 +229,21 @@ export const deleteIssueFromSprint = async (sprintId, issueId) => {
   const res = await API.delete(`/issues/sprints/${sprintId}/issues/${issueId}`);
   return res.data;
 };
-export const completeSprint = async (sprintId) => {
+
+//complete sprint
+
+
+
+export const completeSprint = async (currentSprintId, nextSprintId) => {
   const res = await API.post(
-    `/sprints/${sprintId}/complete?auto_move_incomplete_to=backlog&allow_incomplete_threshold=0&force=true`
+    `/sprints/${currentSprintId}/complete?auto_move_incomplete_to=backlog`
   );
   return res.data;
 };
+
+export const getRunningSprints = async () => {
+  const res = await API.get(`/sprints/running/all`);
+  return res.data;
+};
+
 
