@@ -119,24 +119,23 @@ export default function ProjectSummary({ selectedProject }) {
   }
 
   const getSprints = async () => {
-  try {
-    const data = await getSprint(selectedProject.selectedProject.id);
-    console.log("Fetched Sprints:", data);
-    setSprints(data || []);
-  } catch (error) {
-    console.log("Error fetching sprints:", error);
-  }
-};
-
+    try {
+      const data = await getSprint(selectedProject.selectedProject.id);
+      console.log("Fetched Sprints:", data);
+      setSprints(data || []);
+    } catch (error) {
+      console.log("Error fetching sprints:", error);
+    }
+  };
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   return (
     <div className="p-6 sm:p-10 space-y-10 bg-white min-h-screen text-black rounded-3xl shadow-2xl backdrop-blur-xl relative">
-
       {loading && (
         <div className="absolute inset-0 bg-white flex flex-col items-center h-full justify-center z-50 backdrop-blur-sm">
           <div className="absolute top-70">
             <div className="w-10  h-10 border-4 border-gray-400 border-t-black rounded-full animate-spin"></div>
-          <p className="mt-3 text-gray-800 font-semibold">Loading...</p>
+            <p className="mt-3 text-gray-800 font-semibold">Loading...</p>
           </div>
         </div>
       )}
@@ -209,21 +208,23 @@ export default function ProjectSummary({ selectedProject }) {
             <Users size={22} /> Team Members
           </h3>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm"
-            >
-              <PlusCircle size={16} /> Add
-            </button>
+          {projectDetails?.project_lead?.id === loggedInUser?.id && (
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm"
+              >
+                <PlusCircle size={16} /> Add
+              </button>
 
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-800 text-white rounded-lg text-sm"
-            >
-              <Trash2 size={16} /> Remove
-            </button>
-          </div>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="flex items-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-800 text-white rounded-lg text-sm"
+              >
+                <Trash2 size={16} /> Remove
+              </button>
+            </div>
+          )}
         </div>
 
         <ul className="space-y-3 max-h-64 overflow-y-auto">
@@ -246,6 +247,7 @@ export default function ProjectSummary({ selectedProject }) {
                       )
                     }
                   />
+
                   <div>
                     <p className="font-medium">{member.name}</p>
                   </div>
@@ -329,4 +331,3 @@ export default function ProjectSummary({ selectedProject }) {
     </div>
   );
 }
-
