@@ -26,7 +26,6 @@ import {
   getAllUsers,
   getBoardById,
   boardData,
-  
 } from "../Api/projectAPI";
 import { Columns, File, Hand } from "lucide-react";
 import { div, s } from "framer-motion/client";
@@ -41,7 +40,7 @@ const WhiteBoard = () => {
   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
   const [users, setUsers] = useState([]);
 
-  const [load, setLoad] = useState(false)
+  const [load, setLoad] = useState(false);
 
   const [newProject, setNewProject] = useState({
     name: "",
@@ -59,23 +58,22 @@ const WhiteBoard = () => {
   const [newColumnTitle, setNewColumnTitle] = useState("");
 
   useEffect(() => {
-   
     fetchProjects();
     // getColumn()
   }, []);
-  
-   const fetchProjects = async () => {
-      try {
-        setLoad(true)
-        const data = await getAllProjects();
-        console.log(data, "Alll project ");
-        setProjects(data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }finally{
-        setLoad(false)
-      }
-    };
+
+  const fetchProjects = async () => {
+    try {
+      setLoad(true);
+      const data = await getAllProjects();
+      console.log(data, "Alll project ");
+      setProjects(data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoad(false);
+    }
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -138,20 +136,19 @@ const WhiteBoard = () => {
         avatar: "",
         labels: [],
       });
-
     } catch (error) {
       console.error("Error creating project:", error);
     }
 
-    fetchProjects()
+    fetchProjects();
   };
 
   // ---------------- SELECT PROJECT ----------------
 
   const handleSelectProject = async (id) => {
     try {
-      setLoad(true)
-    
+      setLoad(true);
+
       const data = await getProjectById(id);
 
       setSelectedProject(data);
@@ -176,14 +173,10 @@ const WhiteBoard = () => {
       setActiveTab("summary");
     } catch (error) {
       console.error("Error fetching project details:", error);
-    }finally{
-      setLoad(false)
+    } finally {
+      setLoad(false);
     }
-    
-
   };
-
-  
 
   // ---------------- ADD MEMBER ----------------
   const handleAddMember = async (newMemberId) => {
@@ -204,31 +197,86 @@ const WhiteBoard = () => {
     }
   };
 
-  const role = localStorage.getItem("role");  // admin or employee
+  const role = localStorage.getItem("role"); // admin or employee
 
   // ---------------- ADD COLUMN ----------------
-  const handleAddColumn = () => {
-    if (!newColumnTitle.trim() || !selectedProject) return;
-    const newCol = {
-      id: Date.now().toString(),
-      title: newColumnTitle,
-      tasks: [],
+  // const handleAddColumn = () => {
+  //   if (!newColumnTitle.trim() || !selectedProject) return;
+  //   const newCol = {
+  //     id: Date.now().toString(),
+  //     title: newColumnTitle,
+  //     tasks: [],
+  //   };
+
+  //   const updatedProj = {
+  //     ...selectedProject,
+  //     columns: [...selectedProject.columns, newCol],
+  //   };
+
+  //   setProjects((prev) =>
+  //     prev.map((p) => (p.id === selectedProject.id ? updatedProj : p))
+  //   );
+  //   setSelectedProject(updatedProj);
+  //   setNewColumnTitle("");
+  //   setShowAddColumnModal(false);
+  // };
+
+const handleAddColumn = async () => {
+  if (!newColumnTitle.trim() || !selectedProject) return;
+
+  try {
+    const boardId =
+      selectedProject?.columns?.columns?.board?.id ||
+      selectedProject?.columns?.board_id;
+
+    if (!boardId) {
+      console.error("Board ID not found");
+      return;
+    }
+
+    const columnData = {
+      name: newColumnTitle,
+      status: "todo",
     };
 
-    const updatedProj = {
+    // 🔥 Save to backend
+    const response = await addColumnToBoard(boardId, columnData);
+
+    // backend returns "column" object
+    const createdColumn = response.column;
+
+    // existing columns
+    const existingColumns =
+      selectedProject?.columns?.columns?.board?.columns || [];
+
+    const updatedColumns = [...existingColumns, createdColumn];
+
+    // update project state
+    const updatedProject = {
       ...selectedProject,
-      columns: [...selectedProject.columns, newCol],
+      columns: {
+        columns: {
+          board: {
+            ...selectedProject.columns.columns.board,
+            columns: updatedColumns,
+          },
+        },
+      },
     };
+
+    setSelectedProject(updatedProject);
 
     setProjects((prev) =>
-      prev.map((p) => (p.id === selectedProject.id ? updatedProj : p))
+      prev.map((p) => (p.id === selectedProject.id ? updatedProject : p))
     );
-    setSelectedProject(updatedProj);
+
     setNewColumnTitle("");
     setShowAddColumnModal(false);
-  };
+  } catch (error) {
+    console.error("Error adding column:", error);
+  }
+};
 
-  
 
   return (
     <div className="flex flex-col bg-white text-white h-screen">
@@ -252,12 +300,12 @@ const WhiteBoard = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-  {load && (
-    <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
-      <div className="animate-spin h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-    </div>
-  )}
-          
+          {/* {load && (
+            <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
+              <div className="animate-spin h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+            </div>
+          )} */}
+
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
@@ -265,20 +313,18 @@ const WhiteBoard = () => {
                   {selectedProject.name}
                 </h1>
                 {activeTab === "board" && (
-                 <div className="flex gap-3">
-                   <button
-                    onClick={() => setShowAddColumnModal(true)}
-                    className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
-                  >
-                    + Add Column
-                  </button>
-                 
-                 </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowAddColumnModal(true)}
+                      className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
+                    >
+                      + Add Column
+                    </button>
+                  </div>
                 )}
               </div>
-             
+
               <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-             
 
               {activeTab === "summary" && (
                 <ProjectSummary selectedProject={selectedProject} />
@@ -306,9 +352,9 @@ const WhiteBoard = () => {
           {activeEmployeeSection === "profile" && <EmployeeProfile />}
           {activeEmployeeSection === "leave" && <LeaveManagement />}
           {activeEmployeeSection === "attendance" && <Attendance />}
-          {activeEmployeeSection==='myattendance' && <MyAttendance/>}
-          {activeEmployeeSection==='myprofile' && <MyProfile/>}
-          {activeEmployeeSection==='myleave' && <MyLeave/>}
+          {activeEmployeeSection === "myattendance" && <MyAttendance />}
+          {activeEmployeeSection === "myprofile" && <MyProfile />}
+          {activeEmployeeSection === "myleave" && <MyLeave />}
 
           {activeTab === "goals" && <GoalsPage />}
           {activeTab === "archived" && <ArchivedPage />}
@@ -442,31 +488,32 @@ const WhiteBoard = () => {
 
                 {/* Assigned Employees (Multi-select) */}
                 <div className="flex flex-col gap-2">
-  <label className="text-sm text-gray-300">Assigned Employees</label>
+                  <label className="text-sm text-gray-300">
+                    Assigned Employees
+                  </label>
 
-  <select
-    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 
+                  <select
+                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 
                focus:border-blue-500 outline-none"
-    value={newProject.assignedEmployees[0] || ""}
-    onChange={(e) =>
-      setNewProject({
-        ...newProject,
-        assignedEmployees: [e.target.value], // 💥 always array
-      })
-    }
-  >
-    <option value="">Select Employee</option>
+                    value={newProject.assignedEmployees[0] || ""}
+                    onChange={(e) =>
+                      setNewProject({
+                        ...newProject,
+                        assignedEmployees: [e.target.value], // 💥 always array
+                      })
+                    }
+                  >
+                    <option value="">Select Employee</option>
 
-    {users
-      .filter((u) => u.id !== newProject.projectLead) // Lead remove
-      .map((u) => (
-        <option key={u.id} value={u.id}>
-          {u.name} {u.full_name}
-        </option>
-      ))}
-  </select>
-</div>
-
+                    {users
+                      .filter((u) => u.id !== newProject.projectLead) // Lead remove
+                      .map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.name} {u.full_name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm text-gray-300">Platform</label>

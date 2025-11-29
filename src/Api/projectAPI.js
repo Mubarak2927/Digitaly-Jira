@@ -241,8 +241,8 @@ export const completeSprint = async (currentSprintId, nextSprintId) => {
   return res.data;
 };
 
-export const getRunningSprints = async () => {
-  const res = await API.get(`/sprints/running/all`);
+export const getRunningSprints = async (project_id) => {
+  const res = await API.get(`/sprints/running/?project_id=${project_id}`);
   return res.data;
 };
 
