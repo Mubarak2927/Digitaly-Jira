@@ -244,34 +244,39 @@ const handleAddColumn = async () => {
     // 🔥 Save to backend
     const response = await addColumnToBoard(boardId, columnData);
 
+    console.log(response);
+    
+
     // backend returns "column" object
-    const createdColumn = response.column;
+    // const createdColumn = response.column;
 
-    // existing columns
-    const existingColumns =
-      selectedProject?.columns?.columns?.board?.columns || [];
+    // // existing columns
+    // const existingColumns =
+    //   selectedProject?.columns?.columns?.board?.columns || [];
 
-    const updatedColumns = [...existingColumns, createdColumn];
+    // const updatedColumns = [...existingColumns, createdColumn];
 
     // update project state
-    const updatedProject = {
-      ...selectedProject,
-      columns: {
-        columns: {
-          board: {
-            ...selectedProject.columns.columns.board,
-            columns: updatedColumns,
-          },
-        },
-      },
-    };
+    // const updatedProject = {
+    //   ...selectedProject,
+    //   columns: {
+    //     columns: {
+    //       board: {
+    //         ...selectedProject.columns.columns.board,
+    //         columns: updatedColumns,
+    //       },
+    //     },
+    //   },
+    // };
 
-    setSelectedProject(updatedProject);
+    // setSelectedProject(updatedProject);
 
-    setProjects((prev) =>
-      prev.map((p) => (p.id === selectedProject.id ? updatedProject : p))
-    );
+    // setProjects((prev) =>
+    //   prev.map((p) => (p.id === selectedProject.id ? updatedProject : p))
+    // );
 
+    handleSelectProject(selectedProject.id);
+    
     setNewColumnTitle("");
     setShowAddColumnModal(false);
   } catch (error) {

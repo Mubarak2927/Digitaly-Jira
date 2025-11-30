@@ -282,6 +282,7 @@ export default function BoardView({
       activationConstraint: { distance: 5 },
     })
   );
+  
 
   const columns = selectedProject?.columns?.columns?.board?.columns || [];
 
@@ -518,7 +519,7 @@ export default function BoardView({
       </div>
 
       {/* ================= Columns ================== */}
-      <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
+      {/* <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
         {columns.map((col) => (
           <Column
             key={col.column_info.id}
@@ -530,7 +531,24 @@ export default function BoardView({
             setNewTaskTitle={setNewTaskTitle}
           />
         ))}
-      </div>
+      </div> */}
+      <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
+  {Array.isArray(columns) &&
+    columns
+      .filter((col) => col && col.column_info)
+      .map((col) => (
+        <Column
+          key={col.column_info.id}
+          col={col}
+          onAddTaskClick={handleAddTaskClick}
+          onAddTaskInline={handleAddTaskInline}
+          isAdding={activeColumnForNewTask === col.column_info.id}
+          newTaskTitle={newTaskTitle}
+          setNewTaskTitle={setNewTaskTitle}
+        />
+      ))}
+</div>
+
 
       <DragOverlay>
         {activeTask && <TaskCard task={activeTask} isDraggingOverlay />}
