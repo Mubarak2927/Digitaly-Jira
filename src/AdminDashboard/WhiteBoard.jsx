@@ -26,6 +26,7 @@ import {
   getAllUsers,
   getBoardById,
   boardData,
+  addColumnToBoard,
 } from "../Api/projectAPI";
 import { Columns, File, Hand } from "lucide-react";
 import { div, s } from "framer-motion/client";
@@ -159,7 +160,7 @@ const WhiteBoard = () => {
 
       const withColumns = {
         ...data,
-        // boardId : columns.id,
+        boardId : columns.id,
         columns,
       };
 
@@ -226,7 +227,7 @@ const handleAddColumn = async () => {
 
   try {
     const boardId =
-      selectedProject?.columns?.columns?.board?.id ||
+      selectedProject?.boardId ||
       selectedProject?.columns?.board_id;
 
     if (!boardId) {
@@ -236,7 +237,8 @@ const handleAddColumn = async () => {
 
     const columnData = {
       name: newColumnTitle,
-      status: "todo",
+      status: newColumnTitle.toLowerCase().replace(/\s+/g, "_"),
+      position: selectedProject.columns.columns.board.columns.length + 1,
     };
 
     // 🔥 Save to backend
@@ -335,7 +337,7 @@ const handleAddColumn = async () => {
                   setSelectedProject={setSelectedProject}
                   setProjects={setProjects}
                   handleAddColumn={handleAddColumn}
-                  // addColumnToBoard ={addColumnToBoard }
+                  // addColumnToBoard ={addColumnToBoard}
                   handleSelectProject={handleSelectProject}
                 />
               )}
