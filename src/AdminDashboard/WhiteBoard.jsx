@@ -316,9 +316,7 @@ const handleAddColumn = async () => {
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
-                <h1 className="text-2xl sm:text-3xl  text-black font-bold capitalize">
-                  {selectedProject.name}
-                </h1>
+                {/*  */}
                 {activeTab === "board" && (
                   <div className="flex gap-3">
                     <button
