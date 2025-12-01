@@ -13,11 +13,13 @@ import {
   sprintTaskMoveColumn,
   getAllUsers,
   completeSprint,
+  assignIssueToUser,
+  getRunningSprints,
 } from "../../Api/projectAPI";
 import { User2 } from "lucide-react";
 
 // =================== TaskCard Component ===================
-function TaskCard({ task, isDraggingOverlay }) {
+function TaskCard({ task, isDraggingOverlay, onAssign }) {
   const {
     attributes,
     listeners,
@@ -40,10 +42,6 @@ function TaskCard({ task, isDraggingOverlay }) {
   };
   const isGhost = isDragging && !isDraggingOverlay;
 
-  // if (isDragging && !isDraggingOverlay) {
-  //   return <div className="opacity-0 h-0" />;
-  // }
-
   const handleAdd = () => {
     if (comment.trim()) {
       console.log("Added Comment:", comment);
@@ -57,6 +55,7 @@ function TaskCard({ task, isDraggingOverlay }) {
   const handleCancel = () => {
     setComment("");
   };
+
   useEffect(() => {
     if (openAssignModal) {
       fetchUsers();
@@ -66,10 +65,22 @@ function TaskCard({ task, isDraggingOverlay }) {
   const fetchUsers = async () => {
     try {
       const data = await getAllUsers();
-      setUsers(data); // assuming API returns [{ id, name, ... }]
+      setUsers(data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
     }
+  };
+
+  //  FIXED: Removed issue + setColumns — using parent function
+  const handleAssignUser = async () => {
+    if (!selectedUser) {
+      alert("Please select a user first");
+      return;
+    }
+
+    onAssign(task.id, selectedUser); // 🔥 SEND TO BOARDVIEW
+
+    setOpenAssignModal(false);
   };
 
   return (
@@ -92,8 +103,15 @@ function TaskCard({ task, isDraggingOverlay }) {
       <button
         className="absolute right-2 hover:scale-105 bg-white p-1 rounded-full bottom-1 cursor-pointer text-black"
         onClick={() => setOpenAssignModal(true)}
+        title={task.assigned_user?.full_name || "Assign User"}
       >
-        <User2 size={13} />
+        {task.assigned_user && task.assigned_user.full_name ? (
+          <div className="w-4 h-4 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold">
+            {task.assigned_user.full_name.charAt(0).toUpperCase()}
+          </div>
+        ) : (
+          <User2 size={13} />
+        )}
       </button>
 
       {openDetails && (
@@ -117,6 +135,7 @@ function TaskCard({ task, isDraggingOverlay }) {
               <span className="font-semibold capitalize">Status:</span>{" "}
               {task.status}
             </p>
+
             <div className="flex flex-col">
               <textarea
                 placeholder="Comments..."
@@ -140,6 +159,7 @@ function TaskCard({ task, isDraggingOverlay }) {
                 </button>
               </div>
             </div>
+
             <button
               className="mt-4 px-4 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
               onClick={() => setOpenDetails(false)}
@@ -149,6 +169,7 @@ function TaskCard({ task, isDraggingOverlay }) {
           </div>
         </div>
       )}
+
       {openAssignModal && (
         <div className="fixed inset-0 flex justify-center items-center bg-white/70 z-50">
           <div className="bg-gray-900 px-4 py-10 border-gray-950 rounded-lg shadow-lg/60 w-64">
@@ -172,17 +193,11 @@ function TaskCard({ task, isDraggingOverlay }) {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 className="px-4 py-1 bg-blue-700 text-white rounded"
-                onClick={() => {
-                  if (selectedUser) {
-                    console.log("Assigned to:", selectedUser);
-                    setOpenAssignModal(false);
-                  } else {
-                    alert("Please select a user first");
-                  }
-                }}
+                onClick={handleAssignUser}
               >
                 Assign
               </button>
+
               <button
                 className="px-4 py-1 bg-white text-black rounded"
                 onClick={() => setOpenAssignModal(false)}
@@ -200,6 +215,7 @@ function TaskCard({ task, isDraggingOverlay }) {
 // =================== Column Component ===================
 function Column({
   col,
+  onAssign,
   onAddTaskClick,
   onAddTaskInline,
   isAdding,
@@ -215,15 +231,6 @@ function Column({
     >
       <h2 className="text-sm text-gray-300 font-bold mb-3 flex justify-between">
         {col.column_info.name}
-
-        {/* {col.column_info.status === "todo" && (
-          <button
-            onClick={() => onAddTaskClick(col.column_info.id)}
-            className="text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            + Create
-          </button>
-        )} */}
       </h2>
 
       {isAdding && (
@@ -257,7 +264,9 @@ function Column({
 
       <div className="max-h-[70vh] overflow-y-auto flex flex-col gap-3 pt-1">
         {col.issues.length > 0 ? (
-          col.issues.map((task) => <TaskCard key={task.id} task={task} />)
+          col.issues.map((task) => (
+            <TaskCard key={task.id} task={task} onAssign={onAssign} />
+          ))
         ) : (
           <p className="text-blue-600 text-sm text-center py-4">No tasks</p>
         )}
@@ -282,7 +291,6 @@ export default function BoardView({
       activationConstraint: { distance: 5 },
     })
   );
-  
 
   const columns = selectedProject?.columns?.columns?.board?.columns || [];
 
@@ -316,6 +324,7 @@ export default function BoardView({
     setActiveColumnForNewTask(null);
   };
 
+  // UPDATE PROJECT
   const updateProject = (updatedColumns) => {
     const updatedProject = {
       ...selectedProject,
@@ -334,7 +343,7 @@ export default function BoardView({
     );
   };
 
-  // 🔥 DRAG START LOGS
+  // DRAG START
   const handleDragStart = (event) => {
     console.log("🔥 DRAG START:", event.active.id);
 
@@ -346,82 +355,7 @@ export default function BoardView({
     setActiveTask(active);
   };
 
-  // 🔥 DRAG END LOGS
-  //  const handleDragEnd = async (event) => {
-  //   const { active, over } = event;
-
-  //   console.log("🔥 DRAG END");
-  //   console.log("🟦 Active Task ID:", active.id);
-  //   console.log("🟨 Dropped Over ID:", over?.id);
-
-  //   setActiveTask(null);
-  //   if (!over) {
-  //     console.log("❌ No drop target!");
-  //     return;
-  //   }
-
-  //   const isOverColumn = columns.some(
-  //     (col) => col.column_info.id === over.id
-  //   );
-
-  //   if (!isOverColumn) {
-  //     console.log("⚠️ Dropped on NON column!");
-  //     return;
-  //   }
-
-  //   let sourceCol, destCol;
-
-  //   columns.forEach((col) => {
-  //     if (col.issues.some((t) => t.id === active.id)) sourceCol = col;
-  //     if (col.column_info.id === over.id) destCol = col;
-  //   });
-
-  //   console.log("📦 Source Column:", sourceCol?.column_info?.name);
-  //   console.log("📥 Destination Column:", destCol?.column_info?.name);
-
-  //   // ==== API CALL ====
-  //   try {
-  //     const payload = { status: destCol?.column_info?.status };
-
-  //     console.log(payload, active.id);
-
-  //     const data = await sprintTaskMoveColumn(active.id, payload);
-  //     console.log(data, "Successfully dragged");
-  //   } catch (error) {
-  //     console.log(error);
-  //     console.log("api not called");
-  //   }
-
-  //   if (!sourceCol || !destCol) return;
-
-  //   if (sourceCol.column_info.id === destCol.column_info.id) {
-  //     console.log("⚠️ Same column — no move");
-  //     return;
-  //   }
-
-  //   console.log(
-  //     `✅ MOVING TASK ${active.id} FROM → ${sourceCol.column_info.name} TO → ${destCol.column_info.name}`
-  //   );
-
-  //   // Move UI task
-  //   const task = sourceCol.issues.find((t) => t.id === active.id);
-
-  //   const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
-  //   const newDest = [
-  //     ...destCol.issues,
-  //     { ...task, status: destCol.column_info.status },
-  //   ];
-
-  //   const updated = columns.map((col) =>
-  //     col.column_info.id === sourceCol.column_info.id
-  //       ? { ...col, issues: newSource }
-  //       : col.column_info.id === destCol.column_info.id
-  //       ? { ...col, issues: newDest }
-  //       : col
-  //   );
-
-  //   updateProject(updated);
-  // };
+  // DRAG END
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
@@ -431,8 +365,7 @@ export default function BoardView({
 
     setActiveTask(null);
 
-    // ❗ OVER NULL CHECK — prevents white screen
-    // 🎯 If over.id is a task → replace with its column
+    // FIX for dropping on task instead of column
     if (over && over.id && over.data?.current?.type === "task") {
       const parentColumn = columns.find((col) =>
         col.issues.some((t) => t.id === over.id)
@@ -442,7 +375,6 @@ export default function BoardView({
       }
     }
 
-    // Check if dropped over a column
     const isOverColumn = columns.some((col) => col.column_info.id === over.id);
 
     if (!isOverColumn) {
@@ -450,7 +382,6 @@ export default function BoardView({
       return;
     }
 
-    // Find source/destination
     let sourceCol, destCol;
 
     columns.forEach((col) => {
@@ -468,7 +399,6 @@ export default function BoardView({
       return;
     }
 
-    // API call
     try {
       const payload = { status: destCol.column_info.status };
       const data = await sprintTaskMoveColumn(active.id, payload);
@@ -477,7 +407,6 @@ export default function BoardView({
       console.error("API Error", err);
     }
 
-    // UI Move
     const task = sourceCol.issues.find((t) => t.id === active.id);
 
     const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
@@ -496,10 +425,86 @@ export default function BoardView({
 
     updateProject(updated);
   };
+
+  // COMPLETE SPRINT
   const handleComplete = async () => {
+    // Get sprint ID
+    const projectID = selectedProject?.id;
+
+    const res = await getRunningSprints(projectID);
+    console.log(res);
+
+    // if (!sprintId) {
+    //   alert("Sprint ID missing! Check selectedProject.");
+    //   return;
+    // }
+
+    // if (!window.confirm("Complete this sprint?")) return;
+
+    const sprintId = res.sprints[0].sprint_id;
+
     try {
-      const res = await completeSprint();
-    } catch (error) {}
+      const data = await completeSprint(sprintId);
+      console.log("SPRINT COMPLETE RESPONSE:", data);
+
+      updateProjectAfterSprintComplete(data);
+      alert("Sprint completed successfully!");
+    } catch (error) {
+      console.error("Sprint complete failed:", error);
+      alert("Failed to complete sprint!");
+    }
+  };
+
+  const updateProjectAfterSprintComplete = (data) => {
+    const { completed_issues, pending_issues } = data;
+
+    const updated = columns.map((col) => {
+      if (col.column_info.status === "done") {
+        return {
+          ...col,
+          issues: [...col.issues, ...completed_issues],
+        };
+      }
+
+      if (col.column_info.status === "backlog") {
+        return {
+          ...col,
+          issues: [...col.issues, ...pending_issues],
+        };
+      }
+
+      return {
+        ...col,
+        issues: col.issues.filter(
+          (task) =>
+            !completed_issues.some((t) => t.id === task.id) &&
+            !pending_issues.some((t) => t.id === task.id)
+        ),
+      };
+    });
+
+    updateProject(updated);
+  };
+
+  // =========================
+  // ASSIGN TASK FUNCTION
+  // =========================
+  const handleAssignTask = async (taskId, userId) => {
+    try {
+      await assignIssueToUser(taskId, userId);
+
+      const updated = columns.map((col) => ({
+        ...col,
+        issues: col.issues.map((i) =>
+          i.id === taskId ? { ...i, assigned_user: { id: userId } } : i
+        ),
+      }));
+
+      updateProject(updated);
+    } catch (err) {
+      console.error("Assign failed", err);
+      alert("Assign failed! Check console.");
+    }
   };
 
   return (
@@ -518,37 +523,23 @@ export default function BoardView({
         </button>
       </div>
 
-      {/* ================= Columns ================== */}
-      {/* <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
-        {columns.map((col) => (
-          <Column
-            key={col.column_info.id}
-            col={col}
-            onAddTaskClick={handleAddTaskClick}
-            onAddTaskInline={handleAddTaskInline}
-            isAdding={activeColumnForNewTask === col.column_info.id}
-            newTaskTitle={newTaskTitle}
-            setNewTaskTitle={setNewTaskTitle}
-          />
-        ))}
-      </div> */}
       <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
-  {Array.isArray(columns) &&
-    columns
-      .filter((col) => col && col.column_info)
-      .map((col) => (
-        <Column
-          key={col.column_info.id}
-          col={col}
-          onAddTaskClick={handleAddTaskClick}
-          onAddTaskInline={handleAddTaskInline}
-          isAdding={activeColumnForNewTask === col.column_info.id}
-          newTaskTitle={newTaskTitle}
-          setNewTaskTitle={setNewTaskTitle}
-        />
-      ))}
-</div>
-
+        {Array.isArray(columns) &&
+          columns
+            .filter((col) => col && col.column_info)
+            .map((col) => (
+              <Column
+                key={col.column_info.id}
+                col={col}
+                onAssign={handleAssignTask}
+                onAddTaskClick={handleAddTaskClick}
+                onAddTaskInline={handleAddTaskInline}
+                isAdding={activeColumnForNewTask === col.column_info.id}
+                newTaskTitle={newTaskTitle}
+                setNewTaskTitle={setNewTaskTitle}
+              />
+            ))}
+      </div>
 
       <DragOverlay>
         {activeTask && <TaskCard task={activeTask} isDraggingOverlay />}

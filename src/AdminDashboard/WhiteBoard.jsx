@@ -318,7 +318,7 @@ const handleAddColumn = async () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
                 {/*  */}
                 {activeTab === "board" && (
-                  <div className="flex gap-3">
+                  <div className="flex ">
                     <button
                       onClick={() => setShowAddColumnModal(true)}
                       className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"

@@ -234,16 +234,22 @@ export const deleteIssueFromSprint = async (sprintId, issueId) => {
 
 
 
-export const completeSprint = async (currentSprintId, nextSprintId) => {
+export const completeSprint = async (SprintId) => {
   const res = await API.post(
-    `/sprints/${currentSprintId}/complete?auto_move_incomplete_to=backlog`
+    `/sprints/${SprintId}/complete?auto_move_incomplete_to=backlog`
   );
   return res.data;
 };
 
 export const getRunningSprints = async (project_id) => {
-  const res = await API.get(`/sprints/running/?project_id=${project_id}`);
+  const res = await API.get(`/sprints/running/all?project_id=${project_id}`);
   return res.data;
 };
 
 
+export const assignIssueToUser = async (issue_id, assignee_id) => {
+  const res = await API.patch(`/issues/${issue_id}/assign`, {
+    assignee_id,
+  });
+  return res.data;
+};
