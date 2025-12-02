@@ -255,4 +255,10 @@ export const assignIssueToUser = async (issue_id, assignee_id) => {
   });
   return res.data;
 };
-;
+
+export const getCompleteSprints = async (projectId) => {
+  const res = await API.get(`/sprints/completed?project_id=${projectId}`);
+  return res.data;
+};
+  
+

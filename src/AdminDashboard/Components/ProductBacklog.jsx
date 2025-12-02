@@ -10,6 +10,7 @@ import Epic from "../ProductBacklog/Epic";
 import BacklogColumns from "../ProductBacklog/BacklogColumns";
 import Sprint from "../ProductBacklog/Sprint";
 import { Cog } from "lucide-react";
+import CompleteSprints from "../ProductBacklog/completeSprint";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
@@ -267,17 +268,20 @@ export default function ProductBacklog(selectedProject) {
       </div>
 
       <div className="lg:col-span-1 mt-4">
-        <Sprint
-          sprints={sprints}
-          updateTask={updateTask}
-          startSprint={startSprint}
-          tasks={tasks}
-          selectedProject={selectedProject}
-          filteredBacklog={filteredBacklog}
-          getTasks={getTasks}  
-            // getSprints={getSprints}     
-        />
-      </div>
+  <Sprint
+    sprints={sprints}
+    updateTask={updateTask}
+    startSprint={startSprint}
+    tasks={tasks}
+    selectedProject={selectedProject}
+    filteredBacklog={filteredBacklog}
+    getTasks={getTasks}
+  />
+
+  <CompleteSprints projectId={selectedProject.id} />
+</div>
+
+      
 
       {showSprintModal && <div />}
     </div>

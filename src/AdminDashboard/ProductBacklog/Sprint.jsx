@@ -3,12 +3,11 @@ import {
   createSprint,
   fetchIssuesbySprintId,
   getSprint,
-  sprintById,
   startSprints,
   deleteIssueFromSprint,
   completeSprint,
 } from "../../Api/projectAPI";
-import { AwardIcon, Trash, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 export default function Sprint({
   tasks = [],
@@ -20,6 +19,7 @@ export default function Sprint({
 }) {
   const [sprints, setSprints] = useState([]);
   const [selectedSprint, setSelectedSprint] = useState(null);
+  const [runningSprintId, setRunningSprintId] = useState(null); // <-- NEW
   const [showModal, setShowModal] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState("");
 
@@ -36,8 +36,6 @@ export default function Sprint({
 
   const sprintfetch = async (sprintId) => {
     try {
-      console.log(sprintId, "1221212121");
-
       const fetchIssue = await fetchIssuesbySprintId(sprintId);
       console.log(fetchIssue);
     } catch (error) {
@@ -48,7 +46,6 @@ export default function Sprint({
   const fetchSprints = async () => {
     try {
       const data = await getSprint(selectedProject.selectedProject.id);
-      console.log("Sprints:", data);
       setSprints(data || []);
     } catch (error) {
       console.error("Error fetching sprints:", error);
@@ -56,12 +53,7 @@ export default function Sprint({
   };
 
   const handleCreateSprint = async () => {
-    if (
-      !sprintForm.name ||
-      !sprintForm.start_date ||
-      !sprintForm.end_date ||
-      !sprintForm.goal
-    ) {
+    if (!sprintForm.name || !sprintForm.start_date || !sprintForm.end_date || !sprintForm.goal) {
       alert("Please fill all fields");
       return;
     }
@@ -74,7 +66,9 @@ export default function Sprint({
         project_id: selectedProject.selectedProject.id,
         created_by: loggedInUserId,
       };
+
       await createSprint(payload);
+
       setShowModal(false);
       setSprintForm({ name: "", goal: "", start_date: "", end_date: "" });
       fetchSprints();
@@ -86,7 +80,9 @@ export default function Sprint({
   const startSprint = async (sprint) => {
     try {
       const data = await startSprints(sprint.id);
-      console.log(data);
+
+      setRunningSprintId(sprint.id); // <-- Highlight UI
+
       alert("Sprint started successfully!");
     } catch (error) {
       console.log(error);
@@ -99,38 +95,24 @@ export default function Sprint({
     try {
       await completeSprint(sprintId);
 
-      await fetchSprints(); // refresh sprint list
-      await getTasks(); // refresh backlog tasks
+      setRunningSprintId(null); // <-- After complete remove highlight
+      await fetchSprints();
+      await getTasks();
 
       alert("Sprint completed successfully!");
     } catch (error) {
-      console.error("Failed to complete sprint:", error);
       alert("Error completing sprint");
     }
   };
 
-  //  const handleDeleteIssue = async (sprintId, issueId) => {
-  //   if (!window.confirm("Are you sure you want to delete this issue?")) return;
-
-  //   try {
-  //     await deleteIssueFromSprint(sprintId, issueId);
-  //     alert("Issue removed from sprint!");
-
-  //     fetchSprints();        // sprint tasks reload
-  //     sprintfetch(sprintId); // tasks reload
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Failed to delete issue!");
-  //   }
-  // };
   const handleDeleteIssue = async (sprintId, issueId) => {
     if (!window.confirm("Are you sure?")) return;
 
     try {
       await deleteIssueFromSprint(sprintId, issueId);
 
-      await fetchSprints(); // reload sprint issues
-      await getTasks(); // reload backlog tasks
+      await fetchSprints();
+      await getTasks();
 
       alert("Issue moved to backlog!");
     } catch (err) {
@@ -143,14 +125,12 @@ export default function Sprint({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg text-black font-semibold">Sprints</h2>
 
-        <div className="flex gap-3">
-          <button
-            className="bg-green-400 hover:bg-green-500 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
-            onClick={() => setShowModal(true)}
-          >
-            + Create Sprint
-          </button>
-        </div>
+        <button
+          className="bg-green-400 hover:bg-green-500 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
+          onClick={() => setShowModal(true)}
+        >
+          + Create Sprint
+        </button>
       </div>
 
       {sprints.length === 0 && (
@@ -161,13 +141,10 @@ export default function Sprint({
         {sprints.map((s) => (
           <div
             key={s.id}
-            className={`p-3 rounded-lg cursor-pointer border
-              ${
-                s.issues?.length > 0
-                  ? "bg-green-300 border-green-200 shadow-lg"
-                  : "bg-gray-400 shadow"
-              }
-              ${selectedSprint?.id === s.id ? "ring-2 " : ""}`}
+            className={`p-3 rounded-lg cursor-pointer border shadow 
+              ${runningSprintId === s.id ? "bg-green-300" : "bg-gray-300"} 
+              ${selectedSprint?.id === s.id ? "ring-2" : ""}
+            `}
             onClick={() => {
               const newSprint = selectedSprint?.id === s.id ? null : s;
               setSelectedSprint(newSprint);
@@ -176,17 +153,18 @@ export default function Sprint({
           >
             <div className="flex justify-between">
               <div>
-                <h4 className="font-medium  text-black capitalize">{s.name}</h4>
+                <h4 className="font-medium text-black capitalize">{s.name}</h4>
                 <p className="text-xs text-black">
                   {new Date(s.start_date).toLocaleDateString()} →{" "}
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
               </div>
-              <div className="flex  gap-3 ">
-                 {s.issues?.length > 0 && (
+
+              <div className="flex gap-3">
+                {s.issues?.length > 0 && (
                   <>
                     <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1  rounded"
+                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1 rounded"
                       onClick={(e) => {
                         e.stopPropagation();
                         startSprint(s);
@@ -194,9 +172,9 @@ export default function Sprint({
                     >
                       Start Sprint
                     </button>
-                    
-                      <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1  rounded"
+
+                    <button
+                      className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1 rounded"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleCompleteSprint(s.id);
@@ -204,36 +182,33 @@ export default function Sprint({
                     >
                       Complete Sprint
                     </button>
-                   
-          
-                    
                   </>
                 )}
               </div>
-             
-              
             </div>
 
             {selectedSprint?.id === s.id && (
               <div className="mt-3 border-t border-white pt-3">
                 <h5 className="text-sm font-semibold mb-3">Sprint Tasks</h5>
+
                 {s.issues?.length > 0 ? (
                   s.issues.map((taskId) => {
                     const task = tasks.find((t) => t.id === taskId.id);
 
                     return task ? (
-                      <div key={task.id}
-                        className="bg-gray-300 p-2 rounded mb-2 text-sm">
-                          <div className="flex justify-between">
-                            <div>
-                              <h1 className="font-bold text-black">
-                              {task.name}
-                            </h1>
+                      <div
+                        key={task.id}
+                        className="bg-gray-300 p-2 rounded mb-2 text-sm"
+                      >
+                        <div className="flex justify-between">
+                          <div>
+                            <h1 className="font-bold text-black">{task.name}</h1>
                             <p className="text-black">
                               {task.status} • {task.priority || "Unassigned"}
                             </p>
-                            </div>
-                            <button
+                          </div>
+
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteIssue(s.id, task.id);
@@ -242,44 +217,8 @@ export default function Sprint({
                           >
                             <Trash2 size={18} />
                           </button>
-                          </div>     
+                        </div>
                       </div>
-                     
-                      
-                /* {s.issues?.length > 0 && (
-                  <>
-                    <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1  rounded"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startSprint(s);
-                      }}
-                    >
-                      Start Sprint
-                    </button>
-                    
-                      <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1  rounded"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCompleteSprint(s.id);
-                      }}
-                    >
-                      Complete Sprint
-                    </button>
-                    <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteIssue(s.id, task.id);
-                            }}
-                            className="text-red-600 cursor-pointer rounded-full px-3 py-1 mt-3"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-          
-                    
-                  </>
-                )} */   
                     ) : (
                       <div key={taskId} className="text-white text-xs italic">
                         Task not found
@@ -298,9 +237,8 @@ export default function Sprint({
       {showModal && (
         <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
           <div className="bg-white border border-black shadow-lg/60 p-6 rounded-2xl w-[420px]">
-            <h3 className="text-lg text-black font-semibold mb-4">
-              Create Sprint
-            </h3>
+            <h3 className="text-lg text-black font-semibold mb-4">Create Sprint</h3>
+
             <div className="space-y-3">
               <input
                 type="text"
@@ -311,6 +249,7 @@ export default function Sprint({
                   setSprintForm({ ...sprintForm, name: e.target.value })
                 }
               />
+
               <textarea
                 className="w-full border text-black px-3 py-2 rounded"
                 placeholder="Goal"
@@ -357,9 +296,7 @@ export default function Sprint({
                 <div className="flex gap-2">
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col">
-                      <label className="text-black font-medium mb-1">
-                        Start Date
-                      </label>
+                      <label className="text-black font-medium mb-1">Start Date</label>
                       <input
                         type="date"
                         className="border text-black px-3 py-2 rounded"
@@ -381,9 +318,7 @@ export default function Sprint({
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="text-black font-medium mb-1">
-                        End Date
-                      </label>
+                      <label className="text-black font-medium mb-1">End Date</label>
                       <input
                         type="date"
                         className="border text-black px-3 py-2 rounded"
@@ -399,21 +334,21 @@ export default function Sprint({
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex justify-end gap-2 mt-5">
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-600 px-3 py-1 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateSprint}
-                className="bg-green-500 text-black px-3 py-1 rounded-lg"
-              >
-                Create
-              </button>
+              <div className="flex justify-end gap-2 mt-5">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-600 px-3 py-1 rounded-lg text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateSprint}
+                  className="bg-green-500 text-black px-3 py-1 rounded-lg"
+                >
+                  Create
+                </button>
+              </div>
             </div>
           </div>
         </div>

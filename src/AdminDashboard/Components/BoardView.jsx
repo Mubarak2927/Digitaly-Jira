@@ -15,8 +15,12 @@ import {
   completeSprint,
   assignIssueToUser,
   getRunningSprints,
+  getCompleteSprints,
 } from "../../Api/projectAPI";
+
 import { User2 } from "lucide-react";
+import CompleteSprint from "../ProductBacklog/completeSprint";
+import CompleteSprints from "../ProductBacklog/completeSprint";
 
 // =================== TaskCard Component ===================
 function TaskCard({ task, isDraggingOverlay, onAssign }) {
@@ -71,15 +75,13 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
     }
   };
 
-  //  FIXED: Removed issue + setColumns — using parent function
   const handleAssignUser = async () => {
     if (!selectedUser) {
       alert("Please select a user first");
       return;
     }
 
-    onAssign(task.id, selectedUser); // 🔥 SEND TO BOARDVIEW
-
+    onAssign(task.id, selectedUser);
     setOpenAssignModal(false);
   };
 
@@ -89,8 +91,7 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
       {...(!isDraggingOverlay ? attributes : {})}
       {...(!isDraggingOverlay ? listeners : {})}
       style={style}
-      className="bg-blue-600 text-white p-3 
-      rounded-lg shadow-md cursor-grab relative"
+      className="bg-blue-600 text-white p-3 rounded-lg shadow-md cursor-grab relative"
     >
       <p className="font-medium">{task.name}</p>
       <button
@@ -100,6 +101,8 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
         Details
       </button>
       <p className="text-xs text-gray-200">{task.created_at}</p>
+
+      {/* ASSIGN BUTTON */}
       <button
         className="absolute right-2 hover:scale-105 bg-white p-1 rounded-full bottom-1 cursor-pointer text-black"
         onClick={() => setOpenAssignModal(true)}
@@ -116,25 +119,13 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
 
       {openDetails && (
         <div className="fixed inset-0 flex justify-center items-center bg-white/60 bg-opacity-50 z-50">
-          <div className="bg-white text-black   p-6 rounded-lg shadow-lg/60 border  w-80">
+          <div className="bg-white text-black p-6 rounded-lg shadow-lg w-80">
             <h3 className="text-lg font-bold mb-2">Task Details</h3>
-            <p>
-              <span className="font-semibold">Name:</span> {task.name}
-            </p>
-            <p>
-              <span className="font-semibold">Type:</span> {task.type}
-            </p>
-            <p>
-              <span className="font-semibold">Created At:</span>{" "}
-              {task.created_at}
-            </p>
-            <p>
-              <span className="font-semibold">Epic:</span> {task.epic_name}
-            </p>
-            <p>
-              <span className="font-semibold capitalize">Status:</span>{" "}
-              {task.status}
-            </p>
+            <p><span className="font-semibold">Name:</span> {task.name}</p>
+            <p><span className="font-semibold">Type:</span> {task.type}</p>
+            <p><span className="font-semibold">Created At:</span> {task.created_at}</p>
+            <p><span className="font-semibold">Epic:</span> {task.epic_name}</p>
+            <p><span className="font-semibold capitalize">Status:</span> {task.status}</p>
 
             <div className="flex flex-col">
               <textarea
@@ -145,16 +136,10 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
               />
 
               <div className="flex justify-end gap-3 mr-8 mt-2">
-                <button
-                  onClick={handleCancel}
-                  className="bg-gray-600 text-white px-2 rounded-lg"
-                >
+                <button onClick={handleCancel} className="bg-gray-600 text-white px-2 rounded-lg">
                   Cancel
                 </button>
-                <button
-                  onClick={handleAdd}
-                  className="bg-blue-600 text-white px-2 rounded-lg"
-                >
+                <button onClick={handleAdd} className="bg-blue-600 text-white px-2 rounded-lg">
                   Add
                 </button>
               </div>
@@ -172,13 +157,11 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
 
       {openAssignModal && (
         <div className="fixed inset-0 flex justify-center items-center bg-white/70 z-50">
-          <div className="bg-gray-900 px-4 py-10 border-gray-950 rounded-lg shadow-lg/60 w-64">
-            <h3 className="font-semibold text-lg mb-4 text-white">
-              Assign User
-            </h3>
+          <div className="bg-gray-900 px-4 py-10 rounded-lg shadow-lg w-64">
+            <h3 className="font-semibold text-lg mb-4 text-white">Assign User</h3>
 
             <select
-              className="w-full p-2 border bg-gray-800 text-white rounded-lg"
+              className="w-full p-2 bg-gray-800 text-white rounded-lg"
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
             >
@@ -191,17 +174,10 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
             </select>
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
-                className="px-4 py-1 bg-blue-700 text-white rounded"
-                onClick={handleAssignUser}
-              >
+              <button className="px-4 py-1 bg-blue-700 text-white rounded" onClick={handleAssignUser}>
                 Assign
               </button>
-
-              <button
-                className="px-4 py-1 bg-white text-black rounded"
-                onClick={() => setOpenAssignModal(false)}
-              >
+              <button className="px-4 py-1 bg-white text-black rounded" onClick={() => setOpenAssignModal(false)}>
                 Close
               </button>
             </div>
@@ -234,27 +210,25 @@ function Column({
       </h2>
 
       {isAdding && (
-        <div className="mb-3 p-1  border-gray-600 rounded">
+        <div className="mb-3 p-1 border-gray-600 rounded">
           <textarea
             rows="2"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder="Enter task name..."
-            className="w-full p-2 rounded bg-gray-900 text-gray-200 
-            border border-gray-700 focus:outline-none focus:border-blue-500"
+            className="w-full p-2 rounded bg-gray-900 text-gray-200 border border-gray-700"
           />
 
           <div className="flex justify-end gap-2 mt-2">
             <button
               onClick={() => onAddTaskInline(col.column_info.id)}
-              className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded 
-              text-sm font-medium transition-colors"
+              className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-sm"
             >
               Add
             </button>
             <button
               onClick={() => onAddTaskClick(null)}
-              className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm font-medium transition-colors"
+              className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
             >
               Cancel
             </button>
@@ -286,15 +260,20 @@ export default function BoardView({
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [activeTask, setActiveTask] = useState(null);
 
+  const [completedSprints, setCompletedSprints] = useState([]);
+  const [showCompleted, setShowCompleted] = useState(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     })
   );
 
-  const columns = selectedProject?.columns?.columns?.board?.columns || [];
+  useEffect(() => {
+    handleSelectProject(selectedProject);
+  }, []);
 
-  console.log(selectedProject, columns, "success resp[opnse");
+  const columns = selectedProject?.columns?.columns?.board?.columns || [];
 
   const handleAddTaskClick = (colId) => {
     setActiveColumnForNewTask(colId === activeColumnForNewTask ? null : colId);
@@ -306,10 +285,7 @@ export default function BoardView({
     const newTask = {
       id: Date.now().toString(),
       name: newTaskTitle,
-      created_at: new Date().toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      created_at: new Date().toLocaleTimeString(),
       status: "todo",
     };
 
@@ -324,7 +300,6 @@ export default function BoardView({
     setActiveColumnForNewTask(null);
   };
 
-  // UPDATE PROJECT
   const updateProject = (updatedColumns) => {
     const updatedProject = {
       ...selectedProject,
@@ -343,44 +318,23 @@ export default function BoardView({
     );
   };
 
-  // DRAG START
   const handleDragStart = (event) => {
-    console.log("🔥 DRAG START:", event.active.id);
-
     const allTasks = columns.flatMap((c) => c.issues);
     const active = allTasks.find((t) => t.id === event.active.id);
-
-    console.log("➡️ Dragging Task:", active);
 
     setActiveTask(active);
   };
 
-  // DRAG END
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    console.log("🔥 DRAG END");
-    console.log("🟦 Active Task ID:", active?.id);
-    console.log("🟨 Dropped Over ID:", over?.id);
-
     setActiveTask(null);
 
-    // FIX for dropping on task instead of column
-    if (over && over.id && over.data?.current?.type === "task") {
-      const parentColumn = columns.find((col) =>
-        col.issues.some((t) => t.id === over.id)
-      );
-      if (parentColumn) {
-        over.id = parentColumn.column_info.id;
-      }
-    }
+    if (!over) return;
 
     const isOverColumn = columns.some((col) => col.column_info.id === over.id);
 
-    if (!isOverColumn) {
-      console.log("⚠️ Dropped outside any column");
-      return;
-    }
+    if (!isOverColumn) return;
 
     let sourceCol, destCol;
 
@@ -389,20 +343,12 @@ export default function BoardView({
       if (col.column_info.id === over.id) destCol = col;
     });
 
-    if (!sourceCol || !destCol) {
-      console.log("❌ Source or Destination column not found!");
-      return;
-    }
-
-    if (sourceCol.column_info.id === destCol.column_info.id) {
-      console.log("⚠️ Same column drop → no move");
-      return;
-    }
+    if (!sourceCol || !destCol) return;
+    if (sourceCol.column_info.id === destCol.column_info.id) return;
 
     try {
       const payload = { status: destCol.column_info.status };
-      const data = await sprintTaskMoveColumn(active.id, payload);
-      console.log("API Success:", data);
+      await sprintTaskMoveColumn(active.id, payload);
     } catch (err) {
       console.error("API Error", err);
     }
@@ -410,10 +356,7 @@ export default function BoardView({
     const task = sourceCol.issues.find((t) => t.id === active.id);
 
     const newSource = sourceCol.issues.filter((t) => t.id !== active.id);
-    const newDest = [
-      ...destCol.issues,
-      { ...task, status: destCol.column_info.status },
-    ];
+    const newDest = [...destCol.issues, { ...task, status: destCol.column_info.status }];
 
     const updated = columns.map((col) =>
       col.column_info.id === sourceCol.column_info.id
@@ -426,51 +369,59 @@ export default function BoardView({
     updateProject(updated);
   };
 
-  // COMPLETE SPRINT
-  const handleComplete = async () => {
-    // Get sprint ID
-    const projectID = selectedProject?.id;
-
-    const res = await getRunningSprints(projectID);
-    console.log(res);
-
-    // if (!sprintId) {
-    //   alert("Sprint ID missing! Check selectedProject.");
-    //   return;
-    // }
-
-    // if (!window.confirm("Complete this sprint?")) return;
-
-    const sprintId = res.sprints[0].sprint_id;
-
+  const fetchRunningSprints = async () => {
     try {
-      const data = await completeSprint(sprintId);
-      console.log("SPRINT COMPLETE RESPONSE:", data);
-
-      updateProjectAfterSprintComplete(data);
-      alert("Sprint completed successfully!");
+      const res = await getRunningSprints(selectedProject?.id);
+      console.log("Running Sprints:", res);
     } catch (error) {
-      console.error("Sprint complete failed:", error);
-      alert("Failed to complete sprint!");
+      console.error("Failed:", error);
     }
   };
+
+  useEffect(() => {
+    fetchRunningSprints();
+  }, []);
+
+
+const handleComplete = async () => {
+  try {
+    const projectID = selectedProject?.id;
+    if (!projectID) return alert("No project selected");
+
+    const res = await getRunningSprints(projectID);
+    const sprintId = res?.sprints?.[0]?.sprint_id;
+
+    if (!sprintId) return alert("No active sprint found!");
+
+    // complete the sprint
+    await completeSprint(sprintId);
+
+    // fetch updated completed sprints from backend
+    const completed = await getCompleteSprints(projectID);
+
+    // broadcast to all pages/components
+    window.dispatchEvent(
+      new CustomEvent("completedSprintsUpdatedFromServer", { detail: completed })
+    );
+
+    alert("Sprint Completed!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to complete sprint!");
+  }
+};
+
 
   const updateProjectAfterSprintComplete = (data) => {
     const { completed_issues, pending_issues } = data;
 
     const updated = columns.map((col) => {
       if (col.column_info.status === "done") {
-        return {
-          ...col,
-          issues: [...col.issues, ...completed_issues],
-        };
+        return { ...col, issues: [...col.issues, ...completed_issues] };
       }
 
       if (col.column_info.status === "backlog") {
-        return {
-          ...col,
-          issues: [...col.issues, ...pending_issues],
-        };
+        return { ...col, issues: [...col.issues, ...pending_issues] };
       }
 
       return {
@@ -486,9 +437,6 @@ export default function BoardView({
     updateProject(updated);
   };
 
-  // =========================
-  // ASSIGN TASK FUNCTION
-  // =========================
   const handleAssignTask = async (taskId, userId) => {
     try {
       await assignIssueToUser(taskId, userId);
@@ -503,7 +451,15 @@ export default function BoardView({
       updateProject(updated);
     } catch (err) {
       console.error("Assign failed", err);
-      alert("Assign failed! Check console.");
+    }
+  };
+
+  const loadCompletedSprints = async () => {
+    try {
+      const res = await getCompleteSprints(selectedProject?.id);
+      setCompletedSprints(res);
+    } catch (err) {
+      console.error("Failed to load completed sprints:", err);
     }
   };
 
@@ -514,32 +470,46 @@ export default function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+
         <button
           onClick={handleComplete}
-          className=" cursor-pointer text-white bg-green-500 hover:bg-green-600  px-2 py-2 rounded-lg"
+          className="cursor-pointer text-white bg-green-500 hover:bg-green-600 px-2 py-2 rounded-lg"
         >
           Complete Sprint
         </button>
+
+        {/* SHOW COMPLETED BUTTON */}
+        <button
+          onClick={() => {
+            loadCompletedSprints();
+            setShowCompleted(!showCompleted);
+          }}
+          className="cursor-pointer text-white bg-blue-500 hover:bg-blue-600 px-2 py-2 rounded-lg"
+        >
+          {showCompleted ? "Hide Completed" : "Show Completed"}
+        </button>
+
       </div>
 
       <div className="flex gap-4 p-4 h-fit mt-15 text-white overflow-x-scroll">
         {Array.isArray(columns) &&
-          columns
-            .filter((col) => col && col.column_info)
-            .map((col) => (
-              <Column
-                key={col.column_info.id}
-                col={col}
-                onAssign={handleAssignTask}
-                onAddTaskClick={handleAddTaskClick}
-                onAddTaskInline={handleAddTaskInline}
-                isAdding={activeColumnForNewTask === col.column_info.id}
-                newTaskTitle={newTaskTitle}
-                setNewTaskTitle={setNewTaskTitle}
-              />
-            ))}
+          columns.map((col) => (
+            <Column
+              key={col.column_info.id}
+              col={col}
+              onAssign={handleAssignTask}
+              onAddTaskClick={handleAddTaskClick}
+              onAddTaskInline={handleAddTaskInline}
+              isAdding={activeColumnForNewTask === col.column_info.id}
+              newTaskTitle={newTaskTitle}
+              setNewTaskTitle={setNewTaskTitle}
+            />
+          ))}
       </div>
+
+      {showCompleted && <CompleteSprints projectId={selectedProject?.id} />}
+
 
       <DragOverlay>
         {activeTask && <TaskCard task={activeTask} isDraggingOverlay />}
