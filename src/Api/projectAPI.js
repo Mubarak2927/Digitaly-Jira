@@ -49,6 +49,7 @@ export const deleteProject = async (projectId) => {
   return res.data;
 };
 
+
 //  Get work items
 export const getWorkItems = async (projectId) => {
   const res = await API.get(`/projects/${projectId}/workitems`);
@@ -218,6 +219,7 @@ export const createLeaveRequest = async (payload) => {
   return res.data;
 };
 
+
 export const getMyProfile = async () => {
   const res = await API.get("/employees/me");
   return res.data;
@@ -253,3 +255,4 @@ export const assignIssueToUser = async (issue_id, assignee_id) => {
   });
   return res.data;
 };
+;

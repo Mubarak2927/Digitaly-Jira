@@ -13,8 +13,10 @@ import {
   User2,
   Calendar,
   Clock,
+  Trash2,
 } from "lucide-react";
 import { div } from "framer-motion/client";
+import { deleteProject } from "../../Api/projectAPI";
 
 const Sidebar = ({
   projects,
@@ -29,6 +31,7 @@ const Sidebar = ({
   const [showEmployeeMenu, setShowEmployeeMenu] = useState(false);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [activeEmployeeSection, setActiveEmployeeSection] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   const loginRole = localStorage.getItem("role");
 
@@ -42,6 +45,22 @@ const Sidebar = ({
     setActiveEmployeeSection(section);
     onSelectEmployeeSection(section);
   };
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await deleteProject(id);
+      console.log(res, "delete response");
+      setOpenMenuId(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const handleOutside = () => setOpenMenuId(null);
+    document.addEventListener("click", handleOutside);
+    return () => document.removeEventListener("click", handleOutside);
+  }, []);
 
   return (
     <div className="w-64 h-screen bg-white   border-r shadow-lg/40 p-5 flex flex-col">
@@ -75,8 +94,8 @@ const Sidebar = ({
             <div className="space-y-1 mt-2">
               {load ? (
                 <div className="flex gap-2">
-                <p className="animate-spin h-5 w-5 text-center border-4 border-blue-600 border-t-transparent rounded-full"></p>
-                <p>Loading...</p>
+                  <p className="animate-spin h-5 w-5 text-center border-4 border-blue-600 border-t-transparent rounded-full"></p>
+                  <p>Loading...</p>
                 </div>
               ) : projects?.length === 0 ? (
                 <p className="text-gray-400 text-xs text-center italic"></p>
@@ -85,21 +104,40 @@ const Sidebar = ({
                   <div
                     key={p.id}
                     onClick={() => onSelectProject(p.id)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer text-sm transition-all ${
+                    className={`relative flex items-center justify-between px-3 py-2 rounded-md cursor-pointer text-sm transition-all ${
                       selectedId === p.id
                         ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white"
                         : "hover:bg-gray-500 text-black"
                     }`}
-                    title={p.name}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <File size={15} className="shrink-0" />
                       <span className="truncate capitalize">{p.name}</span>
                     </div>
-                    <MoreHorizontal
-                      size={18}
-                      className="text-black hover:text-white shrink-0 ml-2"
-                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMenuId(openMenuId === p.id ? null : p.id);
+                      }}
+                    >
+                      <MoreHorizontal
+                        size={18}
+                        className="text-black hover:text-white shrink-0 ml-2"
+                      />
+                    </button>
+
+                    {openMenuId === p.id && (
+                      <div
+                        className="absolute right-8 top-0 bg-white border shadow-md rounded-md text-sm z-50"
+                      >
+                        <button
+                          onClick={() => handleDelete(p.id)}
+                          className="block p-1.5 text-red-600 hover:scale-105 cursor-pointer w-full text-left"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))
               )}

@@ -87,6 +87,7 @@ export default function Sprint({
     try {
       const data = await startSprints(sprint.id);
       console.log(data);
+      alert("Sprint started successfully!");
     } catch (error) {
       console.log(error);
     }
