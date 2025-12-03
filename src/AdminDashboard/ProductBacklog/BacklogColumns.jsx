@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getSprint, sprintTaskMove } from "../../Api/projectAPI";
+import { getBacklog, getSprint, sprintTaskMove } from "../../Api/projectAPI";
 import { ClipboardCheck, Bug, BookOpen } from "lucide-react";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
@@ -63,7 +63,19 @@ const BacklogColumns = ({
   // 🌀 Load sprints for dropdown
   useEffect(() => {
     fetchSprints();
+    fetchIssuessss()
   }, []);
+
+  const fetchIssuessss =async() => {
+    try {
+      const res = await getBacklog(selectedProject.selectedProject.id);
+      console.log(res, "000000000");
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
   
 
   const fetchSprints = async () => {
@@ -298,9 +310,9 @@ const BacklogColumns = ({
                       Set Epic
                     </button>
                   )}
-                  <button className="bg-red-600 px-2 py-1 rounded">
+                  {/* <button className="bg-red-600 px-2 py-1 rounded">
                     Delete
-                  </button>
+                  </button> */}
                 </div>
               </div>
             );

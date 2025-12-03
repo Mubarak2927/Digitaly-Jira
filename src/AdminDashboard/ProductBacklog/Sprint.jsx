@@ -142,7 +142,7 @@ export default function Sprint({
           <div
             key={s.id}
             className={`p-3 rounded-lg cursor-pointer border shadow 
-              ${runningSprintId === s.id ? "bg-green-300" : "bg-gray-300"} 
+              ${runningSprintId === s.id ? "bg-blue-400" : "bg-gray-300"} 
               ${selectedSprint?.id === s.id ? "ring-2" : ""}
             `}
             onClick={() => {
@@ -160,31 +160,36 @@ export default function Sprint({
                 </p>
               </div>
 
-              <div className="flex gap-3">
-                {s.issues?.length > 0 && (
-                  <>
-                    <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1 rounded"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startSprint(s);
-                      }}
-                    >
-                      Start Sprint
-                    </button>
+             <div className="flex gap-3">
+  {s.issues?.length > 0 && (
+    <>
+      {runningSprintId !== s.id ? (
+        // Show ONLY Start button when sprint not running
+        <button
+          className="text-sm cursor-pointer text-white hover:scale-105 bg-violet-500 shadow-lg/50 px-2 py-1 rounded"
+          onClick={(e) => {
+            e.stopPropagation();
+            startSprint(s);
+          }}
+        >
+          Start Sprint
+        </button>
+      ) : (
+        // Show ONLY Complete button when sprint is running
+        <button
+          className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1 rounded"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCompleteSprint(s.id);
+          }}
+        >
+          Complete Sprint
+        </button>
+      )}
+    </>
+  )}
+</div>
 
-                    <button
-                      className="text-sm cursor-pointer text-white hover:scale-105 bg-green-500 shadow-lg/50 px-2 py-1 rounded"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCompleteSprint(s.id);
-                      }}
-                    >
-                      Complete Sprint
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
 
             {selectedSprint?.id === s.id && (

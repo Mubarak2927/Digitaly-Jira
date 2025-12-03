@@ -83,9 +83,9 @@ const ListsView = ({ selectedProject }) => {
                 <th className="px-3 py-2 border-b border-gray-700 text-left">
                   Epic
                 </th>
-                <th className="px-3 py-2 border-b border-gray-700 text-left">
+                {/* <th className="px-3 py-2 border-b border-gray-700 text-left">
                   Description
-                </th>
+                </th> */}
                 <th className="px-3 py-2 border-b border-gray-700 whitespace-nowrap text-center">
                   Created At
                 </th>
@@ -112,9 +112,9 @@ const ListsView = ({ selectedProject }) => {
                   <td className="px-3 py-2 text-gray-200 border-b border-gray-700">
                     {task.epic_name}
                   </td>
-                  <td className="px-3 py-2 text-gray-200 border-b border-gray-700">
+                  {/* <td className="px-3 py-2 text-gray-200 border-b border-gray-700">
                     {task.description}
-                  </td>
+                  </td> */}
                   <td className="px-3 py-2 text-center text-gray-400 border-b border-gray-700 whitespace-nowrap">
                     <div className="flex justify-center items-center gap-1">
                       <span className="text-white">{task.created_at}</span>

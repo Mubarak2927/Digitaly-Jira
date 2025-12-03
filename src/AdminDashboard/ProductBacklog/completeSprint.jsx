@@ -1,10 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { getCompleteSprints } from "../../Api/projectAPI";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { ClipboardCheck, Bug, BookOpen } from "lucide-react";
+
 
 export default function CompleteSprints({ projectId }) {
   const [completedSprints, setCompletedSprints] = useState([]);
   const [expanded, setExpanded] = useState(false);
+  const [selectedSprint, setSelectedSprint] = useState(null);
+  
+
+  const getTypeIcon = (type) => {
+  switch (type?.toLowerCase()) {
+    case "task":
+      return <ClipboardCheck size={16} className="text-blue-500" />;
+    case "bug":
+      return <Bug size={16} className="text-red-500" />;
+    case "story":
+      return <BookOpen size={16} className="text-green-500" />;
+    default:
+      return null;
+  }
+};
 
   const fetchData = async () => {
     if (!projectId) return;
@@ -24,61 +41,104 @@ export default function CompleteSprints({ projectId }) {
       window.removeEventListener("completedSprintsUpdatedFromServer", handler);
   }, [projectId]);
 
+
   return (
-    <div className="p-2 shadow  bg-white text-white rounded-xl mt-4 border border-gray-700">
+    <div className="p-2 shadow bg-white rounded-xl mt-4 border border-gray-300">
+      {/* Header */}
       <button
-        className="w-full flex items-center cursor-pointer  justify-between p-3  rounded-md"
+        className="w-full flex items-center justify-between p-3 rounded-md"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
-          
+          {expanded ? (
+            <ChevronDown className="text-black" size={20} />
+          ) : (
+            <ChevronRight className="text-black" size={20} />
+          )}
           <h2 className="text-lg font-semibold text-black">Completed Sprints</h2>
         </div>
-        <span className="text-sm text-black">
-          {completedSprints.length} sprints
-        </span>
+        <span className="text-sm text-black">{completedSprints.length} sprints</span>
       </button>
 
+      {/* Body */}
       {expanded && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-3">
           {completedSprints.length === 0 ? (
-            <p className="text-gray-400">No completed sprints found.</p>
+            <p className="text-gray-500">No completed sprints found.</p>
           ) : (
             completedSprints.map((sprint) => (
               <div
                 key={sprint.id}
-                className="bg-gray-800 p-4 rounded-xl border border-gray-600"
+                className="bg-gray-100 p-3 rounded-lg border border-gray-300 flex items-center justify-between"
               >
-                <h3 className="font-semibold text-green-400 text-lg">
-                  {sprint.name}
-                </h3>
-
-                <p className="text-sm text-gray-300">
-                  Completed At:{" "}
-                  {new Date(sprint.completed_at).toLocaleString()}
-                </p>
-
-                <h4 className="mt-3 font-semibold text-blue-300">
-                  Completed Issues ({sprint.completed_issues.length})
-                </h4>
-
-                <div className="flex flex-col gap-2 mt-2">
-                  {sprint.completed_issues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      className="bg-gray-700 p-3 rounded-lg border border-gray-600"
-                    >
-                      <p className="font-bold">{issue.name}</p>
-                      <p className="text-sm text-gray-300">{issue.key}</p>
-                      <p className="text-sm text-gray-300">
-                        Type: {issue.type}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <p className="font-semibold text-black">{sprint.name}</p>
+                <button
+                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm"
+                  onClick={() => setSelectedSprint(sprint)}
+                >
+                  View More
+                </button>
               </div>
             ))
           )}
+        </div>
+      )}
+
+      {/* Modal */}
+      {selectedSprint && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-10 z-50 overflow-auto">
+          <div className="bg-white w-[95%] max-w-5xl  p-6 rounded-xl shadow-xl max-h-[90vh] overflow-y-auto">
+            
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-blue-700">{selectedSprint.name}</h2>
+              <button
+                className="text-red-500 font-bold text-xl"
+                onClick={() => setSelectedSprint(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4">
+              Completed At: {new Date(selectedSprint.completed_at).toLocaleString()}
+            </p>
+
+            {/* Completed Issues Table */}
+            <h3 className="text-lg font-semibold text-green-600 mb-2">
+              Completed Issues ({selectedSprint.completed_issues.length})
+            </h3>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-black">
+                <thead className="bg-gray-600">
+                  <tr>
+                    <th className="px-4 py-2 border text-left">Type</th>
+                    <th className="px-4 py-2 border text-left">Issue Name</th>
+                    <th className="px-4 py-2 border text-left">Key</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedSprint.completed_issues.map((issue) => (
+                    <tr key={issue.id} className="even:bg-black">
+                      <td className="px-4 py-2 text-black border-b">{issue.type}</td>
+
+                      <td className="px-4  text-black py-2 border">{issue.name}</td>
+                      <td className="px-4 py-2 text-black border">{issue.key}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Close Button */}
+            <button
+              className="mt-5 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg"
+              onClick={() => setSelectedSprint(null)}
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

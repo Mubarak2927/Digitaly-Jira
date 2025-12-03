@@ -278,7 +278,7 @@ export default function ProductBacklog(selectedProject) {
     getTasks={getTasks}
   />
 
-  <CompleteSprints projectId={selectedProject.id} />
+  <CompleteSprints projectId={selectedProject.selectedProject.id} />
 </div>
 
       

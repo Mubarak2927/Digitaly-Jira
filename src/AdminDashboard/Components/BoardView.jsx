@@ -126,7 +126,6 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
             <p><span className="font-semibold">Created At:</span> {task.created_at}</p>
             <p><span className="font-semibold">Epic:</span> {task.epic_name}</p>
             <p><span className="font-semibold capitalize">Status:</span> {task.status}</p>
-
             <div className="flex flex-col">
               <textarea
                 placeholder="Comments..."
@@ -480,7 +479,7 @@ const handleComplete = async () => {
         </button>
 
         {/* SHOW COMPLETED BUTTON */}
-        <button
+        {/* <button
           onClick={() => {
             loadCompletedSprints();
             setShowCompleted(!showCompleted);
@@ -488,7 +487,7 @@ const handleComplete = async () => {
           className="cursor-pointer text-white bg-blue-500 hover:bg-blue-600 px-2 py-2 rounded-lg"
         >
           {showCompleted ? "Hide Completed" : "Show Completed"}
-        </button>
+        </button> */}
 
       </div>
 

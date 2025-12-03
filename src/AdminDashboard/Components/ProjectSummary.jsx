@@ -3,6 +3,7 @@ import {
   getProjectById,
   manageProjectMember,
   getAllUsers,
+  removeProjectMember,
 } from "../../Api/projectAPI";
 import {
   Users,
@@ -99,24 +100,27 @@ export default function ProjectSummary({ selectedProject }) {
 
   // Delete selected members
   async function handleDelete() {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      for (let member of selectedMembers) {
-        await manageProjectMember(selectedProject.id, {
-          user_id: member,
-          action: "remove",
-        });
-      }
+    // Delete all selected members in parallel
+    await Promise.all(
+      selectedMembers.map((member) => removeProjectMember(selectedProject.id, member))
+    );
 
-      await loadProject();
-      setSelectedMembers([]);
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.log("Error removing member", error);
-      setLoading(false);
-    }
+    // Reload project data
+    await loadProject();
+
+    // Reset selection & close modal
+    setSelectedMembers([]);
+    setShowDeleteModal(false);
+  } catch (error) {
+    console.error("Error removing member:", error);
+  } finally {
+    setLoading(false);
   }
+}
+
 
   const getSprints = async () => {
     try {
@@ -217,12 +221,12 @@ export default function ProjectSummary({ selectedProject }) {
 
          
             <div className="flex gap-3">
-              <button
+              {/* <button
                 onClick={() => setShowAddModal(true)}
                 className="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm"
               >
                 <PlusCircle size={16} /> Add
-              </button>
+              </button> */}
 
               <button
                 onClick={() => setShowDeleteModal(true)}
