@@ -157,13 +157,13 @@ export default function ProjectSummary({ selectedProject }) {
               </h1>
             </div>
 
-            {projectDetails.avatar_url && (
+            {/* {projectDetails.avatar_url && (
               <img
                 src={projectDetails.avatar_url}
                 alt="Project Logo"
                 className="w-20 h-20 rounded-full border shadow-md hover:scale-105 transition-transform"
               />
-            )}
+            )} */}
           </div>
 
           <div className="mt-8 grid sm:grid-cols-2 gap-6">

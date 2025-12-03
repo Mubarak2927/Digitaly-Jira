@@ -493,33 +493,75 @@ const handleAddColumn = async () => {
                 </div>
 
                 {/* Assigned Employees (Multi-select) */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">
-                    Assigned Employees
-                  </label>
+                {/* Assigned Employees (Multi-select) */} 
+<div className="flex flex-col gap-2">
+  <label className="text-sm text-gray-300">Assigned Employees</label>
 
-                  <select
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 
-               focus:border-blue-500 outline-none"
-                    value={newProject.assignedEmployees[0] || ""}
-                    onChange={(e) =>
-                      setNewProject({
-                        ...newProject,
-                        assignedEmployees: [e.target.value], // 💥 always array
-                      })
-                    }
-                  >
-                    <option value="">Select Employee</option>
+  {/* 🟦 Selected employees show box */}
+  {newProject.assignedEmployees.length > 0 && (
+    <div className="flex flex-wrap gap-2 mb-2">
+      {newProject.assignedEmployees.map((id) => {
+        const emp = users.find((u) => u.id === id);
+        return (
+          <div
+            key={id}
+            className="flex items-center bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
+          >
+            {emp?.full_name || "Unknown"}
 
-                    {users
-                      .filter((u) => u.id !== newProject.projectLead) // Lead remove
-                      .map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.name} {u.full_name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+            {/* ❌ Remove button */}
+            <button
+              onClick={() =>
+                setNewProject({
+                  ...newProject,
+                  assignedEmployees: newProject.assignedEmployees.filter(
+                    (eid) => eid !== id
+                  ),
+                })
+              }
+              className="ml-2 text-red-400 hover:text-red-600"
+            >
+              ✕
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  )}
+
+  {/* 🟦 Dropdown for selecting new employee */}
+  <select
+    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 
+    focus:border-blue-500 outline-none"
+    value=""
+    onChange={(e) => {
+      if (!e.target.value) return;
+
+      setNewProject({
+        ...newProject,
+        assignedEmployees: [
+          ...newProject.assignedEmployees,
+          e.target.value,
+        ],
+      });
+    }}
+  >
+    <option value="">Select Employee</option>
+
+    {users
+      .filter(
+        (u) =>
+          u.id !== newProject.projectLead && // ❌ exclude lead
+          !newProject.assignedEmployees.includes(u.id) // ❌ exclude already selected
+      )
+      .map((u) => (
+        <option key={u.id} value={u.id}>
+          {u.name} {u.full_name}
+        </option>
+      ))}
+  </select>
+</div>
+
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm text-gray-300">Platform</label>
