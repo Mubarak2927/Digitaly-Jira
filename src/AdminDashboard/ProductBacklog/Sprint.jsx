@@ -8,8 +8,9 @@ import {
   completeSprint,
   deleteSprint,
   updateSprint,
+  IssueComments,
 } from "../../Api/projectAPI";
-import { SquarePen, Trash2 } from "lucide-react";
+import { Eye, EyeIcon, SquarePen, Trash2, View, ViewIcon } from "lucide-react";
 
 export default function Sprint({
   tasks = [],
@@ -27,6 +28,9 @@ export default function Sprint({
 
   const [showEditModal, setShowEditModal] = useState(false);
 const [editData, setEditData] = useState(null);
+const [showDetailsModal, setShowDetailsModal] = useState(false);
+const [detailsData, setDetailsData] = useState(null);
+
 
 
   const [sprintForm, setSprintForm] = useState({
@@ -165,6 +169,14 @@ const handleUpdateSprint = async () => {
   }
 };
 
+const commentAdd = async () => {
+  try {
+    const res= await IssueComments(detailsData.id, comment);
+    console.log(res);
+  } catch (error) {
+    
+  }
+}
 
 
   return (
@@ -205,7 +217,7 @@ const handleUpdateSprint = async () => {
                   {new Date(s.start_date).toLocaleDateString()} →{" "}
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
-                <p className="text-blue-600 hover:underline">view details</p>
+                
               </div>
 
              <div className="flex gap-3">
@@ -237,6 +249,80 @@ const handleUpdateSprint = async () => {
     </>
   )}
   <button
+  className="text-blue-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
+  onClick={(e) => {
+    e.stopPropagation(); // avoid selecting sprint
+    setDetailsData(s); // set the sprint to show
+    setShowDetailsModal(true); // open modal
+  }}
+>
+  <EyeIcon size={14} />
+</button>
+{showDetailsModal && detailsData && (
+  <div className="fixed inset-0 bg-black/50 text-black flex items-center justify-center z-50">
+    <div className="bg-white border border-black shadow-lg/60 p-6 rounded-2xl w-[500px] max-h-[80vh] overflow-y-auto">
+      <h3 className="text-lg font-semibold text-black mb-4">Sprint Details</h3>
+
+      <p><strong>Name:</strong> {detailsData.name}</p>
+      <p><strong>Goal:</strong> {detailsData.goal}</p>
+      <p>
+        <strong>Start Date:</strong>{" "}
+        {new Date(detailsData.start_date).toLocaleDateString()}
+      </p>
+      <p>
+        <strong>End Date:</strong>{" "}
+        {new Date(detailsData.end_date).toLocaleDateString()}
+      </p>
+
+      <h4 className="font-semibold mt-4 mb-2">Tasks</h4>
+      {detailsData.issues?.length > 0 ? (
+        detailsData.issues.map((taskId) => {
+          const task = tasks.find((t) => t.id === taskId.id);
+          return task ? (
+            <div key={task.id} className="bg-gray-300 p-2 rounded mb-2 text-sm">
+              <p className="font-bold text-black">{task.name}</p>
+              <p className="text-black">{task.status} • {task.priority || "Unassigned"}</p>
+            </div>
+          ) : (
+            <div key={taskId} className="text-xs italic text-gray-500">Task not found</div>
+          );
+        })
+      ) : (
+        <p className="text-xs text-gray-500">No tasks in this sprint.</p>
+      )}
+
+      {/* Comment input */}
+      <div className="mt-4">
+        <label className="text-black font-medium mb-1 block">Add Comment</label>
+        <textarea
+          className="w-full border text-black px-3 py-2 rounded mb-2"
+          placeholder="Type your comment here..."
+          
+        />
+        <button
+        onClick={commentAdd}
+         
+          className="bg-blue-500 text-white px-3 py-1 rounded-lg"
+        >
+          Add
+        </button>
+      </div>
+
+      <div className="flex justify-end mt-5">
+        <button
+          onClick={() => setShowDetailsModal(false)}
+          className="bg-gray-600 px-3 py-1 rounded-lg text-white"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+  <button
     className="text-red-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
     onClick={(e) => {
       e.stopPropagation(); // avoid selecting sprint
@@ -245,8 +331,9 @@ const handleUpdateSprint = async () => {
   >
     <Trash2 size={14} />
   </button>
+  
   <button
-  className="text-blue-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
+  className="text-yellow-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
   onClick={(e) => {
     e.stopPropagation();
     setEditData(s);      
