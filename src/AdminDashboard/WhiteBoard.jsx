@@ -469,6 +469,23 @@ const handleAddColumn = async () => {
                       }
                     />
                   </div>
+                   <div className="flex flex-col gap-2 col-span-2">
+      <label className="text-sm text-gray-300">Total Hours</label>
+      <input
+        type="number"
+        min="0"
+        placeholder="Enter total hours"
+        className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none"
+        value={newProject.totalHours || ""}
+        onChange={(e) =>
+          setNewProject({
+            ...newProject,
+            totalHours: e.target.value,
+          })
+        }
+      />
+    </div>
+    </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -601,7 +618,7 @@ const handleAddColumn = async () => {
                 </div>
               </div>
             </div>
-          </div>
+         
         </Modal>
       )}
 

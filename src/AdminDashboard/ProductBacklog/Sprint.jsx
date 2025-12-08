@@ -205,6 +205,7 @@ const handleUpdateSprint = async () => {
                   {new Date(s.start_date).toLocaleDateString()} →{" "}
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
+                <p className="text-blue-600 hover:underline">view details</p>
               </div>
 
              <div className="flex gap-3">
