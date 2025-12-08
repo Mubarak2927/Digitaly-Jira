@@ -314,6 +314,7 @@ const BacklogColumns = ({
                     <div className="font-medium text-black capitalize truncate flex items-center gap-1">
                       {getTypeIcon(t.type)}
                       {t.type}
+                     
                     </div>
                     <div className="text-black capitalize flex">{t.name}</div>
 
