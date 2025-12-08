@@ -117,6 +117,10 @@ export default function ProductBacklog(selectedProject) {
         type: type,
         epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
         priority: createForm.priority,
+        story_points:
+    createForm.type === "story"
+      ? createForm.story_points
+      : undefined,
       };
 
       console.log(newTask, "new task");
