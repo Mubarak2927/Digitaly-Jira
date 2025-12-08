@@ -2,8 +2,10 @@ import React, { useState, useMemo, useEffect } from "react";
 import {
   createEpic,
   createIssues,
+  deleteEpic,
   getEpic,
   getIssues,
+  updateEpic,
 } from "../../Api/projectAPI";
 import { data } from "react-router-dom";
 import Epic from "../ProductBacklog/Epic";
@@ -75,6 +77,21 @@ export default function ProductBacklog(selectedProject) {
       console.log(error);
     }
   };
+
+  const handleDeleteEpic = async (id) => {
+  try {
+    const res = await deleteEpic(id);
+    console.log("Deleted:", res.message);
+
+    // Remove deleted epic from UI
+    setEpics((prev) => prev.filter((e) => e.id !== id));
+
+    // Clear selected epic if deleted
+    setSelectedEpic((prev) => (prev?.id === id ? null : prev));
+  } catch (error) {
+    console.error("Delete failed", error);
+  }
+};
 
   const getTasks = async () => {
     try {
@@ -189,6 +206,17 @@ export default function ProductBacklog(selectedProject) {
     setShowSprintModal(false);
   };
 
+  const handleUpdateEpic = async (epicId, data) => {
+  try {
+    await updateEpic(epicId, data);
+    await getEpics(); // refresh list
+    alert("Epic updated successfully!");
+  } catch (error) {
+    console.log("Epic update failed:", error);
+  }
+};
+
+
   const startSprint = (sprintId) => {
     setSprints((prev) =>
       prev.map((s) =>
@@ -243,6 +271,8 @@ export default function ProductBacklog(selectedProject) {
             createForm={createForm}
             setCreateForm={setCreateForm}
             handleCreateItem={handleCreateItem}
+            handleDeleteEpic={handleDeleteEpic}
+            handleUpdateEpic={handleUpdateEpic}
           />
         </div>
 

@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getBacklog, getSprint, sprintTaskMove } from "../../Api/projectAPI";
+import {
+  deleteIssues,
+  getBacklog,
+  getSprint,
+  sprintTaskMove,
+  updateIssue,
+} from "../../Api/projectAPI";
 import { ClipboardCheck, Bug, BookOpen } from "lucide-react";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
@@ -35,6 +41,10 @@ const BacklogColumns = ({
   const [showEpicModal, setShowEpicModal] = useState(false);
   const [taskIdForEpic, setTaskIdForEpic] = useState(null);
   const [selectedEpicIdForModal, setSelectedEpicIdForModal] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+const [editIssueId, setEditIssueId] = useState(null);
+const [editIssueName, setEditIssueName] = useState("");
+
 
   // -------------------------------
   // 🔥 NEW: Epic Assign Function
@@ -56,27 +66,46 @@ const BacklogColumns = ({
     } catch (err) {
       console.error("Epic assign error:", err);
     }
-   
   };
-  //  handleEpicAssign()
+
+  const handleIssueNameUpdate = async () => {
+  if (!editIssueName.trim()) {
+    alert("Name cannot be empty");
+    return;
+  }
+
+  try {
+    await updateIssue(editIssueId, { name: editIssueName });
+
+    alert("Issue name updated ✔");
+
+    // close modal
+    setShowEditModal(false);
+    setEditIssueId(null);
+    setEditIssueName("");
+
+    // refresh data
+    getTasks();
+  } catch (err) {
+    console.error("Issue update error:", err);
+  }
+};
+
 
   // 🌀 Load sprints for dropdown
   useEffect(() => {
     fetchSprints();
-    fetchIssuessss()
+    fetchIssuessss();
   }, []);
 
-  const fetchIssuessss =async() => {
+  const fetchIssuessss = async () => {
     try {
       const res = await getBacklog(selectedProject.selectedProject.id);
       console.log(res, "000000000");
-      
     } catch (error) {
       console.log(error);
-      
     }
-  }
-  
+  };
 
   const fetchSprints = async () => {
     try {
@@ -103,35 +132,31 @@ const BacklogColumns = ({
 
     createTask();
     fetchSprints();
-  }; 
+  };
 
   // Assign selected tasks to sprint
- const handleAssignToSprint = async () => {
+  const handleAssignToSprint = async () => {
     if (!selectedSprintId || selectedTasksForSprint.length === 0) return;
 
-  try {
+    try {
+      console.log(selectedSprintId, selectedTasksForSprint);
 
-    console.log(selectedSprintId, selectedTasksForSprint);
-    
-    const movedTasks = await sprintTaskMove(selectedSprintId, 
-      {
-        issue_ids:selectedTasksForSprint
+      const movedTasks = await sprintTaskMove(selectedSprintId, {
+        issue_ids: selectedTasksForSprint,
       });
 
-    console.log(movedTasks, "Tasks moved successfully");
-    alert("Tasks added to sprint successfully ✅");
+      console.log(movedTasks, "Tasks moved successfully");
+      alert("Tasks added to sprint successfully ✅");
 
-    setSelectedTasksForSprint([]);
-    setSelectedSprintId("");
-    fetchSprints();
-    getTasks();
-    getSprints();
-  } catch (error) {
-    console.error("Error assigning tasks:", error);
-  }
-};
-
-
+      setSelectedTasksForSprint([]);
+      setSelectedSprintId("");
+      fetchSprints();
+      getTasks();
+      getSprints();
+    } catch (error) {
+      console.error("Error assigning tasks:", error);
+    }
+  };
 
   //icons task,bug,story
 
@@ -147,6 +172,18 @@ const BacklogColumns = ({
         return null;
     }
   };
+
+
+ const handleDeleteIssue = async (issue_id) => {
+  try {
+    const res = await deleteIssues(issue_id);
+    console.log("Deleted:", res);
+    getTasks();  // refresh after delete
+  } catch (error) {
+    console.error("Error deleting issue:", error);
+  }
+};
+
 
   return (
     <div>
@@ -301,7 +338,7 @@ const BacklogColumns = ({
                 <div className="flex items-center gap-2 ml-3">
                   {!t.epic_name && (
                     <button
-                      className="px-2 py-1 rounded bg-blue-500 text-white text-sm"
+                      className="px-2 py-1 rounded bg-blue-500 cursor-pointer text-white text-sm"
                       onClick={() => {
                         setTaskIdForEpic(t.id);
                         setShowEpicModal(true);
@@ -310,14 +347,61 @@ const BacklogColumns = ({
                       Set Epic
                     </button>
                   )}
-                  {/* <button className="bg-red-600 px-2 py-1 rounded">
-                    Delete
-                  </button> */}
+                  <button
+  className="bg-red-600 px-2 py-1 rounded text-white"
+  onClick={() => handleDeleteIssue(t.id)}
+>
+  Delete
+</button>
+<button
+  className="bg-yellow-500 px-2 py-1 rounded cursor-pointer text-white"
+  onClick={() => {
+    setEditIssueId(t.id);
+    setEditIssueName(t.name);
+    setShowEditModal(true);
+  }}
+>
+  Edit
+</button>
+
+
                 </div>
               </div>
             );
           })}
         </div>
+        {showEditModal && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-white p-5 rounded-xl w-[320px]">
+      <h3 className="text-lg font-semibold mb-3 text-black">
+        Edit Backlog Name
+      </h3>
+
+      <input
+        className="w-full border border-black px-3 py-2 rounded text-sm mb-4 text-black"
+        value={editIssueName}
+        onChange={(e) => setEditIssueName(e.target.value)}
+      />
+
+      <div className="flex justify-end gap-3">
+        <button
+          className="px-3 py-1 rounded bg-gray-400"
+          onClick={() => setShowEditModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="px-3 py-1 rounded bg-green-500 text-white"
+          onClick={handleIssueNameUpdate}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
         {/* 🏁 Sprint Assignment Controls */}
         <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

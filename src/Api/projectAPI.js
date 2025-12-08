@@ -277,4 +277,33 @@ export const getCompleteSprints = async (projectId) => {
   return res.data;
 };
   
+export const deleteIssues = async (issueID) => {
+  const res = await API.delete(`/issues/${issueID}`);
+  return res.data;
+};
+
+export const deleteEpic = async (epicID) => {
+  const res = await API.delete(`/epics/${epicID}`);
+  return res.data;
+};
+export const deleteSprint = async (sprintID) => {
+  const res = await API.delete(`/sprints/${sprintID}`);
+  return res.data;
+};
+
+
+export const updateEpic = async (epicID, data) => {
+  const res = await API.put(`/epics/${epicID}`, data);
+  return res.data;
+};
+
+export const updateSprint = async (sprintID, data) => {
+  const res = await API.put(`/sprints/${sprintID}`, data);
+  return res.data;
+};
+
+export const updateIssue = async (issueId, payload) => {
+  const res = await API.put(`/issues/${issueId}`, payload);
+  return res.data;
+};
 

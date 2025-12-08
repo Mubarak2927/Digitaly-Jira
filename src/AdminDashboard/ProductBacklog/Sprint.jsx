@@ -6,6 +6,8 @@ import {
   startSprints,
   deleteIssueFromSprint,
   completeSprint,
+  deleteSprint,
+  updateSprint,
 } from "../../Api/projectAPI";
 import { Trash2 } from "lucide-react";
 
@@ -22,6 +24,10 @@ export default function Sprint({
   const [runningSprintId, setRunningSprintId] = useState(null); // <-- NEW
   const [showModal, setShowModal] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState("");
+
+  const [showEditModal, setShowEditModal] = useState(false);
+const [editData, setEditData] = useState(null);
+
 
   const [sprintForm, setSprintForm] = useState({
     name: "",
@@ -120,6 +126,47 @@ export default function Sprint({
     }
   };
 
+  const handleDeleteSprint = async (sprintId) => {
+  if (!window.confirm("Delete this sprint permanently?")) return;
+
+  try {
+    await deleteSprint(sprintId);
+
+    // Remove sprint from UI
+    setSprints((prev) => prev.filter((s) => s.id !== sprintId));
+
+    // Clear selected sprint
+    setSelectedSprint((prev) => (prev?.id === sprintId ? null : prev));
+
+    alert("Sprint deleted!");
+  } catch (err) {
+    console.error("Failed to delete sprint", err);
+    alert("Something went wrong while deleting sprint.");
+  }
+};
+const handleUpdateSprint = async () => {
+  try {
+    const payload = {
+      name: editData.name,
+      goal: editData.goal,
+      start_date: new Date(editData.start_date).toISOString(),
+      end_date: new Date(editData.end_date).toISOString(),
+    };
+
+    await updateSprint(editData.id, payload);
+
+    setShowEditModal(false);
+    await fetchSprints();
+    alert("Sprint updated successfully!");
+
+  } catch (err) {
+    console.error("Error updating sprint:", err);
+    alert("Failed to update sprint");
+  }
+};
+
+
+
   return (
     <div className="bg-white border border-black p-5 rounded-2xl shadow-lg/60 text-white">
       <div className="flex justify-between items-center mb-4">
@@ -188,6 +235,96 @@ export default function Sprint({
       )}
     </>
   )}
+  <button
+    className="text-red-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
+    onClick={(e) => {
+      e.stopPropagation(); // avoid selecting sprint
+      handleDeleteSprint(s.id);
+    }}
+  >
+    Delete
+  </button>
+  <button
+  className="text-blue-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
+  onClick={(e) => {
+    e.stopPropagation();
+    setEditData(s);      
+    setShowEditModal(true);
+  }}
+>
+  Edit
+</button>
+{showEditModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white border border-black shadow-lg/60 p-6 rounded-2xl w-[420px]">
+      <h3 className="text-lg font-semibold text-black mb-4">Edit Sprint</h3>
+
+      <div className="space-y-3">
+
+        <input
+          type="text"
+          className="w-full border text-black px-3 py-2 rounded"
+          placeholder="Sprint Name"
+          value={editData?.name || ""}
+          onChange={(e) =>
+            setEditData({ ...editData, name: e.target.value })
+          }
+        />
+
+        <textarea
+          className="w-full border text-black px-3 py-2 rounded"
+          placeholder="Goal"
+          value={editData?.goal || ""}
+          onChange={(e) =>
+            setEditData({ ...editData, goal: e.target.value })
+          }
+        />
+
+        <div>
+          <label className="text-black font-medium">Start Date</label>
+          <input
+            type="date"
+            className="w-full border text-black px-3 py-2 rounded"
+            value={editData?.start_date?.split("T")[0] || ""}
+            onChange={(e) =>
+              setEditData({ ...editData, start_date: e.target.value })
+            }
+          />
+        </div>
+
+        <div>
+          <label className="text-black font-medium">End Date</label>
+          <input
+            type="date"
+            className="w-full border text-black px-3 py-2 rounded"
+            value={editData?.end_date?.split("T")[0] || ""}
+            onChange={(e) =>
+              setEditData({ ...editData, end_date: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="flex justify-end gap-2 mt-5">
+          <button
+            onClick={() => setShowEditModal(false)}
+            className="bg-gray-600 px-3 py-1 rounded-lg text-white"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={handleUpdateSprint}
+            className="bg-blue-500 text-white px-3 py-1 rounded-lg"
+          >
+            Update Sprint
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
 </div>
 
             </div>
