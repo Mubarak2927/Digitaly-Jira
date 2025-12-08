@@ -311,7 +311,7 @@ export const updateIssue = async (issueId, payload) => {
 // payload = { project_id: "...", comment: "string" }
 export const ProjectComments = async (project_id, comment) => {
   if (typeof comment !== "string") {
-    comment = String(comment); // ensure it's a string
+    comment = String(comment); 
   }
 
   const res = await API.post(`/comments/`, {
@@ -325,12 +325,21 @@ export const getProjectComments = async (project_id) => {
   const res = await API.get(`/comments/?project_id=${project_id}`);
   return res.data;
 };
+export const deleteProjectComments = async (project_id) => {
+  const res = await API.delete(`/comments/?project_id=${project_id}`);
+  return res.data;
+};
 
 
 
-export const epicComments = async (epicID, comment) => {
+export const epicComments = async (epic_id, comment) => {
+
+  if (typeof comment !== "string") {
+    comment = String(comment); 
+  }
+
   const res = await API.post(`/comments`, {
-    epicID,
+    epic_id,
     comment
   });
   return res.data;
@@ -343,9 +352,9 @@ export const getEpicComments = async (epicID) => {
 };
 
 
-export const SprintComments = async (sprintID) => {
+export const SprintComments = async (sprint_id) => {
   const res = await API.post(`/comments`, { 
-    sprintID,
+    sprint_id,
     comment
   });
   return res.data;
@@ -355,15 +364,16 @@ export const getSprintComments = async (sprintID) => {
   return res.data;
 };
 
-export const IssueComments = async (issueId) => {
+export const IssueComments = async (issue_id, comment) => {
   const res = await API.post(`/comments`, { 
-    issueId,
+     issue_id,
     comment
-   });
+  });
   return res.data;
 };
-export const getIssueComments = async (issueId) => {
-  const res = await API.get(`/comments/${issueId}`);
+
+export const getIssueComments = async (issue_id) => {
+  const res = await API.get(`/comments/${issue_id}`);
   return res.data;
 };
 

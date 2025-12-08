@@ -9,7 +9,7 @@ import {
   deleteSprint,
   updateSprint,
 } from "../../Api/projectAPI";
-import { Trash2 } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 
 export default function Sprint({
   tasks = [],
@@ -205,6 +205,7 @@ const handleUpdateSprint = async () => {
                   {new Date(s.start_date).toLocaleDateString()} →{" "}
                   {new Date(s.end_date).toLocaleDateString()}
                 </p>
+                <p className="text-blue-600 hover:underline">view details</p>
               </div>
 
              <div className="flex gap-3">
@@ -242,7 +243,7 @@ const handleUpdateSprint = async () => {
       handleDeleteSprint(s.id);
     }}
   >
-    Delete
+    <Trash2 size={14} />
   </button>
   <button
   className="text-blue-600 hover:scale-110 cursor-pointer rounded px-2 py-1 text-xs font-semibold"
@@ -252,7 +253,7 @@ const handleUpdateSprint = async () => {
     setShowEditModal(true);
   }}
 >
-  Edit
+  <SquarePen size={14} />
 </button>
 {showEditModal && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

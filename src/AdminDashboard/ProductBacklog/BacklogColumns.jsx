@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   deleteIssues,
   getBacklog,
+  getIssueComments,
   getSprint,
+  IssueComments,
   sprintTaskMove,
   updateIssue,
 } from "../../Api/projectAPI";
-import { ClipboardCheck, Bug, BookOpen } from "lucide-react";
+import { ClipboardCheck, Bug, BookOpen, Trash2, SquarePen } from "lucide-react";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
@@ -47,6 +49,19 @@ const BacklogColumns = ({
   const [editIssuePriority, setEditIssuePriority] = useState("");
   const [editIssueEpicId, setEditIssueEpicId] = useState("");
   const [editStoryPoints, setEditStoryPoints] = useState(""); // ⭐ added
+  // 🔥 COMMENT MODAL STATES
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [commentTaskId, setCommentTaskId] = useState(null);
+  const [commentText, setCommentText] = useState("");
+
+  // 🔥 TASK DETAILS MODAL STATES
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [detailsTask, setDetailsTask] = useState(null);
+
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [taskComments, setTaskComments] = useState([]);
+
   // const [editIssueStoryPoints, setEditIssueStoryPoints] = useState("");
 
   const FIB_POINTS = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
@@ -148,6 +163,22 @@ const BacklogColumns = ({
     }
   };
 
+  const handleAddComment = async () => {
+    if (!commentText.trim()) return alert("Comment cannot be empty");
+
+    try {
+      const data = await IssueComments(commentTaskId, commentText);
+      alert("Comment added ✅");
+      setCommentText("");
+      setCommentTaskId(null);
+      setShowCommentModal(false);
+      getTasks();
+      console.log("Comment Response:", data);
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
+  };
+
   const getTypeIcon = (type) => {
     switch (type.toLowerCase()) {
       case "task":
@@ -168,6 +199,13 @@ const BacklogColumns = ({
     } catch (error) {
       console.error("Error deleting issue:", error);
     }
+  };
+
+  const getCommenst = async () => {
+    try {
+      const data = await getIssueComments(detailsTask.id);
+      console.log("Comments Data:", data);
+    } catch (error) {}
   };
 
   return (
@@ -310,22 +348,25 @@ const BacklogColumns = ({
                       onChange={() => toggleSelectTaskForSprint(t.id)}
                     />
                   )}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 cursor-pointer">
                     <div className="font-medium text-black capitalize truncate flex items-center gap-1">
-                      {getTypeIcon(t.type)}
-                      {t.type}
-                     
+                      <span title={t.type} className="cursor-pointer">
+                        {getTypeIcon(t.type)}
+                      </span>
+                      {t.name}
+                      {t.type?.toLowerCase() === "story" && (
+                        <div className="text-xs ml-2 text-green-700 font-semibold">
+                          Story Points:{" "}
+                          <span className="text-black">
+                            {t.story_points || 0}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <div className="text-black capitalize flex">{t.name}</div>
 
                     {/* ⭐ SHOW STORY POINTS */}
-                    {t.type?.toLowerCase() === "story" && (
-                      <div className="text-xs text-green-700 font-semibold">
-                        Story Points: {t.story_points || 0}
-                      </div>
-                    )}
 
-                    <div className="text-xs text-black truncate">
+                    <div className="text-xs mt-1.5 text-black truncate">
                       {epic ? (
                         <span className="bg-blue-600 px-2 py-0.5 rounded text-white mr-2 text-[11px]">
                           {t.epic_name}
@@ -336,27 +377,168 @@ const BacklogColumns = ({
                         </span>
                       )}
                       <span className="ml-2 capitalize">• {t.status}</span>
-                    </div>
-
-                    <span className="text-black capitalize text-xs">
-                      <span
-                        className={`px-2 py-0.5 rounded ${
-                          t.priority?.toLowerCase() === "highest"
-                            ? "bg-red-600 text-white"
-                            : t.priority?.toLowerCase() === "high"
-                            ? "bg-orange-500 text-white"
-                            : t.priority?.toLowerCase() === "medium"
-                            ? "bg-yellow-300 text-black"
-                            : t.priority?.toLowerCase() === "low"
-                            ? "bg-green-300 text-black"
-                            : t.priority?.toLowerCase() === "lowest"
-                            ? "bg-green-500 text-black"
-                            : "bg-gray-300"
-                        }`}
-                      >
-                        {t.priority || "No Priority"}
+                      <span className="text-black capitalize text-xs">
+                        <span
+                          className={`px-2 py-0.5 rounded ${
+                            t.priority?.toLowerCase() === "highest"
+                              ? "bg-red-600 text-white"
+                              : t.priority?.toLowerCase() === "high"
+                              ? "bg-orange-500 text-white"
+                              : t.priority?.toLowerCase() === "medium"
+                              ? "bg-yellow-300 text-black"
+                              : t.priority?.toLowerCase() === "low"
+                              ? "bg-green-300 text-black"
+                              : t.priority?.toLowerCase() === "lowest"
+                              ? "bg-green-500 text-black"
+                              : "bg-gray-300"
+                          }`}
+                        >
+                          {t.priority || "No Priority"}
+                        </span>
                       </span>
-                    </span>
+                      <p
+                        className="mt-2 text-blue-600 hover:underline cursor-pointer"
+                        onClick={async () => {
+                          setDetailsTask(t);
+                          setShowDetailsModal(true);
+                          setLoadingComments(true);
+
+                          try {
+                            const data = await getIssueComments(t.id);
+                            setTaskComments(data);
+                          } catch (error) {
+                            console.error(error);
+                          }
+
+                          setLoadingComments(false);
+                        }}
+                      >
+                        View Details
+                      </p>
+                      {/* Task Details Modal */}
+                      {showDetailsModal && detailsTask && (
+                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                          <div className="bg-white p-5 rounded-xl w-[400px] max-h-[80vh] overflow-auto">
+                            <h3 className="text-lg font-semibold mb-3 text-black">
+                              Task Details
+                            </h3>
+
+                            <p>
+                              <strong>Title:</strong> {detailsTask.name}
+                            </p>
+                            <p>
+                              <strong>Type:</strong> {detailsTask.type}
+                            </p>
+                            <p>
+                              <strong>Epic:</strong>{" "}
+                              {detailsTask.epic_name || "No Epic"}
+                            </p>
+                            <p>
+                              <strong>Status:</strong> {detailsTask.status}
+                            </p>
+                            <p>
+                              <strong>Priority:</strong>{" "}
+                              {detailsTask.priority || "No Priority"}
+                            </p>
+                            {detailsTask.type?.toLowerCase() === "story" && (
+                              <p>
+                                <strong>Story Points:</strong>{" "}
+                                {detailsTask.story_points || 0}
+                              </p>
+                            )}
+                            <p>
+                              <strong>Description:</strong>{" "}
+                              {detailsTask.description || "No description"}
+                            </p>
+                            <div className="mt-3">
+                              <strong className="text-black">Comments:</strong>
+
+                              {loadingComments ? (
+                                <p className="text-sm text-gray-600">
+                                  Loading comments...
+                                </p>
+                              ) : taskComments.length === 0 ? (
+                                <p className="text-sm text-gray-500">
+                                  No comments yet.
+                                </p>
+                              ) : (
+                                <div className="mt-2 space-y-2">
+                                  {taskComments.map((c) => (
+                                    <div
+                                      key={c.id}
+                                      className="border border-gray-400 p-2 rounded bg-gray-100 text-black text-sm"
+                                    >
+                                      {c.comment}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            <hr className="my-3" />
+
+                            {/* Comments */}
+                            <div className="mb-3">
+                              <h4
+                                onClick={async () => {
+                                  if (!commentText.trim())
+                                    return alert("Comment cannot be empty");
+
+                                  await IssueComments(
+                                    detailsTask.id,
+                                    commentText
+                                  );
+                                  alert("Comment added ✅");
+                                  setCommentText("");
+
+                                  // REFRESH COMMENTS AFTER ADDING
+                                  const updated = await getIssueComments(
+                                    detailsTask.id
+                                  );
+                                  setTaskComments(updated);
+                                }}
+                                className="font-semibold text-black mb-1"
+                              >
+                                Add Comment
+                              </h4>
+                              <textarea
+                                className="w-full border border-black px-3 py-2 rounded text-sm mb-2 text-black"
+                                rows={3}
+                                placeholder="Write your comment..."
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                              />
+                            </div>
+
+                            <div className="flex justify-end gap-3">
+                              <button
+                                className="px-3 py-1 rounded bg-green-500 text-white"
+                                onClick={async () => {
+                                  if (!commentText.trim())
+                                    return alert("Comment cannot be empty");
+                                  await IssueComments(
+                                    detailsTask.id,
+                                    commentText
+                                  );
+                                  alert("Comment added ✅");
+                                  setCommentText("");
+                                  setShowDetailsModal(false);
+                                  getTasks();
+                                }}
+                              >
+                                Add Comment
+                              </button>
+                              <button
+                                className="px-3 py-1 rounded bg-gray-400"
+                                onClick={() => setShowDetailsModal(false)}
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -376,7 +558,7 @@ const BacklogColumns = ({
                     className="bg-red-600 px-2 py-1 rounded text-white"
                     onClick={() => handleDeleteIssue(t.id)}
                   >
-                    Delete
+                    <Trash2 size={14} />
                   </button>
 
                   <button
@@ -391,8 +573,47 @@ const BacklogColumns = ({
                       setShowEditModal(true);
                     }}
                   >
-                    Edit
+                    <SquarePen size={14} />
                   </button>
+
+                  {/* Comment Modal */}
+                  {showCommentModal && (
+                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                      <div className="bg-white p-5 rounded-xl w-[320px]">
+                        <h3 className="text-lg font-semibold mb-3 text-black">
+                          Add Comment
+                        </h3>
+
+                        <textarea
+                          className="w-full border border-black px-3 py-2 rounded text-sm mb-3 text-black"
+                          rows={4}
+                          placeholder="Write your comment..."
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                        />
+
+                        <div className="flex justify-end gap-3">
+                          <button
+                            className="px-3 py-1 rounded bg-gray-400"
+                            onClick={() => {
+                              setShowCommentModal(false);
+                              setCommentText("");
+                              setCommentTaskId(null);
+                            }}
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            className="px-3 py-1 rounded bg-green-500 text-white"
+                            onClick={handleAddComment}
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             );
