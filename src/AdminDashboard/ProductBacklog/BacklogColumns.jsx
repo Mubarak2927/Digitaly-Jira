@@ -250,25 +250,27 @@ const BacklogColumns = ({
             />
 
             {/* ⭐ STORY POINTS ONLY FOR STORY */}
-            {createForm.type === "story" && (
-              <select
-                className="border border-black px-2 py-1 rounded text-sm"
-                value={createForm.story_points || ""}
-                onChange={(e) =>
-                  setCreateForm((prev) => ({
-                    ...prev,
-                    story_points: Number(e.target.value),
-                  }))
-                }
-              >
-                <option value="">Select Story Points</option>
-                {FIB_POINTS.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
-            )}
+            {/* Story Points ONLY when type = Story */}
+{createForm.type.toLowerCase() === "story" && (
+  <select
+    className="border text-black border-black px-2 py-1 rounded text-sm"
+    value={createForm.story_points || ""}
+    onChange={(e) =>
+      setCreateForm((prev) => ({
+        ...prev,
+        story_points: Number(e.target.value),
+      }))
+    }
+  >
+    <option value="">Select Story Points</option>
+    {FIB_POINTS.map((p) => (
+      <option key={p} value={p}>
+        {p}
+      </option>
+    ))}
+  </select>
+)}
+
 
             <select
               className="border border-black text-black px-2 py-1 rounded text-sm"
@@ -417,7 +419,7 @@ const BacklogColumns = ({
                       </p>
                       {/* Task Details Modal */}
                       {showDetailsModal && detailsTask && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
                           <div className="bg-white p-5 rounded-xl w-[400px] max-h-[80vh] overflow-auto">
                             <h3 className="text-lg font-semibold mb-3 text-black">
                               Task Details

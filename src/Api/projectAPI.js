@@ -372,8 +372,8 @@ export const IssueComments = async (issue_id, comment) => {
   return res.data;
 };
 
-export const getIssueComments = async (issue_id) => {
-  const res = await API.get(`/comments/${issue_id}`);
+export const getIssueComments = async (issueID) => {
+  const res = await API.get(`/comments/${issueID}`);
   return res.data;
 };
 

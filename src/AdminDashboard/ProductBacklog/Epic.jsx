@@ -1,6 +1,6 @@
 import { SquarePen, Trash2, MoreVertical } from 'lucide-react';
-import React, { useState } from 'react';
-import { epicComments } from '../../Api/projectAPI';
+import React, { useState, useEffect } from 'react';
+import { epicComments, getEpicComments } from '../../Api/projectAPI';
 
 const Epic = ({
   epics,
@@ -15,29 +15,33 @@ const Epic = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
-  const [showCommentModal, setShowCommentModal] = useState(false);
+  // Details Modal
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [detailsEpic, setDetailsEpic] = useState(null);
   const [commentText, setCommentText] = useState('');
-  const [currentEpicId, setCurrentEpicId] = useState(null);
+  const [commentsList, setCommentsList] = useState([]);
 
-  const [openDropdownId, setOpenDropdownId] = useState(null); // For three-dot menu
+  const [openDropdownId, setOpenDropdownId] = useState(null);
 
-  // Open comment modal
-  const openCommentModal = (epicId) => {
-    setCurrentEpicId(epicId);
-    setCommentText('');
-    setShowCommentModal(true);
-    setOpenDropdownId(null);
+  // Load comments for selected epic
+  const loadComments = async (id) => {
+    try {
+      const res = await getEpicComments(id);
+      setCommentsList(res || []);
+    } catch (err) {
+      console.log("Error loading comments", err);
+    }
   };
 
-  // Save comment
+  // Save comment inside DETAILS modal
   const saveComment = async () => {
     if (!commentText) return;
     try {
-      const response = await epicComments(currentEpicId, commentText);
-      console.log('Comment Added:', response);
-      setShowCommentModal(false);
-    } catch (error) {
-      console.error('Error adding comment:', error);
+      await epicComments(detailsEpic.id, commentText);
+      setCommentText('');
+      await loadComments(detailsEpic.id); // refresh
+    } catch (err) {
+      console.log("Error Saving Comment:", err);
     }
   };
 
@@ -47,6 +51,7 @@ const Epic = ({
         <h3 className="text-lg font-semibold text-black">Epics</h3>
       </div>
 
+      {/* List */}
       <div className="space-y-2">
         <div
           onClick={() => setSelectedEpic(null)}
@@ -58,7 +63,7 @@ const Epic = ({
         {epics.map((e) => (
           <div
             key={e.id}
-            onClick={() => setSelectedEpic((prev) => (prev?.id === e.id ? null : e))}
+            onClick={() => setSelectedEpic(prev => prev?.id === e.id ? null : e)}
             className={`p-3 rounded-lg cursor-pointer group ${
               selectedEpic?.id === e.id ? "bg-white" : "hover:bg-white/5"
             }`}
@@ -69,8 +74,8 @@ const Epic = ({
                 <div className="text-xs text-black">Epic ID: {e.id}</div>
               </div>
 
+              {/* Menu */}
               <div className="relative">
-                {/* Three-dot menu */}
                 <button
                   onClick={(ev) => {
                     ev.stopPropagation();
@@ -81,9 +86,10 @@ const Epic = ({
                   <MoreVertical size={16} />
                 </button>
 
-                {/* Dropdown menu */}
                 {openDropdownId === e.id && (
-                  <div className="absolute right-0 mt-1 w-32 bg-white border border-black rounded shadow-lg z-50">
+                  <div className="absolute right-0 mt-1 w-36 bg-white border border-black rounded shadow-lg z-50">
+
+                    {/* Edit */}
                     <button
                       onClick={(ev) => {
                         ev.stopPropagation();
@@ -96,6 +102,7 @@ const Epic = ({
                       <SquarePen size={14} /> Edit
                     </button>
 
+                    {/* Delete */}
                     <button
                       onClick={(ev) => {
                         ev.stopPropagation();
@@ -107,15 +114,20 @@ const Epic = ({
                       <Trash2 size={14} /> Delete
                     </button>
 
+                    {/* View Details — replaces Add Comment */}
                     <button
-                      onClick={(ev) => {
+                      onClick={async (ev) => {
                         ev.stopPropagation();
-                        openCommentModal(e.id);
+                        setDetailsEpic(e);
+                        await loadComments(e.id);
+                        setShowDetailsModal(true);
+                        setOpenDropdownId(null);
                       }}
-                      className="flex items-center text-black w-full px-3 py-2 text-sm hover:bg-gray-100 gap-1"
+                      className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-100 text-black"
                     >
-                       Add Comment
+                      View Details
                     </button>
+
                   </div>
                 )}
               </div>
@@ -130,7 +142,7 @@ const Epic = ({
           placeholder="New epic title"
           value={createForm.type === "Epic" ? createForm.name : ""}
           onChange={(e) =>
-            setCreateForm((prev) => ({ ...prev, type: "Epic", name: e.target.value }))
+            setCreateForm(prev => ({ ...prev, type: "Epic", name: e.target.value }))
           }
           className="w-full border-black border text-black px-3 py-2 rounded-md text-sm"
         />
@@ -153,10 +165,17 @@ const Epic = ({
             <input
               className="w-full border border-black px-3 py-2 rounded mb-3 text-black"
               value={editData?.name || ""}
-              onChange={(e) => setEditData((prev) => ({ ...prev, name: e.target.value }))}
+              onChange={(e) =>
+                setEditData(prev => ({ ...prev, name: e.target.value }))
+              }
             />
             <div className="flex justify-end gap-2 mt-3">
-              <button className="px-3 py-1 bg-gray-400 text-black rounded" onClick={() => setShowEditModal(false)}>Cancel</button>
+              <button
+                className="px-3 py-1 bg-gray-400 text-black rounded"
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancel
+              </button>
               <button
                 className="px-3 py-1 bg-green-500 text-black rounded"
                 onClick={async () => {
@@ -171,24 +190,60 @@ const Epic = ({
         </div>
       )}
 
-      {/* Comment Modal */}
-      {showCommentModal && (
+      {/* DETAILS MODAL — includes comments */}
+      {showDetailsModal && detailsEpic && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-[350px] border border-black rounded-2xl p-5">
-            <h3 className="text-lg font-semibold text-black mb-3">Add Comment</h3>
+          <div className="bg-white w-[400px] border border-black rounded-2xl p-5">
+
+            <h3 className="text-xl font-semibold text-black mb-3">
+              Epic Details
+            </h3>
+
+            <p className="text-black font-medium">Name: {detailsEpic.name}</p>
+            <p className="text-black text-sm mb-4">Epic ID: {detailsEpic.id}</p>
+
+            <h4 className="text-black font-semibold mb-2">Comments</h4>
+
+            {/* Show comments */}
+            <div className="max-h-32 overflow-auto border border-gray-400 p-2 rounded mb-3 bg-gray-100">
+              {commentsList.length === 0 ? (
+                <p className="text-gray-500 text-sm">No comments yet.</p>
+              ) : (
+                commentsList.map((c, i) => (
+                  <p key={i} className="text-black text-sm border-b pb-1 mb-1">
+                    • {c.comment}
+                  </p>
+                ))
+              )}
+            </div>
+
+            {/* Add comment */}
             <textarea
-              className="w-full border border-black px-3 py-2 rounded mb-3 text-black"
-              placeholder="Write your comment..."
+              className="w-full border border-black px-3 py-2 rounded mb-2 text-black"
+              placeholder="Write a comment..."
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
             />
+
             <div className="flex justify-end gap-2 mt-3">
-              <button className="px-3 py-1 bg-gray-400 text-black rounded" onClick={() => setShowCommentModal(false)}>Cancel</button>
-              <button className="px-3 py-1 bg-green-500 text-black rounded" onClick={saveComment}>Save</button>
+              <button
+                className="px-3 py-1 bg-gray-400 text-black rounded"
+                onClick={() => setShowDetailsModal(false)}
+              >
+                Close
+              </button>
+
+              <button
+                className="px-3 py-1 bg-green-500 text-black rounded"
+                onClick={saveComment}
+              >
+                Save Comment
+              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };
