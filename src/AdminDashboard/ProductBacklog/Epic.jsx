@@ -33,17 +33,39 @@ const Epic = ({
     }
   };
 
-  // Save comment inside DETAILS modal
-  const saveComment = async () => {
-    if (!commentText) return;
-    try {
-      await epicComments(detailsEpic.id, commentText);
-      setCommentText('');
-      await loadComments(detailsEpic.id); // refresh
-    } catch (err) {
-      console.log("Error Saving Comment:", err);
-    }
-  };
+ const saveComment = async () => {
+  try {
+    const res = await epicComments(detailsEpic.id, commentText);
+    console.log(res);
+    setCommentText("");
+    // await fetchComments(); 
+
+  } catch (err) {
+    console.log("Error Saving Comment:", err);
+  }
+};
+
+
+const fetchComments = async () => {
+  try {
+    const res = await getEpicComments(detailsEpic.id);
+    console.log(res);
+    // setCommentsList(res || []);
+  } catch (err) {
+    console.log("Error Fetching Comments:", err);
+  }
+};
+
+
+useEffect(() => {
+  if (detailsEpic?.id) {
+    fetchComments();
+  }
+}, [detailsEpic]);
+
+
+
+
 
   return (
     <div className="p-4 border border-black rounded-2xl shadow-lg/60">
@@ -204,17 +226,27 @@ const Epic = ({
             <h4 className="text-black font-semibold mb-2">Comments</h4>
 
             {/* Show comments */}
-            <div className="max-h-32 overflow-auto border border-gray-400 p-2 rounded mb-3 bg-gray-100">
-              {commentsList.length === 0 ? (
-                <p className="text-gray-500 text-sm">No comments yet.</p>
-              ) : (
-                commentsList.map((c, i) => (
-                  <p key={i} className="text-black text-sm border-b pb-1 mb-1">
-                    • {c.comment}
-                  </p>
-                ))
-              )}
-            </div>
+         <div className="max-h-32 overflow-auto border border-gray-400 p-2 rounded mb-3 bg-gray-100">
+  {commentsList.length === 0 ? (
+    <p className="text-gray-500 text-sm">No comments yet.</p>
+  ) : (
+    commentsList.map((c, i) => (
+      <div key={i} className="border-b pb-2 mb-2">
+        <p className="text-black font-semibold text-sm">
+          {c.author_name || "Unknown User"}
+        </p>
+        <p className="text-black text-sm">
+          {c.comment}
+        </p>
+        <p className="text-gray-500 text-xs mt-1">
+          {new Date(c.created_at).toLocaleString()}
+        </p>
+      </div>
+    ))
+  )}
+</div>
+
+
 
             {/* Add comment */}
             <textarea
