@@ -400,7 +400,7 @@ const BacklogColumns = ({
                         </span>
                       </span>
                       <p
-                        className="mt-2 text-blue-600 hover:underline cursor-pointer"
+                        className="mt-2 text-blue-600 w-fit hover:underline cursor-pointer"
                         onClick={async () => {
                           setDetailsTask(t);
                           setShowDetailsModal(true);
