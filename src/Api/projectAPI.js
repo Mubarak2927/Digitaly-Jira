@@ -306,7 +306,6 @@ export const updateIssue = async (issueId, payload) => {
   return res.data;
 };
 
-
 // payload = { project_id: "...", comment: "string" }
 export const ProjectComments = async (project_id, comment) => {
   if (typeof comment !== "string") {
@@ -351,17 +350,19 @@ export const getEpicComments = async (epic_id) => {
 };
 
 
-export const SprintComments = async (sprint_id) => {
-  const res = await API.post(`/comments`, { 
+export const SprintComments = async (sprint_id, comment) => {
+  const res = await API.post(`/comments`, {
     sprint_id,
     comment
   });
   return res.data;
 };
-export const getSprintComments = async (sprintID) => {
-  const res = await API.get(`/comments/${sprintID}`);
+
+export const getSprintComments = async (sprint_id) => {
+  const res = await API.get(`/comments?sprint_id=${sprint_id}`);
   return res.data;
 };
+
 
 export const IssueComments = async (issue_id, comment) => {
   const res = await API.post(`/comments`, { 
@@ -371,8 +372,8 @@ export const IssueComments = async (issue_id, comment) => {
   return res.data;
 };
 
-export const getIssueComments = async (issueID) => {
-  const res = await API.get(`/comments/${issueID}`);
+export const getIssueComments = async (issue_id) => {
+  const res = await API.get(`/comments?issue_id=${issue_id}`);
   return res.data;
 };
 

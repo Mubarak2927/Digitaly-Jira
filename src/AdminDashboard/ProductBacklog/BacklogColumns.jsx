@@ -167,12 +167,14 @@ const BacklogColumns = ({
     if (!commentText.trim()) return alert("Comment cannot be empty");
 
     try {
-      const data = await IssueComments(commentTaskId, commentText);
-      alert("Comment added ✅");
+      await IssueComments(detailsTask.id, commentText);
       setCommentText("");
-      setCommentTaskId(null);
-      setShowCommentModal(false);
-      getTasks();
+
+      const updated = await getIssueComments(detailsTask.id);
+      setTaskComments(updated);
+
+      alert("Comment added ✅");
+
       console.log("Comment Response:", data);
     } catch (err) {
       console.error("Error adding comment:", err);
@@ -251,26 +253,25 @@ const BacklogColumns = ({
 
             {/* ⭐ STORY POINTS ONLY FOR STORY */}
             {/* Story Points ONLY when type = Story */}
-{createForm.type.toLowerCase() === "story" && (
-  <select
-    className="border text-black border-black px-2 py-1 rounded text-sm"
-    value={createForm.story_points || ""}
-    onChange={(e) =>
-      setCreateForm((prev) => ({
-        ...prev,
-        story_points: Number(e.target.value),
-      }))
-    }
-  >
-    <option value="">Select Story Points</option>
-    {FIB_POINTS.map((p) => (
-      <option key={p} value={p}>
-        {p}
-      </option>
-    ))}
-  </select>
-)}
-
+            {createForm.type.toLowerCase() === "story" && (
+              <select
+                className="border text-black border-black px-2 py-1 rounded text-sm"
+                value={createForm.story_points || ""}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    story_points: Number(e.target.value),
+                  }))
+                }
+              >
+                <option value="">Select Story Points</option>
+                {FIB_POINTS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            )}
 
             <select
               className="border border-black text-black px-2 py-1 rounded text-sm"
@@ -325,7 +326,7 @@ const BacklogColumns = ({
                 ...prev,
                 description: e.target.value,
               }))
-            }
+            } 
           />
         </div>
 
@@ -403,6 +404,15 @@ const BacklogColumns = ({
                         onClick={async () => {
                           setDetailsTask(t);
                           setShowDetailsModal(true);
+
+                          setLoadingComments(true);
+                          try {
+                            const data = await getIssueComments(t.id);
+                            setTaskComments(data || []);
+                          } catch (err) {
+                            console.error(err);
+                          }
+                          setLoadingComments(false);
                         }}
                       >
                         View Details
@@ -460,7 +470,12 @@ const BacklogColumns = ({
                                       key={c.id}
                                       className="border border-gray-400 p-2 rounded bg-gray-100 text-black text-sm"
                                     >
-                                      {c.comment}
+                                      <div className="flex justify-between">
+                                        <p>{c.comment}</p>
+                                        <p>
+                                          <span>By :</span> {c.author_name}
+                                        </p>
+                                      </div>
                                     </div>
                                   ))}
                                 </div>

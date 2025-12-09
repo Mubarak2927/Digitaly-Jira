@@ -7,6 +7,7 @@ import {
   ProjectComments,
   getEpicComments,
   getProjectComments,
+  updateProject,
 } from "../../Api/projectAPI";
 import {
   Users,
@@ -17,6 +18,7 @@ import {
   X,
   User,
   FileText,
+  SquarePen,
 } from "lucide-react";
 
 export default function ProjectSummary({ selectedProject }) {
@@ -30,6 +32,11 @@ export default function ProjectSummary({ selectedProject }) {
   const [showCommentModal, setShowCommentModal] = useState(false);
 const [newComment, setNewComment] = useState("");
 const [comments, setComments] = useState([]);
+
+
+const [showEditModal, setShowEditModal] = useState(false);
+const [editProjectName, setEditProjectName] = useState("");
+
 
 
   // 🔥 Loading State
@@ -170,6 +177,25 @@ const loadProjectComments = async () => {
     }
   };
 
+const handleUpdateProject = async () => {
+  if (!editProjectName.trim()) return;
+
+  try {
+    setLoading(true);
+
+    await updateProject(selectedProject.id, {
+      name: editProjectName,   
+    });
+
+    setShowEditModal(false);
+    await loadProject(); 
+  } catch (err) {
+    console.log("Error updating project:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   return (
@@ -192,7 +218,54 @@ const loadProjectComments = async () => {
               <Layers className="text-black" size={36} />
               <h1 className="text-4xl uppercase font-extrabold tracking-wide">
                 {projectDetails.name}
+                <button
+  className="ml-5 text-blue-600"
+  onClick={() => {
+    setEditProjectName(projectDetails.name);
+    setShowEditModal(true);
+  }}
+>
+  <SquarePen/>
+</button>
+
+
               </h1>
+              {showEditModal && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-2xl w-96 shadow-xl text-black">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Edit Project Name</h3>
+        <button onClick={() => setShowEditModal(false)}>
+          <X size={18} className="cursor-pointer" />
+        </button>
+      </div>
+
+      <label className="font-medium">Project Name</label>
+      <input
+        type="text"
+        className="w-full p-2 border rounded-md mt-1"
+        value={editProjectName}
+        onChange={(e) => setEditProjectName(e.target.value)}
+      />
+
+      <div className="flex justify-end gap-3 mt-5">
+        <button
+          className="px-4 py-1.5 bg-gray-600 text-white rounded-md"
+          onClick={() => setShowEditModal(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-4 py-1.5 bg-green-600 text-white rounded-md"
+          onClick={handleUpdateProject}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
             </div>
             {/* Add Comment Button */}
 <div className="mt-5">
