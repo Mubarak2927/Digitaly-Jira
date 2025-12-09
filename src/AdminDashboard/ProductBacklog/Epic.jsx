@@ -119,7 +119,6 @@ const Epic = ({
                       onClick={async (ev) => {
                         ev.stopPropagation();
                         setDetailsEpic(e);
-                        await loadComments(e.id);
                         setShowDetailsModal(true);
                         setOpenDropdownId(null);
                       }}

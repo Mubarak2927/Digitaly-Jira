@@ -40,7 +40,7 @@ const [comments, setComments] = useState([]);
     try {
       setLoading(true);
 
-      const data = await getProjectById(selectedProject.id);
+      const data = await getProjectById(selectedProject?.id);
       setProjectDetails(data);
 
       const memberList = (data.members || []).map((member) => ({

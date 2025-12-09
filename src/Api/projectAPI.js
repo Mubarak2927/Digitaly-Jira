@@ -346,8 +346,8 @@ export const epicComments = async (epic_id, comment) => {
 };
 
 
-export const getEpicComments = async (epicID) => {
-  const res = await API.get(`/comments/${epicID}`);
+export const getEpicComments = async (epic_id) => {
+  const res = await API.get(`/comments/${epic_id}`);
   return res.data;
 };
 

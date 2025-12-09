@@ -403,16 +403,6 @@ const BacklogColumns = ({
                         onClick={async () => {
                           setDetailsTask(t);
                           setShowDetailsModal(true);
-                          setLoadingComments(true);
-
-                          try {
-                            const data = await getIssueComments(t.id);
-                            setTaskComments(data);
-                          } catch (error) {
-                            console.error(error);
-                          }
-
-                          setLoadingComments(false);
                         }}
                       >
                         View Details
