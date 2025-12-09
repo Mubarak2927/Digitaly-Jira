@@ -129,10 +129,11 @@ const loadProjectComments = async () => {
     try {
       setLoading(true);
       await manageProjectMember(selectedProject.id, {
-        user_id: newMember,
-        role: "developer",
-        action: "add",
-      });
+  user_id: newMember,
+  role: "developer",
+  action: "add"
+});
+
 
       await loadProject();
       setNewMember("");
@@ -276,18 +277,6 @@ const handleUpdateProject = async () => {
     Add Comment
   </button>
 </div>
-
-{/* Comment Modal */}
-
-
-
-            {/* {projectDetails.avatar_url && (
-              <img
-                src={projectDetails.avatar_url}
-                alt="Project Logo"
-                className="w-20 h-20 rounded-full border shadow-md hover:scale-105 transition-transform"
-              />
-            )} */}
           </div>
 
           <div className="mt-8 grid sm:grid-cols-2 gap-6">
@@ -358,12 +347,12 @@ const handleUpdateProject = async () => {
 
          
             <div className="flex gap-3">
-              {/* <button
+              <button
                 onClick={() => setShowAddModal(true)}
                 className="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm"
               >
                 <PlusCircle size={16} /> Add
-              </button> */}
+              </button>
 
               <button
                 onClick={() => setShowDeleteModal(true)}
