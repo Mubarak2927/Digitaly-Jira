@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const API = axios.create({
-  // baseURL: "https://project-management-1409.onrender.com/api/v1",
   baseURL: "https://project-management-sfrn.onrender.com/api/v1",
 
   headers: {
@@ -347,7 +346,7 @@ export const epicComments = async (epic_id, comment) => {
 
 
 export const getEpicComments = async (epic_id) => {
-  const res = await API.get(`/comments/${epic_id}`);
+  const res = await API.get(`/comments?epic_id=${epic_id}`);
   return res.data;
 };
 

@@ -38,7 +38,8 @@ const Epic = ({
     const res = await epicComments(detailsEpic.id, commentText);
     console.log(res);
     setCommentText("");
-    // await fetchComments(); 
+     fetchComments(detailsEpic.id);
+   
 
   } catch (err) {
     console.log("Error Saving Comment:", err);
@@ -50,7 +51,7 @@ const fetchComments = async () => {
   try {
     const res = await getEpicComments(detailsEpic.id);
     console.log(res);
-    // setCommentsList(res || []);
+    setCommentsList(res || []);
   } catch (err) {
     console.log("Error Fetching Comments:", err);
   }
@@ -59,7 +60,7 @@ const fetchComments = async () => {
 
 useEffect(() => {
   if (detailsEpic?.id) {
-    fetchComments();
+    fetchComments(detailsEpic.id);
   }
 }, [detailsEpic]);
 
