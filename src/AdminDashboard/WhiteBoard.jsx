@@ -30,6 +30,7 @@ import {
 } from "../Api/projectAPI";
 import { Columns, File, Hand } from "lucide-react";
 import { div, s } from "framer-motion/client";
+import ProjectModal from "./Components/ProjecModal";
 
 const WhiteBoard = () => {
   const [projects, setProjects] = useState();
@@ -160,7 +161,7 @@ const WhiteBoard = () => {
 
       const withColumns = {
         ...data,
-        boardId : columns.id,
+        boardId: columns.id,
         columns,
       };
 
@@ -200,91 +201,36 @@ const WhiteBoard = () => {
 
   const role = localStorage.getItem("role"); // admin or employee
 
-  // ---------------- ADD COLUMN ----------------
-  // const handleAddColumn = () => {
-  //   if (!newColumnTitle.trim() || !selectedProject) return;
-  //   const newCol = {
-  //     id: Date.now().toString(),
-  //     title: newColumnTitle,
-  //     tasks: [],
-  //   };
+  const handleAddColumn = async () => {
+    if (!newColumnTitle.trim() || !selectedProject) return;
 
-  //   const updatedProj = {
-  //     ...selectedProject,
-  //     columns: [...selectedProject.columns, newCol],
-  //   };
+    try {
+      const boardId =
+        selectedProject?.boardId || selectedProject?.columns?.board_id;
 
-  //   setProjects((prev) =>
-  //     prev.map((p) => (p.id === selectedProject.id ? updatedProj : p))
-  //   );
-  //   setSelectedProject(updatedProj);
-  //   setNewColumnTitle("");
-  //   setShowAddColumnModal(false);
-  // };
+      if (!boardId) {
+        console.error("Board ID not found");
+        return;
+      }
 
-const handleAddColumn = async () => {
-  if (!newColumnTitle.trim() || !selectedProject) return;
+      const columnData = {
+        name: newColumnTitle,
+        status: newColumnTitle.toLowerCase().replace(/\s+/g, "_"),
+        position: selectedProject.columns.columns.board.columns.length + 1,
+      };
 
-  try {
-    const boardId =
-      selectedProject?.boardId ||
-      selectedProject?.columns?.board_id;
+      // 🔥 Save to backend
+      const response = await addColumnToBoard(boardId, columnData);
 
-    if (!boardId) {
-      console.error("Board ID not found");
-      return;
+      console.log(response);
+      handleSelectProject(selectedProject.id);
+
+      setNewColumnTitle("");
+      setShowAddColumnModal(false);
+    } catch (error) {
+      console.error("Error adding column:", error);
     }
-
-    const columnData = {
-      name: newColumnTitle,
-      status: newColumnTitle.toLowerCase().replace(/\s+/g, "_"),
-      position: selectedProject.columns.columns.board.columns.length + 1,
-    };
-
-    // 🔥 Save to backend
-    const response = await addColumnToBoard(boardId, columnData);
-
-    console.log(response);
-    
-
-    // backend returns "column" object
-    // const createdColumn = response.column;
-
-    // // existing columns
-    // const existingColumns =
-    //   selectedProject?.columns?.columns?.board?.columns || [];
-
-    // const updatedColumns = [...existingColumns, createdColumn];
-
-    // update project state
-    // const updatedProject = {
-    //   ...selectedProject,
-    //   columns: {
-    //     columns: {
-    //       board: {
-    //         ...selectedProject.columns.columns.board,
-    //         columns: updatedColumns,
-    //       },
-    //     },
-    //   },
-    // };
-
-    // setSelectedProject(updatedProject);
-
-    // setProjects((prev) =>
-    //   prev.map((p) => (p.id === selectedProject.id ? updatedProject : p))
-    // );
-
-    handleSelectProject(selectedProject.id);
-    
-    setNewColumnTitle("");
-    setShowAddColumnModal(false);
-  } catch (error) {
-    console.error("Error adding column:", error);
-  }
-};
-
-
+  };
 
   return (
     <div className="flex flex-col bg-white text-white h-screen">
@@ -308,12 +254,6 @@ const handleAddColumn = async () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-          {/* {load && (
-            <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
-              <div className="animate-spin h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-            </div>
-          )} */}
-
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
@@ -341,7 +281,6 @@ const handleAddColumn = async () => {
                   setSelectedProject={setSelectedProject}
                   setProjects={setProjects}
                   handleAddColumn={handleAddColumn}
-                  // addColumnToBoard ={addColumnToBoard}
                   handleSelectProject={handleSelectProject}
                 />
               )}
@@ -377,233 +316,17 @@ const handleAddColumn = async () => {
 
       {/* ---------------- MODALS ---------------- */}
       {showSidebarProjectModal && (
-        <Modal
-          onCancel={() => setShowSidebarProjectModal(false)}
-          onConfirm={handleAddSidebarProject}
-        >
-          <div className="flex flex-col text-white max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 p-4">
-            <h1 className="text-center text-2xl font-bold bg-clip-text text-transparent bg-linear-to-tr from-[#300181] via-[#6915cf] to-[#d62196] mb-6">
-              Create New Project
-            </h1>
-
-            <div className="flex flex-col divide-y divide-gray-800">
-              {/* -------- 1️⃣ Basic Details -------- */}
-              <div className="space-y-5 pb-6">
-                <h2 className="text-lg font-semibold text-blue-400">
-                  1️⃣ Basic Details
-                </h2>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">Project Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter project name"
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none"
-                    value={newProject.name || ""}
-                    onChange={(e) =>
-                      setNewProject({ ...newProject, name: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">Project Key</label>
-                  <input
-                    type="text"
-                    placeholder="Short Form"
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none"
-                    value={newProject.key || ""}
-                    onChange={(e) =>
-                      setNewProject({ ...newProject, key: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">Avatar URL</label>
-                  <input
-                    type="text"
-                    placeholder="Project profile"
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none"
-                    value={newProject.avatar || ""}
-                    onChange={(e) =>
-                      setNewProject({ ...newProject, avatar: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* -------- 2️⃣ Timeline & Team -------- */}
-              <div className="space-y-5 py-6">
-                <h2 className="text-lg font-semibold text-green-400">
-                  2️⃣ Timeline & Team
-                </h2>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm text-gray-300">Start Date</label>
-                    <input
-                      type="date"
-                      className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none"
-                      value={newProject.startDate || ""}
-                      onChange={(e) =>
-                        setNewProject({
-                          ...newProject,
-                          startDate: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm text-gray-300">End Date</label>
-                    <input
-                      type="date"
-                      className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none"
-                      value={newProject.endDate || ""}
-                      onChange={(e) =>
-                        setNewProject({
-                          ...newProject,
-                          endDate: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">Project Lead</label>
-                  <select
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 outline-none"
-                    value={newProject.projectLead || ""}
-                    onChange={(e) =>
-                      setNewProject({
-                        ...newProject,
-                        projectLead: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Select Lead</option>
-                    {users.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name} {u.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Assigned Employees (Multi-select) */}
-                {/* Assigned Employees (Multi-select) */} 
-<div className="flex flex-col gap-2">
-  <label className="text-sm text-gray-300">Assigned Employees</label>
-
-  {/* 🟦 Selected employees show box */}
-  {newProject.assignedEmployees.length > 0 && (
-    <div className="flex flex-wrap gap-2 mb-2">
-      {newProject.assignedEmployees.map((id) => {
-        const emp = users.find((u) => u.id === id);
-        return (
-          <div
-            key={id}
-            className="flex items-center bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
-          >
-            {emp?.full_name || "Unknown"}
-
-            {/* ❌ Remove button */}
-            <button
-              onClick={() =>
-                setNewProject({
-                  ...newProject,
-                  assignedEmployees: newProject.assignedEmployees.filter(
-                    (eid) => eid !== id
-                  ),
-                })
-              }
-              className="ml-2 text-red-400 hover:text-red-600"
-            >
-              ✕
-            </button>
-          </div>
-        );
-      })}
-    </div>
-  )}
-
-  {/* 🟦 Dropdown for selecting new employee */}
-  <select
-    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 
-    focus:border-blue-500 outline-none"
-    value=""
-    onChange={(e) => {
-      if (!e.target.value) return;
-
-      setNewProject({
-        ...newProject,
-        assignedEmployees: [
-          ...newProject.assignedEmployees,
-          e.target.value,
-        ],
-      });
-    }}
+  <Modal
+    onCancel={() => setShowSidebarProjectModal(false)}
+    onConfirm={handleAddSidebarProject}
   >
-    <option value="">Select Employee</option>
-
-    {users
-      .filter(
-        (u) =>
-          u.id !== newProject.projectLead && // ❌ exclude lead
-          !newProject.assignedEmployees.includes(u.id) // ❌ exclude already selected
-      )
-      .map((u) => (
-        <option key={u.id} value={u.id}>
-          {u.name} {u.full_name}
-        </option>
-      ))}
-  </select>
-</div>
-
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">Platform</label>
-                  <select
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 outline-none"
-                    value={newProject.platform || ""}
-                    onChange={(e) =>
-                      setNewProject({ ...newProject, platform: e.target.value })
-                    }
-                  >
-                    <option value="">Select Platform</option>
-                    <option value="Web">Web</option>
-                    <option value="Android">Android</option>
-                    <option value="iOS">iOS</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* -------- 3️⃣ Labels & Description -------- */}
-              <div className="space-y-5 py-6">
-                <h2 className="text-lg font-semibold text-pink-400">
-                  3️⃣ Description
-                </h2>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-gray-300">Description</label>
-                  <textarea
-                    placeholder="Enter project description"
-                    className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue-500 outline-none placeholder-gray-500 resize-none h-28"
-                    value={newProject.description || ""}
-                    onChange={(e) =>
-                      setNewProject({
-                        ...newProject,
-                        description: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </Modal>
-      )}
+    <ProjectModal
+      newProject={newProject}
+      setNewProject={setNewProject}
+      users={users}
+    />
+  </Modal>
+)}
 
       {showAddMemberModal && (
         <MemberModal

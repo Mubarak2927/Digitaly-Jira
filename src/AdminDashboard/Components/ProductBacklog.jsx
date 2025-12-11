@@ -2,8 +2,10 @@ import React, { useState, useMemo, useEffect } from "react";
 import {
   createEpic,
   createIssues,
+  deleteEpic,
   getEpic,
   getIssues,
+  updateEpic,
 } from "../../Api/projectAPI";
 import { data } from "react-router-dom";
 import Epic from "../ProductBacklog/Epic";
@@ -76,6 +78,21 @@ export default function ProductBacklog(selectedProject) {
     }
   };
 
+  const handleDeleteEpic = async (id) => {
+  try {
+    const res = await deleteEpic(id);
+    console.log("Deleted:", res.message);
+
+    // Remove deleted epic from UI
+    setEpics((prev) => prev.filter((e) => e.id !== id));
+
+    // Clear selected epic if deleted
+    setSelectedEpic((prev) => (prev?.id === id ? null : prev));
+  } catch (error) {
+    console.error("Delete failed", error);
+  }
+};
+
   const getTasks = async () => {
     try {
       const data = await getIssues(selectedProject.selectedProject.id);
@@ -100,6 +117,10 @@ export default function ProductBacklog(selectedProject) {
         type: type,
         epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
         priority: createForm.priority,
+        story_points:
+    createForm.type === "story"
+      ? createForm.story_points
+      : undefined,
       };
 
       console.log(newTask, "new task");
@@ -189,6 +210,17 @@ export default function ProductBacklog(selectedProject) {
     setShowSprintModal(false);
   };
 
+  const handleUpdateEpic = async (epicId, data) => {
+  try {
+    await updateEpic(epicId, data);
+    await getEpics(); // refresh list
+    alert("Epic updated successfully!");
+  } catch (error) {
+    console.log("Epic update failed:", error);
+  }
+};
+
+
   const startSprint = (sprintId) => {
     setSprints((prev) =>
       prev.map((s) =>
@@ -229,7 +261,7 @@ export default function ProductBacklog(selectedProject) {
     <div className="min-h-screen bg-white to-text border-black border-2 rounded-4xl shadow-lg/60 text-white p-6">
      <div className="flex items-center justify-between">
        <h1 className="text-3xl font-bold mb-6 text-black tracking-wide">
-        Project Backlog Items
+        Product Backlog Items
       </h1>
      </div>
 
@@ -243,6 +275,8 @@ export default function ProductBacklog(selectedProject) {
             createForm={createForm}
             setCreateForm={setCreateForm}
             handleCreateItem={handleCreateItem}
+            handleDeleteEpic={handleDeleteEpic}
+            handleUpdateEpic={handleUpdateEpic}
           />
         </div>
 

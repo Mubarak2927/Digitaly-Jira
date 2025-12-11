@@ -122,7 +122,7 @@ const Sidebar = ({
                     >
                       <MoreHorizontal
                         size={18}
-                        className="text-black hover:text-white shrink-0 ml-2"
+                        className="text-white hover:text-white shrink-0 ml-2"
                       />
                     </button>
 

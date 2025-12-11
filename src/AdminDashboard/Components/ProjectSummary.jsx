@@ -4,6 +4,10 @@ import {
   manageProjectMember,
   getAllUsers,
   removeProjectMember,
+  ProjectComments,
+  getEpicComments,
+  getProjectComments,
+  updateProject,
 } from "../../Api/projectAPI";
 import {
   Users,
@@ -14,6 +18,7 @@ import {
   X,
   User,
   FileText,
+  SquarePen,
 } from "lucide-react";
 
 export default function ProjectSummary({ selectedProject }) {
@@ -24,6 +29,15 @@ export default function ProjectSummary({ selectedProject }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectDetails, setProjectDetails] = useState(null);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+const [newComment, setNewComment] = useState("");
+const [comments, setComments] = useState([]);
+
+
+const [showEditModal, setShowEditModal] = useState(false);
+const [editProjectName, setEditProjectName] = useState("");
+
+
 
   // 🔥 Loading State
   const [loading, setLoading] = useState(true);
@@ -33,7 +47,7 @@ export default function ProjectSummary({ selectedProject }) {
     try {
       setLoading(true);
 
-      const data = await getProjectById(selectedProject.id);
+      const data = await getProjectById(selectedProject?.id);
       setProjectDetails(data);
 
       const memberList = (data.members || []).map((member) => ({
@@ -48,6 +62,37 @@ export default function ProjectSummary({ selectedProject }) {
       setLoading(false);
     }
   }
+
+
+  useEffect(() => {
+  if (selectedProject) loadProjectComments();
+}, [selectedProject]);
+
+const loadProjectComments = async () => {
+  try {
+    const data = await getProjectComments(selectedProject.id);
+    setComments(data || []);
+  } catch (err) {
+    console.log("Error loading comments:", err);
+  }
+};
+
+
+  const handleAddComment = async () => {
+  if (!newComment.trim()) return;
+
+  try {
+   await ProjectComments(selectedProject.id, newComment);
+    setNewComment("");
+    setShowCommentModal(false);
+
+     await loadProjectComments(); 
+  } catch (err) {
+    console.log("Error adding comment:", err);
+  }
+};
+
+
 
   useEffect(() => {
     async function fetchData() {
@@ -84,10 +129,11 @@ export default function ProjectSummary({ selectedProject }) {
     try {
       setLoading(true);
       await manageProjectMember(selectedProject.id, {
-        user_id: newMember,
-        role: "developer",
-        action: "add",
-      });
+  user_id: newMember,
+  role: "developer",
+  action: "add"
+});
+
 
       await loadProject();
       setNewMember("");
@@ -131,16 +177,31 @@ export default function ProjectSummary({ selectedProject }) {
       console.log("Error fetching sprints:", error);
     }
   };
-//   if (loadingProjectData) {
-//   return (
-//     <div className="w-full h-full flex justify-center items-center">
-//       <p className="text-lg font-semibold animate-pulse">Loading...</p>
-//     </div>
-//   );
-// }
+
+const handleUpdateProject = async () => {
+  if (!editProjectName.trim()) return;
+
+  try {
+    setLoading(true);
+
+    await updateProject(selectedProject.id, {
+      name: editProjectName,   
+    });
+
+    setShowEditModal(false);
+    await loadProject(); 
+  } catch (err) {
+    console.log("Error updating project:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   return (
+
+    <>
     <div className="p-6 sm:p-10 space-y-10 bg-white min-h-screen text-black rounded-3xl shadow-2xl backdrop-blur-xl relative">
       {loading && (
         <div className="absolute inset-0 bg-white flex flex-col items-center h-screen justify-center z-50 backdrop-blur-sm">
@@ -158,16 +219,64 @@ export default function ProjectSummary({ selectedProject }) {
               <Layers className="text-black" size={36} />
               <h1 className="text-4xl uppercase font-extrabold tracking-wide">
                 {projectDetails.name}
-              </h1>
-            </div>
+                <button
+  className="ml-5 text-blue-600"
+  onClick={() => {
+    setEditProjectName(projectDetails.name);
+    setShowEditModal(true);
+  }}
+>
+  <SquarePen/>
+</button>
 
-            {/* {projectDetails.avatar_url && (
-              <img
-                src={projectDetails.avatar_url}
-                alt="Project Logo"
-                className="w-20 h-20 rounded-full border shadow-md hover:scale-105 transition-transform"
-              />
-            )} */}
+
+              </h1>
+              {showEditModal && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-2xl w-96 shadow-xl text-black">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Edit Project Name</h3>
+        <button onClick={() => setShowEditModal(false)}>
+          <X size={18} className="cursor-pointer" />
+        </button>
+      </div>
+
+      <label className="font-medium">Project Name</label>
+      <input
+        type="text"
+        className="w-full p-2 border rounded-md mt-1"
+        value={editProjectName}
+        onChange={(e) => setEditProjectName(e.target.value)}
+      />
+
+      <div className="flex justify-end gap-3 mt-5">
+        <button
+          className="px-4 py-1.5 bg-gray-600 text-white rounded-md"
+          onClick={() => setShowEditModal(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-4 py-1.5 bg-green-600 text-white rounded-md"
+          onClick={handleUpdateProject}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+            </div>
+            {/* Add Comment Button */}
+<div className="mt-5">
+  <button
+    onClick={() => setShowCommentModal(true)}
+    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+  >
+    Add Comment
+  </button>
+</div>
           </div>
 
           <div className="mt-8 grid sm:grid-cols-2 gap-6">
@@ -208,6 +317,21 @@ export default function ProjectSummary({ selectedProject }) {
               </div>
               <p>{projectDetails.description || "No description provided."}</p>
             </div>
+                <div className="mt-6 border rounded-xl p-4">
+  <h3 className="text-lg font-semibold mb-3">Comments</h3>
+  {comments.length > 0 ? (
+    comments.map((c) => (
+      <>
+      <div className="flex  justify-between">
+        <p key={c.id} className=" py-2">{c.comment}</p>
+      <p key={c.id} className=" py-2">By : <span className="text-blue-600">{c.author_name}</span></p>
+      </div>
+</>
+    ))
+  ) : (
+    <p className="text-gray-500 text-sm italic">No comments yet</p>
+  )}
+</div>
           </div>
         </div>
       )}
@@ -218,15 +342,17 @@ export default function ProjectSummary({ selectedProject }) {
           <h3 className="text-2xl font-semibold flex items-center gap-2">
             <Users size={22} /> Team Members
           </h3>
+      
+
 
          
             <div className="flex gap-3">
-              {/* <button
+              <button
                 onClick={() => setShowAddModal(true)}
                 className="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm"
               >
                 <PlusCircle size={16} /> Add
-              </button> */}
+              </button>
 
               <button
                 onClick={() => setShowDeleteModal(true)}
@@ -339,6 +465,42 @@ export default function ProjectSummary({ selectedProject }) {
           </div>
         </div>
       )}
+      
     </div>
+    {showCommentModal && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    <div className="bg-white text-black p-6 rounded-2xl w-80 shadow-xl">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Add Comment</h3>
+        <button onClick={() => setShowCommentModal(false)}>
+          <X size={18} className="cursor-pointer" />
+        </button>
+      </div>
+      <label htmlFor="">Comments</label>
+      <textarea
+        className="w-full p-2 border rounded-md h-24"
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        placeholder="Type your comment here..."
+      />
+
+      <div className="flex justify-end gap-3 mt-5">
+        <button
+          className="px-4 py-1.5 bg-gray-600 text-white rounded-md"
+          onClick={() => setShowCommentModal(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-4 py-1.5 bg-green-600 text-white rounded-md"
+          onClick={handleAddComment}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+    </>
   );
 }
