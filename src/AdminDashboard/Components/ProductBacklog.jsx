@@ -260,7 +260,7 @@ export default function ProductBacklog(selectedProject) {
   return (
     <div className="min-h-screen bg-white to-text border-black border-2 rounded-4xl shadow-lg/60 text-white p-6">
      <div className="flex items-center justify-between">
-       <h1 className="text-3xl font-bold mb-6 text-black tracking-wide">
+       <h1 className="text-3xl capitalize font-bold mb-6 text-black tracking-wide">
         Product Backlog Items
       </h1>
      </div>
