@@ -2,7 +2,8 @@ import axios from "axios";
 
 const API = axios.create({
   // baseURL: "https://project-management-1409.onrender.com/api/v1",
-  baseURL: "https://project-management-sfrn.onrender.com/api/v1",
+  // baseURL: "https://project-management-sfrn.onrender.com/api/v1",
+  baseURL: "https://pmtoolapidev.digitaly.live/api/v1",
 
   headers: {
     "Content-Type": "application/json",
@@ -170,7 +171,7 @@ export const sprintTaskMove = async (sprintId, payload) => {
   return res.data;
 };
 
-export const sprintById= async (project_id) => {
+export const sprintById = async (project_id) => {
   const res = await API.get(`/sprints/${project_id}`);
   return res.data;
 }
@@ -185,13 +186,13 @@ export const startSprints = async (sprintId) => {
   return res.data;
 };
 
-export const boardData= async (project_id) => {
+export const boardData = async (project_id) => {
   const res = await API.get(`/boards/?project_id=${project_id}`);
   return res.data;
 }
 
 export const sprintTaskMoveColumn = async (issuesID, payload) => {
-  const res = await API.put(`/issues/${issuesID}`,payload);
+  const res = await API.put(`/issues/${issuesID}`, payload);
   return res.data;
 };
 
@@ -276,5 +277,5 @@ export const getCompleteSprints = async (projectId) => {
   const res = await API.get(`/sprints/completed?project_id=${projectId}`);
   return res.data;
 };
-  
+
 
