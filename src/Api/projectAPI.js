@@ -25,25 +25,6 @@ export const getAllProjects = async () => {
 };
 
 
-// export const getAllProjects = async () => {
-//   try {
-//     const res = await API.get("/projects", {
-//       params: {
-//         skip: 0,
-//         limit: 100,
-//       },
-//     });
-
-//     console.log("response", res);
-//     return res.data;
-
-//   } catch (error) {
-//     console.error("Failed to fetch projects:", error);
-//     throw error;
-//   }
-// };
-
-
 
 
 
