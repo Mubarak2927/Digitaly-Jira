@@ -48,13 +48,13 @@ const WhiteBoard = () => {
     name: "",
     key: "",
     startDate: "",
-    endDate: "",
-    projectLead: "",
-    assignedEmployees: [],
+    // endDate: "",
+    // projectLead: "",
+    // assignedEmployees: [],
     platform: "",
     description: "",
-    avatar: "",
-    labels: [],
+    // avatar: "",
+    // labels: [],
   });
 
   const [newColumnTitle, setNewColumnTitle] = useState("");
@@ -92,30 +92,30 @@ const WhiteBoard = () => {
 
   // ---------------- CREATE PROJECT ----------------
   const handleAddSidebarProject = async () => {
-    if (!newProject.name.trim() || !newProject.projectLead)
-      return alert("Please fill all required fields.");
+    // if (!newProject.name.trim() || !newProject.projectLead)
+    //   return alert("Please fill all required fields.");
 
     const member_roles = {
       // [newProject.projectLead]: "project_admin",
     };
 
-    newProject.assignedEmployees.forEach((empId) => {
-      member_roles[empId] = "developer";
-    });
+    // newProject.assignedEmployees.forEach((empId) => {
+    //   member_roles[empId] = "developer";
+    // });
 
     const payload = {
       key: newProject.key || newProject.name.slice(0, 6).toUpperCase(),
       name: newProject.name,
       description: newProject.description || "No description",
-      avatar_url: newProject.avatar || "",
-      start_date: newProject.startDate
-        ? new Date(newProject.startDate).toISOString()
-        : null,
-      end_date: newProject.endDate
-        ? new Date(newProject.endDate).toISOString()
-        : null,
-      project_lead: newProject.projectLead,
-      member_roles, // ✅ Updated
+      // avatar_url: newProject.avatar || "",
+      // start_date: newProject.startDate
+      //   ? new Date(newProject.startDate).toISOString()
+      //   : null,
+      // end_date: newProject.endDate
+      //   ? new Date(newProject.endDate).toISOString()
+      //   : null,
+      // project_lead: newProject.projectLead,
+      // member_roles, // ✅ Updated
     };
 
     try {
@@ -129,14 +129,14 @@ const WhiteBoard = () => {
       setNewProject({
         name: "",
         key: "",
-        startDate: "",
-        endDate: "",
-        projectLead: "",
-        assignedEmployees: [],
-        platform: "",
+        // startDate: "",
+        // endDate: "",
+        // projectLead: "",
+        // assignedEmployees: [],
+        // platform: "",
         description: "",
-        avatar: "",
-        labels: [],
+        // avatar: "",
+        // labels: [],
       });
     } catch (error) {
       console.error("Error creating project:", error);

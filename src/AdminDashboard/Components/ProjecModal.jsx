@@ -16,7 +16,7 @@ export default function ProjectModal({
       <div className="flex flex-col divide-y divide-gray-800">
         {/* -------- 1️⃣ Basic Details -------- */}
         <div className="space-y-5 pb-6">
-          <h2 className="text-lg font-semibold text-blue-400">1️⃣ Basic Details</h2>
+          <h2 className="text-lg font-semibold text-blue-400">Basic Details</h2>
 
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-300">Project Name</label>
@@ -44,7 +44,7 @@ export default function ProjectModal({
             />
           </div>
 
-          <div className="flex flex-col gap-2">
+          {/* <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-300">Avatar URL</label>
             <input
               type="text"
@@ -55,16 +55,16 @@ export default function ProjectModal({
                 setNewProject({ ...newProject, avatar: e.target.value })
               }
             />
-          </div>
+          </div> */}
         </div>
 
         {/* -------- 2️⃣ Timeline & Team -------- */}
-        <div className="space-y-5 py-6">
+        {/* <div className="space-y-5 py-6">
           <h2 className="text-lg font-semibold text-green-400">
             2️⃣ Timeline & Team
-          </h2>
+          </h2> */}
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm text-gray-300">Start Date</label>
               <input
@@ -75,9 +75,9 @@ export default function ProjectModal({
                   setNewProject({ ...newProject, startDate: e.target.value })
                 }
               />
-            </div>
+            </div> */}
 
-            <div className="flex flex-col gap-2">
+            {/* <div className="flex flex-col gap-2">
               <label className="text-sm text-gray-300">End Date</label>
               <input
                 type="date"
@@ -87,7 +87,7 @@ export default function ProjectModal({
                   setNewProject({ ...newProject, endDate: e.target.value })
                 }
               />
-            </div>
+            </div> */}
 
             {/* <div className="flex flex-col gap-2 col-span-2">
               <label className="text-sm text-gray-300">Total Hours</label>
@@ -102,11 +102,11 @@ export default function ProjectModal({
                 }
               />
             </div> */}
-          </div>
-        </div>
+          {/* </div>
+        </div> */}
 
         {/* -------- Project Lead -------- */}
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <label className="text-sm text-gray-300">Project Lead</label>
           <select
             className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 outline-none"
@@ -122,10 +122,10 @@ export default function ProjectModal({
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* -------- Assigned Employees -------- */}
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <label className="text-sm text-gray-300">Assigned Employees</label>
 
           {newProject.assignedEmployees.length > 0 && (
@@ -181,11 +181,11 @@ export default function ProjectModal({
                 </option>
               ))}
           </select>
-        </div>
+        </div> */}
 
         {/* -------- Description -------- */}
         <div className="space-y-5 py-6">
-          <h2 className="text-lg font-semibold text-pink-400">3️⃣ Description</h2>
+          <h2 className="text-lg font-semibold text-pink-400"> Description</h2>
 
           <textarea
             placeholder="Enter project description"
