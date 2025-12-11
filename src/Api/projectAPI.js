@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://project-management-sfrn.onrender.com/api/v1",
+  baseURL: "https://pmtoolapidev.digitaly.live/api/v1",
 
   headers: {
     "Content-Type": "application/json",
@@ -16,13 +16,37 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-//  Get all projects
+ 
 export const getAllProjects = async () => {
   const res = await API.get("/projects");
   console.log(res, "response");
 
   return res.data;
 };
+
+
+// export const getAllProjects = async () => {
+//   try {
+//     const res = await API.get("/projects", {
+//       params: {
+//         skip: 0,
+//         limit: 100,
+//       },
+//     });
+
+//     console.log("response", res);
+//     return res.data;
+
+//   } catch (error) {
+//     console.error("Failed to fetch projects:", error);
+//     throw error;
+//   }
+// };
+
+
+
+
+
 
 //  Get project by ID
 export const getProjectById = async (projectId) => {
@@ -205,6 +229,8 @@ export const createEmployee = async (payload) => {
   const res = await API.post("/employees/admin/create", payload);
   return res.data;
 };
+
+
 // list employee profile
 export const getAllEmployeesList = async (page = 1, limit = 50) => {
   const res = await API.get(`/employees/admin/list`, {
@@ -212,6 +238,8 @@ export const getAllEmployeesList = async (page = 1, limit = 50) => {
   });
   return res.data;
 };
+
+
 export const checkInAttendance = async (note = "") => {
   try {
     const res = await API.post("/employees/me/attendance/checkin", note ? { note } : {});

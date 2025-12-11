@@ -20,7 +20,7 @@ const LoginPage = () => {
 
     try {
       const res = await axios.post(
-        "https://project-management-sfrn.onrender.com/api/v1/login",
+        "https://pmtoolapidev.digitaly.live/api/v1/login",
         {
           email: form.email,
           password: form.password,
