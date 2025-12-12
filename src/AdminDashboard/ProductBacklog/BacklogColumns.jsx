@@ -90,14 +90,13 @@ const BacklogColumns = ({
     if (!editIssueName.trim()) return alert("Name cannot be empty");
 
     try {
-      await updateIssue(editIssueId, {
-        name: editIssueName,
-        type: editIssueType,
-        priority: editIssuePriority,
-        epic_id: editIssueEpicId,
-        story_points:
-          editIssueType === "story" ? editIssueStoryPoints : undefined,
-      });
+     await updateIssue(editIssueId, {
+  name: editIssueName,
+  type: editIssueType,
+  priority: editIssuePriority,
+  epic_id: editIssueEpicId,
+  story_points: editIssueType === "story" ? editStoryPoints : undefined,
+});
 
       alert("Issue updated ✔");
 
@@ -212,7 +211,8 @@ const BacklogColumns = ({
 
   return (
     <div>
-      <div className="bg-white p-5 w-[55vw] border border-black rounded-2xl shadow-lg/60">
+      <div className=" bg-white  p-4 sm:p-5 w-full  sm:w-[90vw]  md:w-[70vw]  lg:w-[50vw] xl:w-[55vw] border border-black  rounded-2xl shadow-lg/60"
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">Backlog</h3>
@@ -253,7 +253,7 @@ const BacklogColumns = ({
 
             {/* ⭐ STORY POINTS ONLY FOR STORY */}
             {/* Story Points ONLY when type = Story */}
-            {createForm.type.toLowerCase() === "story" && (
+            {/* {createForm.type.toLowerCase() === "story" && (
               <select
                 className="border text-black border-black px-2 py-1 rounded text-sm"
                 value={createForm.story_points || ""}
@@ -271,7 +271,7 @@ const BacklogColumns = ({
                   </option>
                 ))}
               </select>
-            )}
+            )} */}
 
             <select
               className="border border-black text-black px-2 py-1 rounded text-sm"
@@ -326,7 +326,7 @@ const BacklogColumns = ({
                 ...prev,
                 description: e.target.value,
               }))
-            } 
+            }
           />
         </div>
 

@@ -77,18 +77,18 @@ const WhiteBoard = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await getAllUsers();
-        setUsers(data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const data = await getAllUsers();
+  //       setUsers(data);
+  //     } catch (error) {
+  //       console.error("Error fetching users:", error);
+  //     }
+  //   };
 
-    fetchUsers();
-  }, []);
+  //   fetchUsers();
+  // }, []);
 
   // ---------------- CREATE PROJECT ----------------
   const handleAddSidebarProject = async () => {
@@ -237,6 +237,7 @@ const WhiteBoard = () => {
       <div className="sticky top-0 z-50 w-full">
         <AdminTopBar />
       </div>
+     
 
       <div className="flex flex-1 overflow-hidden">
         <div className="w-64 bg-gray-950 text-black border-r border-gray-800">
@@ -254,12 +255,16 @@ const WhiteBoard = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div >
+   <h1 className="text-black text-4xl font-bold">{selectedProject?.name} </h1>
+</div>
+
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3">
                 {/*  */}
                 {activeTab === "board" && (
-                  <div className="flex ">
+                  <div className="flex absolute right-10 ">
                     <button
                       onClick={() => setShowAddColumnModal(true)}
                       className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
@@ -335,25 +340,32 @@ const WhiteBoard = () => {
         />
       )}
 
-      {showAddColumnModal && (
-        <Modal
-          onCancel={() => setShowAddColumnModal(false)}
-          onConfirm={handleAddColumn}
-        >
-          <div className="flex flex-col gap-4">
-            <h2 className="text-center text-xl font-semibold text-blue-600">
-              Add New Column
-            </h2>
-            <input
-              type="text"
-              placeholder="Enter column name..."
-              className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue  -500 outline-none"
-              value={newColumnTitle}
-              onChange={(e) => setNewColumnTitle(e.target.value)}
-            />
-          </div>
-        </Modal>
-      )}
+        {showAddColumnModal && (
+          <Modal
+            onCancel={() => setShowAddColumnModal(false)}
+            onConfirm={handleAddColumn}
+          >
+            <div className="flex flex-col gap-4">
+              <h2 className="text-center text-xl font-semibold text-blue-600">
+                Add New Column
+              </h2>
+              <input
+                type="text"
+                placeholder="Enter column name..."
+                className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue  -500 outline-none"
+                value={newColumnTitle}
+                onChange={(e) => setNewColumnTitle(e.target.value)}
+              />
+              <input
+  type="number"
+  placeholder="Position"
+  onChange={(e) => setColumnPosition(Number(e.target.value))}
+  className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-white"
+/>
+
+            </div>
+          </Modal>
+        )}
     </div>
   );
 };

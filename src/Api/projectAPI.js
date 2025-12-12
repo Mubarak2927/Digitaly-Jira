@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
+  // baseURL:"https://project-management-sfrn.onrender/api/v1",
   baseURL: "https://pmtoolapidev.digitaly.live/api/v1",
 
   headers: {
@@ -17,12 +18,19 @@ API.interceptors.request.use((config) => {
 });
 
  
-export const getAllProjects = async () => {
-  const res = await API.get("/projects");
-  console.log(res, "response");
+// export const getAllProjects = async () => {
+//   const res = await API.get("/projects");
+//   console.log(res, "response");
 
+//   return res.data;
+// };
+
+export const getAllProjects = async (skip = 0, limit = 100) => {
+  const res = await API.get(`/projects/?skip=${skip}&limit=${limit}`);
   return res.data;
 };
+
+
 
 
 
@@ -88,10 +96,11 @@ export const removeProjectMember = async (project_id, user_id) => {
 };
 
 //  Get all users (for dropdowns)
-export const getAllUsers = async () => {
-  const res = await API.get("/users"); // This will automatically attach token
-  return res.data; // returns array of users
+export const getAllUsers = async (skip = 0, limit = 100) => {
+  const res = await API.get(`/users/?skip=${skip}&limit=${limit}`);
+  return res.data;
 };
+
 
 //  Get All Boards by Project
 export const getBoards = async (project_id) => {
@@ -109,7 +118,7 @@ export const createBoard = async (boardData) => {
 
 //  Get Board by ID
 export const getBoardById = async (board_id) => {
-  const res = await API.get(`/boards?project_id=${board_id}`);
+  const res = await API.get(`/boards/?project_id=${board_id}`);
   return res.data;
 };
 
@@ -323,17 +332,14 @@ export const updateIssue = async (issueId, payload) => {
 
 // payload = { project_id: "...", comment: "string" }
 export const ProjectComments = async (project_id, comment) => {
-  if (typeof comment !== "string") {
-    comment = String(comment); 
-  }
-
   const res = await API.post(`/comments/`, {
     project_id,
-    comment,
+    comment, // string only!
   });
-
   return res.data;
 };
+
+
 export const getProjectComments = async (project_id) => {
   const res = await API.get(`/comments/?project_id=${project_id}`);
   return res.data;
@@ -351,7 +357,7 @@ export const epicComments = async (epic_id, comment) => {
     comment = String(comment); 
   }
 
-  const res = await API.post(`/comments`, {
+  const res = await API.post(`/comments/`, {
     epic_id,
     comment
   });
@@ -360,13 +366,13 @@ export const epicComments = async (epic_id, comment) => {
 
 
 export const getEpicComments = async (epic_id) => {
-  const res = await API.get(`/comments?epic_id=${epic_id}`);
+  const res = await API.get(`/comments/?epic_id=${epic_id}`);
   return res.data;
 };
 
 
 export const SprintComments = async (sprint_id, comment) => {
-  const res = await API.post(`/comments`, {
+  const res = await API.post(`/comments/`, {
     sprint_id,
     comment
   });
@@ -374,13 +380,13 @@ export const SprintComments = async (sprint_id, comment) => {
 };
 
 export const getSprintComments = async (sprint_id) => {
-  const res = await API.get(`/comments?sprint_id=${sprint_id}`);
+  const res = await API.get(`/comments/?sprint_id=${sprint_id}`);
   return res.data;
 };
 
 
 export const IssueComments = async (issue_id, comment) => {
-  const res = await API.post(`/comments`, { 
+  const res = await API.post(`/comments/`, { 
      issue_id,
     comment
   });
@@ -388,7 +394,7 @@ export const IssueComments = async (issue_id, comment) => {
 };
 
 export const getIssueComments = async (issue_id) => {
-  const res = await API.get(`/comments?issue_id=${issue_id}`);
+  const res = await API.get(`/comments/?issue_id=${issue_id}`);
   return res.data;
 };
 
