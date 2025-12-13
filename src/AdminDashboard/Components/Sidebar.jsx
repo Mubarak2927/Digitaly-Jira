@@ -66,8 +66,18 @@ const handleDelete = async (id) => {
   }, []);
 
   return (
-    <div className="w-64 h-screen bg-white   border-r shadow-lg/40 p-5 flex flex-col">
-      {/* Projects Section */}
+    <div className="w-64 h-screen bg-white    shadow-lg/40 p-5 flex flex-col">
+
+
+      <div className="mb-10 flex items-center gap-2">
+        <p className="bg-blue-600 w-fit px-2 py-0.5 text-white rounded-lg">
+          <h1 className="text-2xl">
+            D
+          </h1>
+        </p>
+        <p className="text-2xl font-semibold">Digitaly</p>
+      </div>
+      
       <div className="mb-3">
         <div
           className="flex justify-between p-2 rounded-lg items-center cursor-pointer border transition"
