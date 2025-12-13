@@ -14,6 +14,7 @@ import {
   Calendar,
   Clock,
   Trash2,
+  AlarmClockPlus,
 } from "lucide-react";
 import { div } from "framer-motion/client";
 import { deleteProject } from "../../Api/projectAPI";
@@ -46,18 +47,18 @@ const Sidebar = ({
     onSelectEmployeeSection(section);
   };
 
-const handleDelete = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this project?")) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this project?"))
+      return;
 
-  try {
-    await deleteProject(id);
-    alert("Project deleted successfully ✅");
-    setOpenMenuId(null);
-  } catch (err) {
-    alert("Failed to delete project ❌");
-  }
-};
-
+    try {
+      await deleteProject(id);
+      alert("Project deleted successfully ✅");
+      setOpenMenuId(null);
+    } catch (err) {
+      alert("Failed to delete project ❌");
+    }
+  };
 
   useEffect(() => {
     const handleOutside = () => setOpenMenuId(null);
@@ -67,17 +68,13 @@ const handleDelete = async (id) => {
 
   return (
     <div className="w-64 h-screen bg-white    shadow-lg/40 p-5 flex flex-col">
-
-
       <div className="mb-10 flex items-center gap-2">
-        <p className="bg-blue-600 w-fit px-2 py-0.5 text-white rounded-lg">
-          <h1 className="text-2xl">
-            D
-          </h1>
-        </p>
+        <h1 className="bg-blue-600 w-fit px-2 py-0.5 text-white rounded-lg">
+          <h1 className="text-2xl">D</h1>
+        </h1>
         <p className="text-2xl font-semibold">Digitaly</p>
       </div>
-      
+
       <div className="mb-3">
         <div
           className="flex justify-between p-2 rounded-lg items-center cursor-pointer border transition"
@@ -135,14 +132,12 @@ const handleDelete = async (id) => {
                     >
                       <MoreHorizontal
                         size={18}
-                        className="text-white hover:text-white shrink-0 ml-2"
+                        className="text-white hover:text-white cursor-pointer shrink-0 ml-2"
                       />
                     </button>
 
                     {openMenuId === p.id && (
-                      <div
-                        className="absolute right-8 top-0 bg-white border shadow-md rounded-md text-sm z-50"
-                      >
+                      <div className="absolute right-8 top-0 bg-white border shadow-md rounded-md text-sm z-50">
                         <button
                           onClick={() => handleDelete(p.id)}
                           className="block p-1.5 text-red-600 hover:scale-105 cursor-pointer w-full text-left"
@@ -158,10 +153,24 @@ const handleDelete = async (id) => {
           </div>
         )}
       </div>
+      <div className="border px-3 py-2 rounded-md flex justify-between items-center">
+  <h1 className="flex items-center gap-3">
+    <AlarmClockPlus size={23} />
+    <span className="font-bold">Create Sprint</span>
+  </h1>
+
+  <button
+    title="Create Sprint"
+    className="hover:scale-110 cursor-pointer"
+       // 👈 CONNECTED
+  >
+    <Plus size={20} />
+  </button>
+</div>
 
       {/* Employee Section */}
       <div
-        className=" text-black px-3  border py-2 rounded-md cursor-pointer flex justify-between items-center transition"
+        className=" text-black px-3  mt-5 border py-2 rounded-md cursor-pointer flex justify-between items-center transition"
         onClick={() => setShowEmployeeMenu(!showEmployeeMenu)}
       >
         <h1 className="flex items-center font-bold gap-2">

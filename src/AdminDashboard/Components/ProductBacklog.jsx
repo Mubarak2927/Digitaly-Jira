@@ -111,17 +111,15 @@ export default function ProductBacklog(selectedProject) {
   try {
     const type = createForm.type.toLowerCase();
 
-    const newTask = {
-      name: createForm.title,
-      project_id: selectedProject.selectedProject.id,
-      type: type,
-      epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
-      priority: createForm.priority,
-      story_points:
-        type === "story"
-          ? Number(createForm.story_points)
-          : 0, // 🔥 FIX
-    };
+  const newTask = {
+  name: createForm.title,
+  project_id: selectedProject.selectedProject.id,
+  type: type,
+  epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
+  priority: createForm.priority,
+  ...(type === "story" && { story_points: Number(createForm.story_points) }),
+};
+
 
     console.log("Creating Task Payload:", newTask);
 

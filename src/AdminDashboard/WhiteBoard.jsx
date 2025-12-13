@@ -330,6 +330,11 @@ const WhiteBoard = () => {
       newProject={newProject}
       setNewProject={setNewProject}
       users={users}
+            onConfirm={() => {
+        setShowSidebarProjectModal(false); 
+        fetchProjects();                  // ✅ PROJECT REFRESH
+      }}
+
     />
   </Modal>
 )}

@@ -5,6 +5,16 @@ import { Trash, Trash2 } from "lucide-react";
 
 const BulkAPI = axios.create({
   baseURL: "https://project-management-sfrn.onrender.com/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+BulkAPI.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token"); // 👈 token key
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export default function ProjectModal({
@@ -15,54 +25,41 @@ export default function ProjectModal({
 }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const fileInputRef = useRef(null); 
+  const fileInputRef = useRef(null);
 
   const handleRemoveFile = () => {
     setFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; 
+      fileInputRef.current.value = "";
     }
   };
 
   const handleBulkUpload = async () => {
-    if (!file) return alert("Please Select Excel file");
+    if (!file) return alert("Please select Excel file");
 
     setLoading(true);
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const projects = XLSX.utils.sheet_to_json(sheet);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-   try {
-  for (const project of projects) {
-    const payload = {
-      name: project.Name || project.name || "",
-      key: project.Key || project.key || "",
-      description: project.Description || project.description || "No description",
-    };
+      await BulkAPI.post("/bulk-import/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    if (!payload.name || !payload.key) {
-      console.error("Skipping invalid row:", payload);
-      continue;
+      alert("Projects created successfully");
+
+      handleRemoveFile(); 
+      onConfirm(); 
+    } catch (error) {
+      console.error(error);
+      alert("Bulk upload failed ");
+    } finally {
+      setLoading(false);
     }
-
-    await BulkAPI.post("/bulk-import/upload", payload);
-  }
-
-  alert("Bulk projects created successfully 🎉");
-  handleRemoveFile();
-  onConfirm();
-} catch (err) {
-  console.error(err);
-  alert("Bulk upload failed ❌");
-} finally {
-  setLoading(false);
-}
-    reader.readAsArrayBuffer(file);
-  };}
+  };
 
   return (
     <div className="flex flex-col text-white max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 p-4">
@@ -73,14 +70,10 @@ export default function ProjectModal({
       <div className="flex flex-col divide-y divide-gray-800">
         {/* -------- 1️⃣ Basic Details -------- */}
         <div className="space-y-5 pb-6">
-          <h2 className="text-lg font-semibold text-blue-400">
-            Basic Details
-          </h2>
+          <h2 className="text-lg font-semibold text-blue-400">Basic Details</h2>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-300">
-              Project Name
-            </label>
+            <label className="text-sm text-gray-300">Project Name</label>
             <input
               type="text"
               className="p-3 rounded-lg bg-gray-900 border border-gray-700"
@@ -92,9 +85,7 @@ export default function ProjectModal({
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-300">
-              Project Key
-            </label>
+            <label className="text-sm text-gray-300">Project Key</label>
             <input
               type="text"
               className="p-3 rounded-lg bg-gray-900 border border-gray-700"
@@ -107,13 +98,11 @@ export default function ProjectModal({
         </div>
 
         {/* -------- 2️⃣ Description -------- */}
-        <div className="space-y-5 py-6">
-          <h2 className="text-lg font-semibold text-pink-400">
-            Description
-          </h2>
+        <div className="py-5">
+          <h2 className="text-lg font-semibold text-pink-400">Description</h2>
 
           <textarea
-            className="p-3 rounded-lg w-full bg-gray-900 border border-gray-700 resize-none h-28"
+            className="p-3 rounded-lg w-full mt-3 bg-gray-900 border resize-none h-28"
             value={newProject.description}
             onChange={(e) =>
               setNewProject({
@@ -127,17 +116,26 @@ export default function ProjectModal({
         {/* -------- 3️⃣ Bulk Upload -------- */}
         <div className="space-y-5 pt-6">
           <h2 className="text-lg font-semibold text-green-400">
-            Bulk Upload (Excel)
+            Upload File for Create Project
           </h2>
 
           {/* File Input */}
-          <input
+          <div className="flex flex-col gap-3">
+            <input
             ref={fileInputRef}
             type="file"
             accept=".xlsx,.xls"
             onChange={(e) => setFile(e.target.files[0])}
-            className="text-sm text-gray-300"
+            className="text-sm text-gray-300 hidden"
           />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current.click()}
+            className="bg-blue-600 p-1 rounded-lg hover:bg-blue-700"
+          >
+            Choose Excel File
+          </button>
+          </div>
 
           {/* Selected File Preview */}
           {file && (
@@ -150,17 +148,17 @@ export default function ProjectModal({
                 onClick={handleRemoveFile}
                 className="text-red-400 hover:text-red-500 text-sm"
               >
-              <Trash2 size={15} className="cursor-pointer hover:scale-110"/>
+                <Trash2 size={15} className="cursor-pointer hover:scale-110" />
               </button>
             </div>
           )}
 
           <button
+            className="bg-green-600 px-1 py-2 rounded-lg"
             onClick={handleBulkUpload}
             disabled={loading || !file}
-            className="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
-            {loading ? "Uploading..." : "Upload File To Create Projects"}
+            {loading ? "Uploading..." : "Upload File"}
           </button>
         </div>
       </div>

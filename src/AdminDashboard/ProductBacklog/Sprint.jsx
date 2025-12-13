@@ -21,6 +21,7 @@ export default function Sprint({
   getTasks,
   getSprints,
 }) {
+
   const [sprints, setSprints] = useState([]);
   const [selectedSprint, setSelectedSprint] = useState(null);
   const [runningSprintId, setRunningSprintId] = useState(null); // <-- NEW
@@ -48,6 +49,14 @@ const [newComment, setNewComment] = useState("");
   useEffect(() => {
     fetchSprints();
   }, [filteredBacklog]);
+
+  
+  useEffect(() => {
+  if (openFromSidebar) {
+    setShowModal(true);   // 👈 sidebar click-la open
+  }
+}, [openFromSidebar]);
+
 
   const sprintfetch = async (sprintId) => {
     try {

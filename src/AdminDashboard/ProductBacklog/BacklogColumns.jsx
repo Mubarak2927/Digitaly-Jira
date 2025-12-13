@@ -140,7 +140,11 @@ const BacklogColumns = ({
   if (!createForm.title.trim()) return alert("Please enter a task title");
   if (!createForm.type.trim()) return alert("Please choose a task type");
 
+  console.log(createForm);
+  
+
   createTask();
+
 
   // 🔥 RESET FORM AFTER ADD
   setCreateForm({
@@ -221,7 +225,6 @@ const BacklogColumns = ({
     alert("Failed to delete task ❌");
   }
 };
-
 
 
 
