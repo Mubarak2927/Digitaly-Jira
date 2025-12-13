@@ -45,6 +45,7 @@ export default function ProductBacklog(selectedProject) {
     epicId: null,
     assignee: "",
     name: "",
+    story_points: "",
   });
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function ProductBacklog(selectedProject) {
 
     // Clear selected epic if deleted
     setSelectedEpic((prev) => (prev?.id === id ? null : prev));
+     alert("Epic deleted successfully ✅");
   } catch (error) {
     console.error("Delete failed", error);
   }
@@ -106,35 +108,45 @@ export default function ProductBacklog(selectedProject) {
   console.log(tasks, sprints, "total tasks");
 
   const createTask = async () => {
-    try {
-      const type = createForm.type.toLowerCase();
+  try {
+    const type = createForm.type.toLowerCase();
 
-      console.log(selectedEpic, createForm.epicId, "selected");
+    const newTask = {
+      name: createForm.title,
+      project_id: selectedProject.selectedProject.id,
+      type: type,
+      epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
+      priority: createForm.priority,
+      story_points:
+        type === "story"
+          ? Number(createForm.story_points)
+          : 0, // 🔥 FIX
+    };
 
-      const newTask = {
-        name: createForm.title,
-        project_id: selectedProject.selectedProject.id,
-        type: type,
-        epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
-        priority: createForm.priority,
-        story_points:
-    createForm.type === "story"
-      ? createForm.story_points
-      : undefined,
-      };
+    console.log("Creating Task Payload:", newTask);
 
-      console.log(newTask, "new task");
+    const data = await createIssues(newTask);
 
-      const data = await createIssues(newTask);
-      console.log(data, "after create task");
-      alert("Succesfully Created Task");
-      getTasks();
+    alert("Successfully Created Task");
 
-      setTasks((prev) => [...prev, data]);
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
+    getTasks();
+
+    // 🔥 RESET FORM AFTER CREATE
+    setCreateForm({
+      type: "Task",
+      title: "",
+      description: "",
+      epicId: null,
+      assignee: "",
+      priority: "",
+      story_points: "",
+    });
+
+  } catch (error) {
+    console.error("Error creating task:", error);
+  }
+};
+
 
   const activeSprintIds = useMemo(
     () => sprints.filter((s) => s.status === "Active").flatMap((s) => s.tasks),

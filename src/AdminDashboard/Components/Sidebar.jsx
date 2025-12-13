@@ -46,15 +46,18 @@ const Sidebar = ({
     onSelectEmployeeSection(section);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const res = await deleteProject(id);
-      console.log(res, "delete response");
-      setOpenMenuId(null);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this project?")) return;
+
+  try {
+    await deleteProject(id);
+    alert("Project deleted successfully ✅");
+    setOpenMenuId(null);
+  } catch (err) {
+    alert("Failed to delete project ❌");
+  }
+};
+
 
   useEffect(() => {
     const handleOutside = () => setOpenMenuId(null);

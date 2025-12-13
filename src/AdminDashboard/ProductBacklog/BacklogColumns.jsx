@@ -137,12 +137,24 @@ const BacklogColumns = ({
   };
 
   const handleCreate = () => {
-    if (!createForm.title.trim()) return alert("Please enter a task title");
-    if (!createForm.type.trim()) return alert("Please choose a task type");
+  if (!createForm.title.trim()) return alert("Please enter a task title");
+  if (!createForm.type.trim()) return alert("Please choose a task type");
 
-    createTask();
-    fetchSprints();
-  };
+  createTask();
+
+  // 🔥 RESET FORM AFTER ADD
+  setCreateForm({
+    title: "",
+    type: "Task",
+    description: "",
+    priority: "",
+    epicId: "",
+    story_points: "",
+  });
+
+  fetchSprints();
+};
+
 
   const handleAssignToSprint = async () => {
     if (!selectedSprintId || selectedTasksForSprint.length === 0) return;
@@ -194,13 +206,24 @@ const BacklogColumns = ({
   };
 
   const handleDeleteIssue = async (issue_id) => {
-    try {
-      await deleteIssues(issue_id);
-      getTasks();
-    } catch (error) {
-      console.error("Error deleting issue:", error);
-    }
-  };
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this task?"
+  );
+
+  if (!confirmDelete) return; // ❌ cancel clicked
+
+  try {
+    await deleteIssues(issue_id);
+    alert("Task deleted successfully ✅");
+    getTasks();
+  } catch (error) {
+    console.error("Error deleting issue:", error);
+    alert("Failed to delete task ❌");
+  }
+};
+
+
+
 
   const getCommenst = async () => {
     try {
@@ -211,7 +234,7 @@ const BacklogColumns = ({
 
   return (
     <div>
-      <div className=" bg-white  p-4 sm:p-5 w-full  sm:w-[90vw]  md:w-[70vw]  lg:w-[50vw] xl:w-[55vw] border border-black  rounded-2xl shadow-lg/60"
+      <div className=" bg-white  p-4 sm:p-5 w-full  sm:w-[90vw]  md:w-[70vw]  lg:w-[47.5vw] xl:w-[50vw] border border-black  rounded-2xl shadow-lg/60"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
@@ -253,7 +276,7 @@ const BacklogColumns = ({
 
             {/* ⭐ STORY POINTS ONLY FOR STORY */}
             {/* Story Points ONLY when type = Story */}
-            {/* {createForm.type.toLowerCase() === "story" && (
+            {createForm.type.toLowerCase() === "story" && (
               <select
                 className="border text-black border-black px-2 py-1 rounded text-sm"
                 value={createForm.story_points || ""}
@@ -271,7 +294,7 @@ const BacklogColumns = ({
                   </option>
                 ))}
               </select>
-            )} */}
+            )}
 
             <select
               className="border border-black text-black px-2 py-1 rounded text-sm"

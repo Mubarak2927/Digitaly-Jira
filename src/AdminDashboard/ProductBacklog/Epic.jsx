@@ -1,6 +1,6 @@
-import { SquarePen, Trash2, MoreVertical } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { epicComments, getEpicComments } from '../../Api/projectAPI';
+import { SquarePen, Trash2, MoreVertical } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { epicComments, getEpicComments } from "../../Api/projectAPI";
 
 const Epic = ({
   epics,
@@ -10,7 +10,7 @@ const Epic = ({
   setCreateForm,
   handleCreateItem,
   handleDeleteEpic,
-  handleUpdateEpic
+  handleUpdateEpic,
 }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -18,7 +18,7 @@ const Epic = ({
   // Details Modal
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailsEpic, setDetailsEpic] = useState(null);
-  const [commentText, setCommentText] = useState('');
+  const [commentText, setCommentText] = useState("");
   const [commentsList, setCommentsList] = useState([]);
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -33,40 +33,32 @@ const Epic = ({
     }
   };
 
- const saveComment = async () => {
-  try {
-    const res = await epicComments(detailsEpic.id, commentText);
-    console.log(res);
-    setCommentText("");
-     fetchComments(detailsEpic.id);
-   
+  const saveComment = async () => {
+    try {
+      const res = await epicComments(detailsEpic.id, commentText);
+      console.log(res);
+      setCommentText("");
+      fetchComments(detailsEpic.id);
+    } catch (err) {
+      console.log("Error Saving Comment:", err);
+    }
+  };
 
-  } catch (err) {
-    console.log("Error Saving Comment:", err);
-  }
-};
+  const fetchComments = async () => {
+    try {
+      const res = await getEpicComments(detailsEpic.id);
+      console.log(res);
+      setCommentsList(res || []);
+    } catch (err) {
+      console.log("Error Fetching Comments:", err);
+    }
+  };
 
-
-const fetchComments = async () => {
-  try {
-    const res = await getEpicComments(detailsEpic.id);
-    console.log(res);
-    setCommentsList(res || []);
-  } catch (err) {
-    console.log("Error Fetching Comments:", err);
-  }
-};
-
-
-useEffect(() => {
-  if (detailsEpic?.id) {
-    fetchComments(detailsEpic.id);
-  }
-}, [detailsEpic]);
-
-
-
-
+  useEffect(() => {
+    if (detailsEpic?.id) {
+      fetchComments(detailsEpic.id);
+    }
+  }, [detailsEpic]);
 
   return (
     <div className="p-4 border border-black rounded-2xl shadow-lg/60">
@@ -86,15 +78,18 @@ useEffect(() => {
         {epics.map((e) => (
           <div
             key={e.id}
-            onClick={() => setSelectedEpic(prev => prev?.id === e.id ? null : e)}
+            onClick={() =>
+              setSelectedEpic((prev) => (prev?.id === e.id ? null : e))
+            }
             className={`p-3 rounded-lg cursor-pointer group ${
               selectedEpic?.id === e.id ? "bg-white" : "hover:bg-white/5"
             }`}
           >
             <div className="flex items-center border border-black p-2 rounded-2xl bg-gray-300 justify-between relative">
               <div>
-                <div className="font-medium text-black">{e.name}</div>
-                <div className="text-xs text-black">Epic ID: {e.id}</div>
+                <div className="font-medium text-black capitalize">
+                  {e.name}
+                </div>
               </div>
 
               {/* Menu */}
@@ -111,7 +106,6 @@ useEffect(() => {
 
                 {openDropdownId === e.id && (
                   <div className="absolute right-0 mt-1 w-36 bg-white border border-black rounded shadow-lg z-50">
-
                     {/* Edit */}
                     <button
                       onClick={(ev) => {
@@ -129,6 +123,13 @@ useEffect(() => {
                     <button
                       onClick={(ev) => {
                         ev.stopPropagation();
+
+                        const confirmDelete = window.confirm(
+                          "Are you sure you want to delete this epic?"
+                        );
+
+                        if (!confirmDelete) return;
+
                         handleDeleteEpic(e.id);
                         setOpenDropdownId(null);
                       }}
@@ -149,7 +150,6 @@ useEffect(() => {
                     >
                       View Details
                     </button>
-
                   </div>
                 )}
               </div>
@@ -164,7 +164,11 @@ useEffect(() => {
           placeholder="New epic title"
           value={createForm.type === "Epic" ? createForm.name : ""}
           onChange={(e) =>
-            setCreateForm(prev => ({ ...prev, type: "Epic", name: e.target.value }))
+            setCreateForm((prev) => ({
+              ...prev,
+              type: "Epic",
+              name: e.target.value,
+            }))
           }
           className="w-full border-black border text-black px-3 py-2 rounded-md text-sm"
         />
@@ -188,7 +192,7 @@ useEffect(() => {
               className="w-full border border-black px-3 py-2 rounded mb-3 text-black"
               value={editData?.name || ""}
               onChange={(e) =>
-                setEditData(prev => ({ ...prev, name: e.target.value }))
+                setEditData((prev) => ({ ...prev, name: e.target.value }))
               }
             />
             <div className="flex justify-end gap-2 mt-3">
@@ -216,7 +220,6 @@ useEffect(() => {
       {showDetailsModal && detailsEpic && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white w-[400px] border border-black rounded-2xl p-5">
-
             <h3 className="text-xl font-semibold text-black mb-3">
               Epic Details
             </h3>
@@ -227,27 +230,23 @@ useEffect(() => {
             <h4 className="text-black font-semibold mb-2">Comments</h4>
 
             {/* Show comments */}
-         <div className="max-h-32 overflow-auto border border-gray-400 p-2 rounded mb-3 bg-gray-100">
-  {commentsList.length === 0 ? (
-    <p className="text-gray-500 text-sm">No comments yet.</p>
-  ) : (
-    commentsList.map((c, i) => (
-      <div key={i} className="border-b pb-2 mb-2">
-        <p className="text-black font-semibold text-sm">
-          {c.author_name || "Unknown User"}
-        </p>
-        <p className="text-black text-sm">
-          {c.comment}
-        </p>
-        <p className="text-gray-500 text-xs mt-1">
-          {new Date(c.created_at).toLocaleString()}
-        </p>
-      </div>
-    ))
-  )}
-</div>
-
-
+            <div className="max-h-32 overflow-auto border border-gray-400 p-2 rounded mb-3 bg-gray-100">
+              {commentsList.length === 0 ? (
+                <p className="text-gray-500 text-sm">No comments yet.</p>
+              ) : (
+                commentsList.map((c, i) => (
+                  <div key={i} className="border-b pb-2 mb-2">
+                    <p className="text-black font-semibold text-sm">
+                      {c.author_name || "Unknown User"}
+                    </p>
+                    <p className="text-black text-sm">{c.comment}</p>
+                    <p className="text-gray-500 text-xs mt-1">
+                      {new Date(c.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
 
             {/* Add comment */}
             <textarea
@@ -275,7 +274,6 @@ useEffect(() => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
