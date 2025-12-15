@@ -257,7 +257,6 @@ const WhiteBoard = () => {
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
           <div >
-   <h1 className="text-black text-4xl capitalize font-bold">{selectedProject?.name} </h1>
 </div>
 
           {selectedProject && !activeEmployeeSection && (

@@ -50,12 +50,6 @@ const [newComment, setNewComment] = useState("");
     fetchSprints();
   }, [filteredBacklog]);
 
-  
-  useEffect(() => {
-  if (openFromSidebar) {
-    setShowModal(true);   // 👈 sidebar click-la open
-  }
-}, [openFromSidebar]);
 
 
   const sprintfetch = async (sprintId) => {
@@ -73,36 +67,6 @@ const [newComment, setNewComment] = useState("");
       setSprints(data || []);
     } catch (error) {
       console.error("Error fetching sprints:", error);
-    }
-  };
-
-  const handleCreateSprint = async () => {
-    if (
-      !sprintForm.name ||
-      !sprintForm.start_date ||
-      !sprintForm.end_date ||
-      !sprintForm.goal
-    ) {
-      alert("Please fill all fields");
-      return;
-    }
-    try {
-      const payload = {
-        name: sprintForm.name,
-        goal: sprintForm.goal,
-        start_date: new Date(sprintForm.start_date).toISOString(),
-        end_date: new Date(sprintForm.end_date).toISOString(),
-        project_id: selectedProject.selectedProject.id,
-        created_by: loggedInUserId,
-      };
-
-      await createSprint(payload);
-
-      setShowModal(false);
-      setSprintForm({ name: "", goal: "", start_date: "", end_date: "" });
-      fetchSprints();
-    } catch (err) {
-      console.error("Error creating sprint:", err);
     }
   };
 
@@ -223,13 +187,6 @@ const handleAddComment = async () => {
     <div className="bg-white border border-black p-5 rounded-2xl shadow-lg/60 text-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg text-black font-semibold">Sprints</h2>
-
-        <button
-          className="bg-green-400 hover:bg-green-500 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
-          onClick={() => setShowModal(true)}
-        >
-          + Create Sprint
-        </button>
       </div>
 
       {sprints.length === 0 && (
@@ -296,67 +253,7 @@ const handleAddComment = async () => {
 >
   <EyeIcon size={14} />
 </button>
-{showSprintDetails && sprintDetails && (
-  <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-2xl w-[500px] shadow-xl border border-black">
 
-      <h3 className="text-xl font-bold text-black mb-3">
-        Sprint Details
-      </h3>
-
-      <p className="text-black"><b>Name:</b> {sprintDetails.name}</p>
-      <p className="text-black"><b>Goal:</b> {sprintDetails.goal}</p>
-      <p className="text-black">
-        <b>Start:</b> {new Date(sprintDetails.start_date).toLocaleDateString()}
-      </p>
-      <p className="text-black mb-3">
-        <b>End:</b> {new Date(sprintDetails.end_date).toLocaleDateString()}
-      </p>
-
-      <hr className="my-3" />
-
-      <h4 className="text-lg text-black font-semibold mb-2">Comments</h4>
-
-      <div className="max-h-[150px] overflow-y-auto mb-3 bg-gray-200 p-3 rounded">
-        {comments.length > 0 ? (
-          comments.map((c) => (
-            <div key={c.id} className="bg-white p-2 rounded mb-2 border">
-              <div className="flex justify-between">
-                <p className="text-black">{c.comment}</p>
-              <p className="text-black">By: {c.author_name}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-sm">No comments yet.</p>
-        )}
-      </div>
-
-      <textarea
-        className="w-full border px-3 py-2 rounded text-black mb-3"
-        placeholder="Add a comment..."
-        value={newComment}
-        onChange={(e) => setNewComment(e.target.value)}
-      />
-
-      <div className="flex justify-end gap-2">
-        <button
-          className="bg-gray-600 text-white px-4 py-1 rounded"
-          onClick={() => setShowSprintDetails(false)}
-        >
-          Close
-        </button>
-
-        <button
-          className="bg-blue-600 text-white px-4 py-1 rounded"
-          onClick={handleAddComment}
-        >
-          Add Comment
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
 
                 <button

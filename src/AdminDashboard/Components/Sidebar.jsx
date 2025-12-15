@@ -17,7 +17,7 @@ import {
   AlarmClockPlus,
 } from "lucide-react";
 import { div } from "framer-motion/client";
-import { deleteProject } from "../../Api/projectAPI";
+import { createSprint, deleteProject, getSprint } from "../../Api/projectAPI";
 
 const Sidebar = ({
   projects,
@@ -26,6 +26,7 @@ const Sidebar = ({
   selectedId,
   onSelectEmployeeSection,
   load,
+  selectedProject 
 }) => {
   const navigate = useNavigate();
 
@@ -33,6 +34,19 @@ const Sidebar = ({
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [activeEmployeeSection, setActiveEmployeeSection] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [showSprintMenu, setShowSprintMenu] = useState(false);
+  const [openSprintModal, setOpenSprintModal] = useState(false);
+  const [sprints, setSprints] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+
+
+  const [sprintForm, setSprintForm] = useState({
+    name: "",
+    projectId: "",
+    startDate: "",
+    endDate: "",
+  });
 
   const loginRole = localStorage.getItem("role");
 
@@ -46,6 +60,26 @@ const Sidebar = ({
     setActiveEmployeeSection(section);
     onSelectEmployeeSection(section);
   };
+  const handleWeekSelect = (days) => {
+  setSelectedWeek(days);
+  setSprintByWeeks(days);
+};
+
+useEffect(() => {
+  if (!selectedId) return;
+
+  const fetchSprints = async () => {
+     try {
+       const data = await getSprint(selectedProject.selectedProject.id);
+       setSprints(data || []);
+     } catch (error) {
+       console.error("Error fetching sprints:", error);
+     }
+   };
+
+  fetchSprints();
+}, [selectedId]);
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this project?"))
@@ -65,6 +99,51 @@ const Sidebar = ({
     document.addEventListener("click", handleOutside);
     return () => document.removeEventListener("click", handleOutside);
   }, []);
+
+ const handleCreateSprint = async () => {
+  try {
+    const payload = {
+      name: sprintForm.name,
+      goal: sprintForm.goal,
+      project_id: sprintForm.projectId,
+      start_date: new Date(sprintForm.startDate).toISOString(),
+      end_date: new Date(sprintForm.endDate).toISOString(),
+    };
+
+    await createSprint(payload);
+
+    // Refresh sprint list for the project of the created sprint
+    const res = await getSprint(sprintForm.projectId,sprintForm.name);
+    setSprints(res?.data || []);
+
+    setOpenSprintModal(false);
+  } catch (error) {
+    console.error("Error creating sprint:", error.response?.data || error);
+  }
+};
+
+
+const getProjectName = (projectId) => {
+  const project = projects?.find((p) => p.id === projectId);
+  return project ? project.name : "Unknown Project";
+};
+
+
+
+
+  const setSprintByWeeks = (days) => {
+    const start = new Date();
+    const end = new Date();
+    end.setDate(start.getDate() + days);
+
+    const formatDate = (date) => date.toISOString().split("T")[0];
+
+    setSprintForm({
+      ...sprintForm,
+      startDate: formatDate(start),
+      endDate: formatDate(end),
+    });
+  };
 
   return (
     <div className="w-64 h-screen bg-white    shadow-lg/40 p-5 flex flex-col">
@@ -153,20 +232,194 @@ const Sidebar = ({
           </div>
         )}
       </div>
-      <div className="border px-3 py-2 rounded-md flex justify-between items-center">
-  <h1 className="flex items-center gap-3">
-    <AlarmClockPlus size={23} />
-    <span className="font-bold">Create Sprint</span>
-  </h1>
+      <div className="mt-3">
+        <div
+          className="border px-3 py-2 cursor-pointer transition rounded-md flex justify-between items-center"
+          onClick={() => setShowSprintMenu(!showSprintMenu)}
+        >
+          <h1 className="flex items-center gap-3">
+            <AlarmClockPlus size={23} />
+            <span className="font-bold">Sprints</span>
+          </h1>
+
+          <button className="hover:scale-110 transition cursor-pointer">
+            {showSprintMenu ? (
+              <ChevronUp size={20} />
+            ) : (
+              <ChevronDown size={20} />
+            )}
+          </button>
+        </div>
+
+        {/* Sprint Dropdown */}
+   {showSprintMenu && (
+  <div className="mt-2 px-3 space-y-3">
+
+    <button
+      onClick={() => setOpenSprintModal(true)}
+      className="ml-2 text-md flex items-center gap-2 cursor-pointer py-2"
+    >
+      <span className="text-2xl">+</span> Create Sprint
+    </button>
+
+    {sprints.length === 0 ? (
+      <p className="text-xs text-gray-400 ml-4">No sprints</p>
+    ) : (
+      sprints.map((sprint) => (
+        <div key={sprint.id} className="ml-4">
+          
+          {/* Project Name */}
+          <p className="text-xs font-bold text-gray-600 uppercase">
+            {getProjectName(sprint.project_id)}
+          </p>
+
+          {/* Sprint Name */}
+          <div className="ml-3 px-3 py-1 rounded-md text-sm cursor-pointer hover:bg-blue-100">
+            🏃 {sprint.name}
+          </div>
+
+        </div>
+      ))
+    )}
+  </div>
+)}
+
+
+      </div>
+
+      {openSprintModal && (
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+          onClick={() => setOpenSprintModal(false)}
+        >
+          <div
+            className="bg-white w-99 h-auto rounded-xl p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-bold mb-4">Create Sprint</h2>
+
+            {/* Sprint Name */}
+            <input
+              type="text"
+              placeholder="Sprint name"
+              value={sprintForm.name}
+              onChange={(e) =>
+                setSprintForm({ ...sprintForm, name: e.target.value })
+              }
+              className="w-full border px-3 py-2 rounded-md mb-3"
+            />
+              <input
+              type="text"
+              placeholder="Goal"
+              value={sprintForm.goal}
+              onChange={(e) =>
+                setSprintForm({ ...sprintForm, goal: e.target.value })
+              }
+              className="w-full border px-3 py-2 rounded-md mb-3"
+            />
+
+            {/* Project Dropdown */}
+            <select
+              value={sprintForm.projectId}
+              onChange={(e) =>
+                setSprintForm({ ...sprintForm, projectId: e.target.value })
+              }
+              className="w-full border rounded-md px-3 py-2 mt-5 bg-white"
+            >
+              <option value="">Select Project</option>
+              {projects?.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+
+            {/* 🔥 Week Buttons */}
+           <div className="flex gap-2 mt-5">
+  <button
+    onClick={() => handleWeekSelect(7)}
+    className={`flex-1 cursor-pointer rounded-xl p-1.5 shadow-lg/50 transition
+      ${
+        selectedWeek === 7
+          ? "bg-green-600 text-white scale-105"
+          : "bg-blue-600 text-white hover:scale-105"
+      }`}
+  >
+    Week 1
+  </button>
 
   <button
-    title="Create Sprint"
-    className="hover:scale-110 cursor-pointer"
-       // 👈 CONNECTED
+    onClick={() => handleWeekSelect(14)}
+    className={`flex-1 cursor-pointer rounded-xl p-1.5 shadow-lg/50 transition
+      ${
+        selectedWeek === 14
+          ? "bg-green-600 text-white scale-105"
+          : "bg-blue-600 text-white hover:scale-105"
+      }`}
   >
-    <Plus size={20} />
+    Week 2
+  </button>
+
+  <button
+    onClick={() => handleWeekSelect(28)}
+    className={`flex-1 cursor-pointer rounded-xl p-1.5 shadow-lg/50 transition
+      ${
+        selectedWeek === 28
+          ? "bg-green-600 text-white scale-105"
+          : "bg-blue-600 text-white hover:scale-105"
+      }`}
+  >
+    Week 4
   </button>
 </div>
+
+
+            {/* Dates (Manual also allowed) */}
+            <div className="  mt-5 ">
+              <div className="flex-col flex">
+                <label className="font-bold">Start Date</label>
+                <input
+                  type="date"
+                  value={sprintForm.startDate}
+                  onChange={(e) =>
+                    setSprintForm({ ...sprintForm, startDate: e.target.value })
+                  }
+                  className="w-full border px-3 py-2 rounded-md mb-3"
+                />
+              </div>
+
+              <div className="flex flex-col mt-3">
+                <label className="font-bold">End Date</label>
+                <input
+                  type="date"
+                  value={sprintForm.endDate}
+                  onChange={(e) =>
+                    setSprintForm({ ...sprintForm, endDate: e.target.value })
+                  }
+                  className="w-full border px-3 py-2 rounded-md mb-3"
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-3 mt-7 ">
+              <button
+                onClick={() => setOpenSprintModal(false)}
+                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white cursor-pointer rounded-md"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleCreateSprint}
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 cursor-pointer  text-white rounded-md"
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Employee Section */}
       <div
