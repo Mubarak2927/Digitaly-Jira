@@ -58,9 +58,8 @@ html {
   width: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: white;
-  border-radius: 10px;
+  background: gray;
+  border-radius:5px;
+  padding-top: 10;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: white;
-}
+

@@ -9,7 +9,7 @@ import {
   updateIssue,
 } from "../../Api/projectAPI";
 import { ClipboardCheck, Bug, BookOpen, Trash2, SquarePen } from "lucide-react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
@@ -69,38 +69,30 @@ const BacklogColumns = ({
 
   // -------------------------------
 
-  const handleEpicAssign = async () => {
-    if (!selectedEpicIdForModal) return alert("Select an Epic first");
-
-    try {
-      await updateTask(taskIdForEpic, {
-        epic_id: selectedEpicIdForModal,
-      });
-
-      toast.success("Epic Assigned Successfully ✔");
-      setShowEpicModal(false);
-      setSelectedEpicIdForModal("");
-      setTaskIdForEpic(null);
-      getTasks();
-    } catch (err) {
-      console.error("Epic assign error:", err);
-    }
-  };
-
   const handleIssueUpdate = async () => {
     if (!editIssueName.trim()) return alert("Name cannot be empty");
 
     try {
-     await updateIssue(editIssueId, {
-  name: editIssueName,
-  type: editIssueType,
-  priority: editIssuePriority,
-  epic_id: editIssueEpicId,
-  story_points: editIssueType === "story" ? editStoryPoints : undefined,
-});
+      // 🔹 Create payload
+      const payload = {
+        name: editIssueName,
+        type: editIssueType,
+        priority: editIssuePriority,
+        story_points: editIssueType === "story" ? editStoryPoints : undefined,
+      };
+
+      // 🔹 Only add epic_id if selected, else null to clear
+      if (editIssueEpicId) {
+        payload.epic_id = editIssueEpicId;
+      } else {
+        payload.epic_id = null;
+      }
+
+      await updateIssue(editIssueId, payload);
 
       toast.success("Issue updated ✔");
 
+      // 🔹 Reset edit modal state
       setShowEditModal(false);
       setEditIssueId(null);
       setEditIssueName("");
@@ -112,6 +104,7 @@ const BacklogColumns = ({
       getTasks();
     } catch (err) {
       console.error("Issue update error:", err);
+      toast.error("Failed to update issue ❌");
     }
   };
 
@@ -138,28 +131,25 @@ const BacklogColumns = ({
   };
 
   const handleCreate = () => {
-  if (!createForm.title.trim()) return alert("Please enter a task title");
-  if (!createForm.type.trim()) return alert("Please choose a task type");
+    if (!createForm.title.trim()) return alert("Please enter a task title");
+    if (!createForm.type.trim()) return alert("Please choose a task type");
 
-  console.log(createForm);
-  
+    console.log(createForm);
 
-  createTask();
+    createTask();
 
+    // 🔥 RESET FORM AFTER ADD
+    setCreateForm({
+      title: "",
+      type: "Task",
+      description: "",
+      priority: "",
+      epicId: "",
+      story_points: "",
+    });
 
-  // 🔥 RESET FORM AFTER ADD
-  setCreateForm({
-    title: "",
-    type: "Task",
-    description: "",
-    priority: "",
-    epicId: "",
-    story_points: "",
-  });
-
-  fetchSprints();
-};
-
+    fetchSprints();
+  };
 
   const handleAssignToSprint = async () => {
     if (!selectedSprintId || selectedTasksForSprint.length === 0) return;
@@ -211,23 +201,21 @@ const BacklogColumns = ({
   };
 
   const handleDeleteIssue = async (issue_id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this task?"
-  );
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
 
-  if (!confirmDelete) return; // ❌ cancel clicked
+    if (!confirmDelete) return; // ❌ cancel clicked
 
-  try {
-    await deleteIssues(issue_id);
-    toast.success("Task deleted successfully ");
-    getTasks();
-  } catch (error) {
-    console.error("Error deleting issue:", error);
-    toast.success("Failed to delete task ");
-  }
-};
-
-
+    try {
+      await deleteIssues(issue_id);
+      toast.success("Task deleted successfully ");
+      getTasks();
+    } catch (error) {
+      console.error("Error deleting issue:", error);
+      toast.success("Failed to delete task ");
+    }
+  };
 
   const getCommenst = async () => {
     try {
@@ -238,9 +226,8 @@ const BacklogColumns = ({
 
   return (
     <div>
-      <div className=" bg-white  p-4 sm:p-5 w-full  sm:w-[90vw]  md:w-[70vw]  lg:w-[47.5vw] xl:w-[50vw] border border-black  rounded-2xl shadow-lg/60"
-      >
-         <Toaster position="top-right" />
+      <div className=" bg-white  p-4 sm:p-5 w-full  sm:w-[90vw]  md:w-[70vw]  lg:w-[47.5vw] xl:w-[50vw] border border-black  rounded-2xl shadow-lg/60">
+        <Toaster position="top-right" />
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">Backlog</h3>
@@ -578,17 +565,6 @@ const BacklogColumns = ({
                 </div>
 
                 <div className="flex items-center gap-2 ml-3">
-                  {!t.epic_name && (
-                    <button
-                      className="px-2 py-1 rounded bg-blue-500 cursor-pointer text-white text-sm"
-                      onClick={() => {
-                        setTaskIdForEpic(t.id);
-                        setShowEpicModal(true);
-                      }}
-                    >
-                      Set Epic
-                    </button>
-                  )}
                   <button
                     className="bg-red-600 px-2 py-1 rounded text-white"
                     onClick={() => handleDeleteIssue(t.id)}
@@ -711,8 +687,12 @@ const BacklogColumns = ({
 
               <select
                 className="w-full border border-black px-3 py-2 rounded text-sm mb-4 text-black"
-                value={editIssueEpicId}
-                onChange={(e) => setEditIssueEpicId(e.target.value)}
+                value={editIssueEpicId || ""}
+                onChange={(e) =>
+                  setEditIssueEpicId(
+                    e.target.value === "" ? null : e.target.value
+                  )
+                }
               >
                 <option value="">No Epic</option>
                 {epics.map((ep) => (
