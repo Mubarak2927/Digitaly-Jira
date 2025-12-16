@@ -126,24 +126,7 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
             <p><span className="font-semibold">Created At:</span> {task.created_at}</p>
             <p><span className="font-semibold">Epic:</span> {task.epic_name}</p>
             <p><span className="font-semibold capitalize">Status:</span> {task.status}</p>
-            <div className="flex flex-col">
-              <textarea
-                placeholder="Comments..."
-                className="w-60 border text-black text-xs h-20 mt-3 p-1"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-
-              <div className="flex justify-end gap-3 mr-8 mt-2">
-                <button onClick={handleCancel} className="bg-gray-600 text-white px-2 rounded-lg">
-                  Cancel
-                </button>
-                <button onClick={handleAdd} className="bg-blue-600 text-white px-2 rounded-lg">
-                  Add
-                </button>
-              </div>
-            </div>
-
+          
             <button
               className="mt-4 px-4 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
               onClick={() => setOpenDetails(false)}

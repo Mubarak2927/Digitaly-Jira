@@ -6,33 +6,13 @@ const EmployeePage = () => {
   const [viewModal, setViewModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [employeeList, setEmployeeList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [employee, setEmployee] = useState({
     emp_id: "",
     full_name: "",
     email: "",
     password: "",
-    personal_info: {
-      date_of_birth: "",
-      phone_number: "",
-      address: "",
-      gender: "",
-      marital_status: "",
-      emergency_contact: {
-        name: "",
-        phone_number: "",
-        relationship: "",
-      },
-      profile_image: "",
-    },
-    work_info: {
-      department: "",
-      designation: "",
-      date_joined: "",
-      employment_type: "",
-      experience_level: "",
-      skills: [],
-    },
     payroll_group: "MONTHLY",
   });
 
@@ -49,41 +29,35 @@ const EmployeePage = () => {
     }
   };
 
-  const submitEmployee = async () => {
-    try {
-      await createEmployee(employee);
-       toast.success('Employee Created Sucessfully')
-      setShowModal(false);
-      await loadEmployees();
-      // reset form
-      setEmployee({
-        emp_id: "",
-        full_name: "",
-        email: "",
-        password: "",
-        personal_info: {
-          date_of_birth: "",
-          phone_number: "",
-          address: "",
-          gender: "",
-          marital_status: "",
-          emergency_contact: { name: "", phone_number: "", relationship: "" },
-          profile_image: "",
-        },
-        work_info: {
-          department: "",
-          designation: "",
-          date_joined: "",
-          employment_type: "",
-          experience_level: "",
-          skills: [],
-        },
-        payroll_group: "MONTHLY",
-      });
-    } catch (error) {
-      console.log("Error creating employee", error);
-    }
-  };
+ const submitEmployee = async () => {
+  setLoading(true);
+  try {
+    const newEmployee = await createEmployee(employee); // capture the created employee
+    toast.success('Employee Created Successfully');
+
+    // Update state immediately
+    setEmployeeList(prev => [...prev, newEmployee]);
+
+    // Reset form
+    setEmployee({
+      emp_id: "",
+      full_name: "",
+      email: "",
+      password: "",
+      payroll_group: "MONTHLY"
+    });
+  } catch (err) {
+    console.log(err);
+    toast.error('Failed to create employee');
+  } finally {
+    setShowModal(false);
+    setLoading(false);
+  }
+};
+
+
+
+
 
   return (
     <div className="p-6 lg:p-10 text-white">
@@ -112,10 +86,7 @@ const EmployeePage = () => {
               <div>
                 <p className="font-semibold text-lg bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
                   {emp.full_name}
-                </p>
-                <p className="text-xs text-gray-400">
-                  {emp.work_info?.designation || "—"}
-                </p>
+                  </p>
               </div>
             </div>
 
@@ -125,10 +96,6 @@ const EmployeePage = () => {
               </p>
               <p>
                 <strong className="text-gray-200">Email:</strong> {emp.email}
-              </p>
-              <p>
-                <strong className="text-gray-200">Department:</strong>{" "}
-                {emp.work_info?.department || "—"}
               </p>
             </div>
 
@@ -145,330 +112,78 @@ const EmployeePage = () => {
         ))}
       </div>  
       {/* Create Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white p-6 w-full max-w-lg rounded-xl shadow-xl overflow-y-auto max-h-[90vh]">
-            <h2 className="text-lg text-black font-semibold mb-4">Create Employee</h2>
+    {/* Create Modal */}
+{showModal && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-white p-6 w-full max-w-md rounded-xl shadow-xl">
+      <h2 className="text-lg text-black font-semibold mb-4">Create Employee</h2>
 
-            <div className="grid grid-cols-1 gap-3 text-black">
-              <label htmlFor="">Employee ID</label>
-              <input
-                type="text"
-                placeholder="Employee ID"
-                className="px-3 py-2 border rounded"
-                value={employee.emp_id}
-                onChange={(e) =>
-                  setEmployee({ ...employee, emp_id: e.target.value })
-                }
-              />
-              <label htmlFor="">Full Name</label>
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="px-3 py-2 border rounded"
-                value={employee.full_name}
-                onChange={(e) =>
-                  setEmployee({ ...employee, full_name: e.target.value })
-                }
-              />
-              <label htmlFor="">Email</label>
-              <input
-                type="email"
-                placeholder="Email"
-                className="px-3 py-2 border rounded"
-                value={employee.email}
-                onChange={(e) =>
-                  setEmployee({ ...employee, email: e.target.value })
-                }
-              />
-              <label htmlFor="">Password</label>
-              <input
-                type="password"
-                placeholder="Password"
-                className="px-3 py-2 border rounded"
-                value={employee.password}
-                onChange={(e) =>
-                  setEmployee({ ...employee, password: e.target.value })
-                }
-              />
-              <label htmlFor="">Date of Birth</label>
-              <input
-                type="date"
-                placeholder="Date of Birth"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.date_of_birth}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      date_of_birth: e.target.value,
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Phone Number</label>
-              <input
-                type="text"
-                placeholder="Phone Number"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.phone_number}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      phone_number: e.target.value,
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Address</label>
-              <input
-                type="text"
-                placeholder="Address"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.address}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      address: e.target.value,
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Gender</label>
-              <select
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.gender}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      gender: e.target.value,
-                    },
-                  })
-                }
-              >
-                <option value="">Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Others</option>
-              </select>
-              <label htmlFor="">Marital Status</label>
-              <select
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.marital_status}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      marital_status: e.target.value,
-                    },
-                  })
-                }
-              >
-                <option value="">Marital Status</option>
-                <option>Single</option>
-                <option>Married</option>
-              </select>
-<label htmlFor="">Emergency Contact Name</label>
-              <input
-                type="text"
-                placeholder="Emergency Contact Name"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.emergency_contact.name}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      emergency_contact: {
-                        ...employee.personal_info.emergency_contact,
-                        name: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Emergency Contact Phone</label>
-              <input
-                type="text"
-                placeholder="Emergency Contact Phone"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.emergency_contact.phone_number}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      emergency_contact: {
-                        ...employee.personal_info.emergency_contact,
-                        phone_number: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Emergency Contact Relationship</label>
-              <input
-                type="text"
-                placeholder="Emergency Contact Relationship"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.emergency_contact.relationship}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      emergency_contact: {
-                        ...employee.personal_info.emergency_contact,
-                        relationship: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Profile Image</label>
-              <input
-                type="text"
-                placeholder="Profile Image URL"
-                className="px-3 py-2 border rounded"
-                value={employee.personal_info.profile_image}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    personal_info: {
-                      ...employee.personal_info,
-                      profile_image: e.target.value,
-                    },
-                  })
-                }
-              />
-              <label htmlFor="">Department</label>
-              <input
-                type="text"
-                placeholder="Department"
-                className="px-3 py-2 border rounded"
-                value={employee.work_info.department}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    work_info: { ...employee.work_info, department: e.target.value },
-                  })
-                }
-              />
-              <label htmlFor="">Designation</label>
-              <input
-                type="text"
-                placeholder="Designation"
-                className="px-3 py-2 border rounded"
-                value={employee.work_info.designation}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    work_info: { ...employee.work_info, designation: e.target.value },
-                  })
-                }
-              />
-              <label htmlFor="">Date Joined</label>
-              <input
-                type="date"
-                placeholder="Date Joined"
-                className="px-3 py-2 border rounded"
-                value={employee.work_info.date_joined}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    work_info: { ...employee.work_info, date_joined: e.target.value },
-                  })
-                }
-              />
-              <label htmlFor="">Work Type</label>
-              <select
-                className="px-3 py-2 border rounded"
-                value={employee.work_info.employment_type}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    work_info: { ...employee.work_info, employment_type: e.target.value },
-                  })
-                }
-              >
-                <option value="">Employment Type</option>
-                <option>Full-Time</option>
-                <option>Part-Time</option>
-                <option>Internship</option>
-              </select>
+      <div className="grid grid-cols-1 gap-3 text-black">
+        <label>Employee ID</label>
+        <input
+          type="text"
+          placeholder="Employee ID"
+          className="px-3 py-2 border rounded"
+          value={employee.emp_id}
+          onChange={(e) =>
+            setEmployee({ ...employee, emp_id: e.target.value })
+          }
+        />
 
-              <label htmlFor="">Experience</label>
-              <select
-                className="px-3 py-2 border rounded"
-                value={employee.work_info.experience_level}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    work_info: { ...employee.work_info, experience_level: e.target.value },
-                  })
-                }
-              >
-                <option value="">Experience Level</option>
-                <option>Junior</option>
-                <option>Mid</option>
-                <option>Senior</option>
-              </select>
+        <label>Full Name</label>
+        <input
+          type="text"
+          placeholder="Full Name"
+          className="px-3 py-2 border rounded"
+          value={employee.full_name}
+          onChange={(e) =>
+            setEmployee({ ...employee, full_name: e.target.value })
+          }
+        />
 
-              <label htmlFor="">Skills</label>
-              <input
-                type="text"
-                placeholder="Skills"
-                className="px-3 py-2 border rounded"
-                value={employee.work_info.skills.join(", ")}
-                onChange={(e) =>
-                  setEmployee({
-                    ...employee,
-                    work_info: {
-                      ...employee.work_info,
-                      skills: e.target.value.split(",").map((s) => s.trim()),
-                    },
-                  })
-                }
-              />
+        <label>Email</label>
+        <input
+          type="email"
+          placeholder="Email"
+          className="px-3 py-2 border rounded"
+          value={employee.email}
+          onChange={(e) =>
+            setEmployee({ ...employee, email: e.target.value })
+          }
+        />
 
-              <label htmlFor="">Payroll</label>
-              <select
-                className="px-3 py-2 border rounded"
-                value={employee.payroll_group}
-                onChange={(e) =>
-                  setEmployee({ ...employee, payroll_group: e.target.value })
-                }
-              >
-                <option value="MONTHLY">MONTHLY</option>
-                <option value="WEEKLY">WEEKLY</option>
-              </select>
-            </div>
+        <label>Password</label>
+        <input
+          type="password"
+          placeholder="Password"
+          className="px-3 py-2 border rounded"
+          value={employee.password}
+          onChange={(e) =>
+            setEmployee({ ...employee, password: e.target.value })
+          }
+        />
+      </div>
 
-            <div className="flex justify-end gap-3 mt-5">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={submitEmployee}
-                className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 text-white"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="flex justify-end gap-3 mt-5">
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 text-white"
+        >
+          Cancel
+        </button>
+        <button
+  onClick={submitEmployee}
+  disabled={loading}
+  className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 text-white"
+>
+  {loading ? 'Creating...' : 'Create'}
+</button>
+
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* View Modal */}
       {viewModal && selectedEmployee && (

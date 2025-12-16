@@ -300,7 +300,7 @@ const Sidebar = ({
 
         {/* Sprint Dropdown */}
         {showSprintMenu && (
-          <div className="mt-2 px-3 space-y-3">
+          <div className="mt-2 px-3 space-y-3 overflow-y-auto max-h-30">
             <button
               onClick={() => setOpenSprintModal(true)}
               className="ml-2 text-md flex items-center gap-2 cursor-pointer py-2"

@@ -158,7 +158,7 @@ export default function ProjectModal({
             onClick={handleBulkUpload}
             disabled={loading || !file}
           >
-            {loading ? "Uploading..." : "Upload File"}
+            {loading ? "Creating..." : "Upload File"}
           </button>
         </div>
       </div>

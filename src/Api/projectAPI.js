@@ -247,6 +247,10 @@ export const getMyProfile = async () => {
   const res = await API.get("/employees/me");
   return res.data;
 };
+export const updateProfile = async () => {
+  const res = await API.put("/employees/me");
+  return res.data;
+};
 
 // Delete Issue from Sprint
 export const deleteIssueFromSprint = async (sprintId, issueId) => {
