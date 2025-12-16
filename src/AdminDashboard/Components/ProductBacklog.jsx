@@ -13,6 +13,7 @@ import BacklogColumns from "../ProductBacklog/BacklogColumns";
 import Sprint from "../ProductBacklog/Sprint";
 import { Cog } from "lucide-react";
 import CompleteSprints from "../ProductBacklog/completeSprint";
+import toast, { Toaster } from "react-hot-toast";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
@@ -89,7 +90,7 @@ export default function ProductBacklog(selectedProject) {
 
     // Clear selected epic if deleted
     setSelectedEpic((prev) => (prev?.id === id ? null : prev));
-     alert("Epic deleted successfully ✅");
+     toast.success('Epic Deleted Sucessfully')
   } catch (error) {
     console.error("Delete failed", error);
   }
@@ -111,25 +112,21 @@ export default function ProductBacklog(selectedProject) {
   try {
     const type = createForm.type.toLowerCase();
 
-  const newTask = {
-  name: createForm.title,
-  project_id: selectedProject.selectedProject.id,
-  type: type,
-  epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
-  priority: createForm.priority,
-  ...(type === "story" && { story_points: Number(createForm.story_points) }),
-};
+    const newTask = {
+      name: createForm.title,
+      project_id: selectedProject.selectedProject.id,
+      type: type,
+      epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
+      priority: createForm.priority,
+      ...(type === "story" && { story_points: Number(createForm.story_points) }),
+    };
 
+    await createIssues(newTask);
 
-    console.log("Creating Task Payload:", newTask);
-
-    const data = await createIssues(newTask);
-
-    alert("Successfully Created Task");
+    toast.success("Task created successfully ");
 
     getTasks();
 
-    // 🔥 RESET FORM AFTER CREATE
     setCreateForm({
       type: "Task",
       title: "",
@@ -139,9 +136,9 @@ export default function ProductBacklog(selectedProject) {
       priority: "",
       story_points: "",
     });
-
   } catch (error) {
-    console.error("Error creating task:", error);
+    console.error(error);
+    toast.error("Failed to create task ❌");
   }
 };
 
@@ -224,7 +221,7 @@ export default function ProductBacklog(selectedProject) {
   try {
     await updateEpic(epicId, data);
     await getEpics(); // refresh list
-    alert("Epic updated successfully!");
+    toast.success("Epic updated successfully!");
   } catch (error) {
     console.log("Epic update failed:", error);
   }
@@ -244,7 +241,7 @@ export default function ProductBacklog(selectedProject) {
           : s
       )
     );
-    alert("Sprint started!");
+    toast.success("Sprint started successfully 🚀");
   };
 
   const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -269,6 +266,8 @@ export default function ProductBacklog(selectedProject) {
 
   return (
     <div className="min-h-screen bg-white to-text border-black border-2 rounded-4xl shadow-lg/60 text-white p-6">
+    <Toaster position="top-right" reverseOrder={false} />
+
      <div className="flex items-center justify-between">
        <h1 className="text-3xl capitalize font-bold mb-6 text-black tracking-wide">
         Product Backlog Items
@@ -307,6 +306,7 @@ export default function ProductBacklog(selectedProject) {
             promptAssignEpic={promptAssignEpic}
             openSprintModal={openSprintModal}
             selectedProject={selectedProject}
+            
           />
         </div>
       </div>

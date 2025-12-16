@@ -49,7 +49,7 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
   const handleAdd = () => {
     if (comment.trim()) {
       console.log("Added Comment:", comment);
-      alert("Comment added!");
+       toast.success("Comment added!");
       setComment("");
     } else {
       alert("Please enter a comment before adding.");
@@ -77,7 +77,7 @@ function TaskCard({ task, isDraggingOverlay, onAssign }) {
 
   const handleAssignUser = async () => {
     if (!selectedUser) {
-      alert("Please select a user first");
+       toast.success("Please select a user first");
       return;
     }
 
@@ -388,6 +388,7 @@ const handleComplete = async () => {
     if (!projectID) return alert("No project selected");
 
     const res = await getRunningSprints(projectID);
+     toast.success('Sprint Completed Sucessfully')
     const sprintId = res?.sprints?.[0]?.sprint_id;
 
     if (!sprintId) return alert("No active sprint found!");
@@ -477,17 +478,6 @@ const handleComplete = async () => {
         >
           Complete Sprint
         </button>
-
-        {/* SHOW COMPLETED BUTTON */}
-        {/* <button
-          onClick={() => {
-            loadCompletedSprints();
-            setShowCompleted(!showCompleted);
-          }}
-          className="cursor-pointer text-white bg-blue-500 hover:bg-blue-600 px-2 py-2 rounded-lg"
-        >
-          {showCompleted ? "Hide Completed" : "Show Completed"}
-        </button> */}
 
       </div>
 

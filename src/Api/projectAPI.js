@@ -17,25 +17,10 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
- 
-// export const getAllProjects = async () => {
-//   const res = await API.get("/projects");
-//   console.log(res, "response");
-
-//   return res.data;
-// };
-
 export const getAllProjects = async (skip = 0, limit = 100) => {
   const res = await API.get(`/projects/?skip=${skip}&limit=${limit}`);
   return res.data;
 };
-
-
-
-
-
-
-
 
 //  Get project by ID
 export const getProjectById = async (projectId) => {
@@ -61,7 +46,6 @@ export const deleteProject = async (projectId) => {
   return res.data;
 };
 
-
 //  Get work items
 export const getWorkItems = async (projectId) => {
   const res = await API.get(`/projects/${projectId}/workitems`);
@@ -72,7 +56,7 @@ export const getWorkItems = async (projectId) => {
 export const manageProjectMember = async (project_id, user_id, role) => {
   try {
     const payload = {
-      [user_id]: role,  // dynamic key
+      [user_id]: role, // dynamic key
     };
 
     const res = await API.post(`/projects/${project_id}/members`, payload);
@@ -81,9 +65,6 @@ export const manageProjectMember = async (project_id, user_id, role) => {
     throw error.response?.data || error;
   }
 };
-
-
-
 
 // Remove a member from a project
 export const removeProjectMember = async (project_id, user_id) => {
@@ -101,11 +82,10 @@ export const getAllUsers = async (skip = 0, limit = 100) => {
   return res.data;
 };
 
-
 //  Get All Boards by Project
 export const getBoards = async (project_id) => {
   const res = await API.get(`/boards`, {
-    params: { project_id }
+    params: { project_id },
   });
   return res.data;
 };
@@ -152,12 +132,10 @@ export const deleteBoard = async (board_id) => {
   return res.data;
 };
 
-
 export const getEpic = async (project_id) => {
   const res = await API.get(`/epics/?project_id=${project_id}`);
   return res.data;
 };
-
 
 export const createEpic = async (boardData) => {
   const res = await API.post(`/epics/`, boardData);
@@ -185,14 +163,17 @@ export const createSprint = async (payload) => {
 };
 
 export const sprintTaskMove = async (sprintId, payload) => {
-  const res = await API.post(`/issues/move-multiple?to=sprint&sprint_id=${sprintId}`, payload);
+  const res = await API.post(
+    `/issues/move-multiple?to=sprint&sprint_id=${sprintId}`,
+    payload
+  );
   return res.data;
 };
 
-export const sprintById= async (project_id) => {
+export const sprintById = async (project_id) => {
   const res = await API.get(`/sprints/${project_id}`);
   return res.data;
-}
+};
 
 export const fetchIssuesbySprintId = async (sprintId) => {
   const res = await API.get(`/sprints/${sprintId}`);
@@ -204,13 +185,13 @@ export const startSprints = async (sprintId) => {
   return res.data;
 };
 
-export const boardData= async (project_id) => {
+export const boardData = async (project_id) => {
   const res = await API.get(`/boards/?project_id=${project_id}`);
   return res.data;
-}
+};
 
 export const sprintTaskMoveColumn = async (issuesID, payload) => {
-  const res = await API.put(`/issues/${issuesID}`,payload);
+  const res = await API.put(`/issues/${issuesID}`, payload);
   return res.data;
 };
 
@@ -220,19 +201,20 @@ export const createEmployee = async (payload) => {
   return res.data;
 };
 
-
 // list employee profile
 export const getAllEmployeesList = async (page = 1, limit = 50) => {
   const res = await API.get(`/employees/admin/list`, {
-    params: { page, limit }
+    params: { page, limit },
   });
   return res.data;
 };
 
-
 export const checkInAttendance = async (note = "") => {
   try {
-    const res = await API.post("/employees/me/attendance/checkin", note ? { note } : {});
+    const res = await API.post(
+      "/employees/me/attendance/checkin",
+      note ? { note } : {}
+    );
     return res.data;
   } catch (err) {
     console.error("Check-in failed", err);
@@ -243,7 +225,10 @@ export const checkInAttendance = async (note = "") => {
 // Check-out API
 export const checkOutAttendance = async (note = "") => {
   try {
-    const res = await API.post("/employees/me/attendance/checkout", note ? { note } : {});
+    const res = await API.post(
+      "/employees/me/attendance/checkout",
+      note ? { note } : {}
+    );
     return res.data;
   } catch (err) {
     console.error("Check-out failed", err);
@@ -258,12 +243,10 @@ export const createLeaveRequest = async (payload) => {
   return res.data;
 };
 
-
 export const getMyProfile = async () => {
   const res = await API.get("/employees/me");
   return res.data;
 };
-
 
 // Delete Issue from Sprint
 export const deleteIssueFromSprint = async (sprintId, issueId) => {
@@ -272,8 +255,6 @@ export const deleteIssueFromSprint = async (sprintId, issueId) => {
 };
 
 //complete sprint
-
-
 
 export const completeSprint = async (SprintId) => {
   const res = await API.post(
@@ -287,7 +268,6 @@ export const getRunningSprints = async (project_id) => {
   return res.data;
 };
 
-
 export const assignIssueToUser = async (issue_id, assignee_id) => {
   const res = await API.patch(`/issues/${issue_id}/assign`, {
     assignee_id,
@@ -299,7 +279,7 @@ export const getCompleteSprints = async (projectId) => {
   const res = await API.get(`/sprints/completed?project_id=${projectId}`);
   return res.data;
 };
-  
+
 export const deleteIssues = async (issueID) => {
   const res = await API.delete(`/issues/${issueID}`);
   return res.data;
@@ -313,7 +293,6 @@ export const deleteSprint = async (sprintID) => {
   const res = await API.delete(`/sprints/${sprintID}`);
   return res.data;
 };
-
 
 export const updateEpic = async (epicID, data) => {
   const res = await API.put(`/epics/${epicID}`, data);
@@ -339,7 +318,6 @@ export const ProjectComments = async (project_id, comment) => {
   return res.data;
 };
 
-
 export const getProjectComments = async (project_id) => {
   const res = await API.get(`/comments/?project_id=${project_id}`);
   return res.data;
@@ -349,32 +327,27 @@ export const deleteProjectComments = async (project_id) => {
   return res.data;
 };
 
-
-
 export const epicComments = async (epic_id, comment) => {
-
   if (typeof comment !== "string") {
-    comment = String(comment); 
+    comment = String(comment);
   }
 
   const res = await API.post(`/comments/`, {
     epic_id,
-    comment
+    comment,
   });
   return res.data;
 };
-
 
 export const getEpicComments = async (epic_id) => {
   const res = await API.get(`/comments/?epic_id=${epic_id}`);
   return res.data;
 };
 
-
 export const SprintComments = async (sprint_id, comment) => {
   const res = await API.post(`/comments/`, {
     sprint_id,
-    comment
+    comment,
   });
   return res.data;
 };
@@ -384,11 +357,10 @@ export const getSprintComments = async (sprint_id) => {
   return res.data;
 };
 
-
 export const IssueComments = async (issue_id, comment) => {
-  const res = await API.post(`/comments/`, { 
-     issue_id,
-    comment
+  const res = await API.post(`/comments/`, {
+    issue_id,
+    comment,
   });
   return res.data;
 };
@@ -397,5 +369,3 @@ export const getIssueComments = async (issue_id) => {
   const res = await API.get(`/comments/?issue_id=${issue_id}`);
   return res.data;
 };
-
-

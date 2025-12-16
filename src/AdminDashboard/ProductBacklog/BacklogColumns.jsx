@@ -9,6 +9,7 @@ import {
   updateIssue,
 } from "../../Api/projectAPI";
 import { ClipboardCheck, Bug, BookOpen, Trash2, SquarePen } from "lucide-react";
+import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = ["To Do", "In Progress", "In Review", "Done"];
 
@@ -76,7 +77,7 @@ const BacklogColumns = ({
         epic_id: selectedEpicIdForModal,
       });
 
-      alert("Epic Assigned Successfully ✔");
+      toast.success("Epic Assigned Successfully ✔");
       setShowEpicModal(false);
       setSelectedEpicIdForModal("");
       setTaskIdForEpic(null);
@@ -98,7 +99,7 @@ const BacklogColumns = ({
   story_points: editIssueType === "story" ? editStoryPoints : undefined,
 });
 
-      alert("Issue updated ✔");
+      toast.success("Issue updated ✔");
 
       setShowEditModal(false);
       setEditIssueId(null);
@@ -167,7 +168,7 @@ const BacklogColumns = ({
       await sprintTaskMove(selectedSprintId, {
         issue_ids: selectedTasksForSprint,
       });
-      alert("Tasks added to sprint successfully ✅");
+      toast.success("Tasks added to sprint successfully ");
       setSelectedTasksForSprint([]);
       setSelectedSprintId("");
       fetchSprints();
@@ -188,7 +189,7 @@ const BacklogColumns = ({
       const updated = await getIssueComments(detailsTask.id);
       setTaskComments(updated);
 
-      alert("Comment added ✅");
+      toast.success("Comment added ");
 
       console.log("Comment Response:", data);
     } catch (err) {
@@ -218,11 +219,11 @@ const BacklogColumns = ({
 
   try {
     await deleteIssues(issue_id);
-    alert("Task deleted successfully ✅");
+    toast.success("Task deleted successfully ");
     getTasks();
   } catch (error) {
     console.error("Error deleting issue:", error);
-    alert("Failed to delete task ❌");
+    toast.success("Failed to delete task ");
   }
 };
 
@@ -239,6 +240,7 @@ const BacklogColumns = ({
     <div>
       <div className=" bg-white  p-4 sm:p-5 w-full  sm:w-[90vw]  md:w-[70vw]  lg:w-[47.5vw] xl:w-[50vw] border border-black  rounded-2xl shadow-lg/60"
       >
+         <Toaster position="top-right" />
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">Backlog</h3>

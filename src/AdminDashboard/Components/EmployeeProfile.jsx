@@ -52,6 +52,7 @@ const EmployeePage = () => {
   const submitEmployee = async () => {
     try {
       await createEmployee(employee);
+       toast.success('Employee Created Sucessfully')
       setShowModal(false);
       await loadEmployees();
       // reset form

@@ -31,6 +31,7 @@ import {
 import { Columns, File, Hand } from "lucide-react";
 import { div, s } from "framer-motion/client";
 import ProjectModal from "./Components/ProjecModal";
+import toast from "react-hot-toast";
 
 const WhiteBoard = () => {
   const [projects, setProjects] = useState();
@@ -48,20 +49,14 @@ const WhiteBoard = () => {
     name: "",
     key: "",
     startDate: "",
-    // endDate: "",
-    // projectLead: "",
-    // assignedEmployees: [],
     platform: "",
     description: "",
-    // avatar: "",
-    // labels: [],
   });
 
   const [newColumnTitle, setNewColumnTitle] = useState("");
 
   useEffect(() => {
     fetchProjects();
-    // getColumn()
   }, []);
 
   const fetchProjects = async () => {
@@ -77,52 +72,19 @@ const WhiteBoard = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const data = await getAllUsers();
-  //       setUsers(data);
-  //     } catch (error) {
-  //       console.error("Error fetching users:", error);
-  //     }
-  //   };
-
-  //   fetchUsers();
-  // }, []);
-
   // ---------------- CREATE PROJECT ----------------
   const handleAddSidebarProject = async () => {
-    // if (!newProject.name.trim() || !newProject.projectLead)
-    //   return alert("Please fill all required fields.");
-
-    const member_roles = {
-      // [newProject.projectLead]: "project_admin",
-    };
-
-    // newProject.assignedEmployees.forEach((empId) => {
-    //   member_roles[empId] = "developer";
-    // });
+    const member_roles = {};
 
     const payload = {
       key: newProject.key || newProject.name.slice(0, 6).toUpperCase(),
       name: newProject.name,
       description: newProject.description || "No description",
-      // avatar_url: newProject.avatar || "",
-      // start_date: newProject.startDate
-      //   ? new Date(newProject.startDate).toISOString()
-      //   : null,
-      // end_date: newProject.endDate
-      //   ? new Date(newProject.endDate).toISOString()
-      //   : null,
-      // project_lead: newProject.projectLead,
-      // member_roles, // ✅ Updated
     };
 
     try {
-      
-      // setLoad(true)
       const created = await createProject(payload);
-      // setProjects((prev) => [...prev, created]);
+      toast.success('Project Created Sucessfully')
       setSelectedProject(created);
       setShowSidebarProjectModal(false);
 
@@ -130,14 +92,8 @@ const WhiteBoard = () => {
       setNewProject({
         name: "",
         key: "",
-        // startDate: "",
-        // endDate: "",
-        // projectLead: "",
-        // assignedEmployees: [],
-        // platform: "",
+
         description: "",
-        // avatar: "",
-        // labels: [],
       });
     } catch (error) {
       console.error("Error creating project:", error);
@@ -235,11 +191,6 @@ const WhiteBoard = () => {
 
   return (
     <div className="flex flex-col bg-white text-white h-screen">
-      {/* <div className="sticky top-0 z-50 w-full">
-        <AdminTopBar />
-      </div> */}
-     
-
       <div className="flex flex-1 overflow-hidden">
         <div className="w-64 bg-gray-950 text-black border-r border-gray-800">
           <Sidebar
@@ -256,8 +207,7 @@ const WhiteBoard = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-          <div >
-</div>
+          <div></div>
 
           {selectedProject && !activeEmployeeSection && (
             <div className="max-w-7xl mx-auto">
@@ -321,22 +271,21 @@ const WhiteBoard = () => {
 
       {/* ---------------- MODALS ---------------- */}
       {showSidebarProjectModal && (
-  <Modal
-    onCancel={() => setShowSidebarProjectModal(false)}
-    onConfirm={handleAddSidebarProject}
-  >
-    <ProjectModal
-      newProject={newProject}
-      setNewProject={setNewProject}
-      users={users}
+        <Modal
+          onCancel={() => setShowSidebarProjectModal(false)}
+          onConfirm={handleAddSidebarProject}
+        >
+          <ProjectModal
+            newProject={newProject}
+            setNewProject={setNewProject}
+            users={users}
             onConfirm={() => {
-        setShowSidebarProjectModal(false); 
-        fetchProjects();                  // ✅ PROJECT REFRESH
-      }}
-
-    />
-  </Modal>
-)}
+              setShowSidebarProjectModal(false);
+              fetchProjects(); // ✅ PROJECT REFRESH
+            }}
+          />
+        </Modal>
+      )}
 
       {showAddMemberModal && (
         <MemberModal
@@ -345,32 +294,31 @@ const WhiteBoard = () => {
         />
       )}
 
-        {showAddColumnModal && (
-          <Modal
-            onCancel={() => setShowAddColumnModal(false)}
-            onConfirm={handleAddColumn}
-          >
-            <div className="flex flex-col gap-4">
-              <h2 className="text-center text-xl font-semibold text-blue-600">
-                Add New Column
-              </h2>
-              <input
-                type="text"
-                placeholder="Enter column name..."
-                className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue  -500 outline-none"
-                value={newColumnTitle}
-                onChange={(e) => setNewColumnTitle(e.target.value)}
-              />
-              <input
-  type="number"
-  placeholder="Position"
-  onChange={(e) => setColumnPosition(Number(e.target.value))}
-  className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-white"
-/>
-
-            </div>
-          </Modal>
-        )}
+      {showAddColumnModal && (
+        <Modal
+          onCancel={() => setShowAddColumnModal(false)}
+          onConfirm={handleAddColumn}
+        >
+          <div className="flex flex-col gap-4">
+            <h2 className="text-center text-xl font-semibold text-blue-600">
+              Add New Column
+            </h2>
+            <input
+              type="text"
+              placeholder="Enter column name..."
+              className="p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-blue  -500 outline-none"
+              value={newColumnTitle}
+              onChange={(e) => setNewColumnTitle(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Position"
+              onChange={(e) => setColumnPosition(Number(e.target.value))}
+              className="p-3 rounded-lg bg-gray-900 border border-gray-700 text-white"
+            />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

@@ -21,6 +21,7 @@ import {
   SquarePen,
   Key,
 } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 export default function ProjectSummary({ selectedProject }) {
   // Extract correct project ID
@@ -79,6 +80,7 @@ export default function ProjectSummary({ selectedProject }) {
 
   try {
     await ProjectComments(projectId, newComment);
+    toast.success("Comment added successfully ");
 
 
     setNewComment("");
@@ -184,7 +186,7 @@ export default function ProjectSummary({ selectedProject }) {
       await updateProject(projectId, {
         name: editProjectName,
       });
-
+     toast.success("Project updated successfully ");
       setShowEditModal(false);
       await loadProject();
     } catch (err) {
@@ -210,14 +212,9 @@ export default function ProjectSummary({ selectedProject }) {
  return (
   <>
     <div className="p-8 bg-gray-100 text-black min-h-screen">
+      <Toaster position="top-right" />
+
       <div className="max-w-5xl mx-auto space-y-10">
-        {/* LOADING OVERLAY */}
-        {/* {loading && (
-          <div className="absolute inset-0 bg-white/70 flex flex-col justify-center items-center backdrop-blur-sm z-50">
-            <div className="w-10 h-10 border-4 border-gray-400 border-t-blue-600 rounded-full animate-spin"></div>
-            <p className="mt-3 text-black font-medium">Loading...</p>
-          </div>
-        )} */}
 
         {/* PROJECT HEADER */}
         {projectDetails && (
