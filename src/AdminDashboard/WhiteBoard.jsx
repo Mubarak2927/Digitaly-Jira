@@ -174,7 +174,6 @@ const WhiteBoard = () => {
   }
 
   try {
-    // TEMP FIX: project id as board id
     const boardId = selectedProject.id;
 
     const totalColumns =
@@ -188,7 +187,7 @@ const WhiteBoard = () => {
       position: columnPosition || totalColumns + 1,
     };
 
-    console.log("API PAYLOAD 👉", boardId, columnData);
+    console.log("board", boardId, columnData);
 
     await addColumnToBoard(boardId, columnData);
 

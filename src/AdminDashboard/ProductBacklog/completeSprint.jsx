@@ -86,8 +86,8 @@ export default function CompleteSprints({ projectId }) {
 
       {/* Modal */}
       {selectedSprint && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-10 z-50 overflow-auto">
-          <div className="bg-white w-[95%] max-w-5xl  p-6 rounded-xl shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center pt-10 z-50 overflow-auto">
+          <div className="bg-white w-100 max-w-5xl  p-6 rounded-xl shadow-xl max-h-[90vh] overflow-y-auto">
             
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
@@ -115,7 +115,6 @@ export default function CompleteSprints({ projectId }) {
                   <tr>
                     <th className="px-4 py-2 border text-left">Type</th>
                     <th className="px-4 py-2 border text-left">Issue Name</th>
-                    <th className="px-4 py-2 border text-left">Key</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -124,7 +123,6 @@ export default function CompleteSprints({ projectId }) {
                       <td className="px-4 py-2 text-black border-b">{issue.type}</td>
 
                       <td className="px-4  text-black py-2 border">{issue.name}</td>
-                      <td className="px-4 py-2 text-black border">{issue.key}</td>
                     </tr>
                   ))}
                 </tbody>
