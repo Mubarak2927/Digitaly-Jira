@@ -4,13 +4,13 @@ import axios from "axios";
 import { Trash, Trash2 } from "lucide-react";
 
 const BulkAPI = axios.create({
-  baseURL: "https://project-management-sfrn.onrender.com/api/v1",
+  baseURL: "https://pmtoolapidev.digitaly.live/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
 });
 BulkAPI.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token"); // 👈 token key
+  const token = localStorage.getItem("access_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

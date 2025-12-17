@@ -42,6 +42,8 @@ const WhiteBoard = () => {
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
   const [users, setUsers] = useState([]);
+  const [columnPosition, setColumnPosition] = useState("");
+
 
   const [load, setLoad] = useState(false);
 
@@ -159,35 +161,49 @@ const WhiteBoard = () => {
   const role = localStorage.getItem("role"); // admin or employee
 
   const handleAddColumn = async () => {
-    if (!newColumnTitle.trim() || !selectedProject) return;
+  console.log("ADD COLUMN CLICKED");
 
-    try {
-      const boardId =
-        selectedProject?.boardId || selectedProject?.columns?.board_id;
+  if (!newColumnTitle.trim()) {
+    alert("Column name missing");
+    return;
+  }
 
-      if (!boardId) {
-        console.error("Board ID not found");
-        return;
-      }
+  if (!selectedProject) {
+    alert("No project selected");
+    return;
+  }
 
-      const columnData = {
-        name: newColumnTitle,
-        status: newColumnTitle.toLowerCase().replace(/\s+/g, "_"),
-        position: selectedProject.columns.columns.board.columns.length + 1,
-      };
+  try {
+    // TEMP FIX: project id as board id
+    const boardId = selectedProject.id;
 
-      // 🔥 Save to backend
-      const response = await addColumnToBoard(boardId, columnData);
+    const totalColumns =
+      selectedProject?.columns?.columns?.length ||
+      selectedProject?.columns?.length ||
+      0;
 
-      console.log(response);
-      handleSelectProject(selectedProject.id);
+    const columnData = {
+      name: newColumnTitle,
+      status: newColumnTitle.toLowerCase().replace(/\s+/g, "_"),
+      position: columnPosition || totalColumns + 1,
+    };
 
-      setNewColumnTitle("");
-      setShowAddColumnModal(false);
-    } catch (error) {
-      console.error("Error adding column:", error);
-    }
-  };
+    console.log("API PAYLOAD 👉", boardId, columnData);
+
+    await addColumnToBoard(boardId, columnData);
+
+    await handleSelectProject(selectedProject.id);
+
+    setNewColumnTitle("");
+    setColumnPosition("");
+    setShowAddColumnModal(false);
+
+    toast.success("Column added ");
+  } catch (error) {
+    console.error("Error adding column:", error);
+  }
+};
+
 
   return (
     <div className="flex flex-col bg-white text-white h-screen">

@@ -253,6 +253,107 @@ const handleAddComment = async () => {
 >
   <EyeIcon size={14} />
 </button>
+{showSprintDetails && sprintDetails && (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white w-[520px] rounded-3xl shadow-2xl overflow-hidden">
+
+      {/* Header */}
+      <div className="b p-5 flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-semibold text-black">
+            {sprintDetails.name}
+          </h3>
+          <p className="text-xs text-black">
+            Sprint Overview
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowSprintDetails(false)}
+          className="text-black hover:scale-110 text-xl"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="p-5 space-y-5">
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="bg-gray-300 rounded-xl p-3">
+            <p className="text-gray-500 text-xs">Goal</p>
+            <p className="font-medium text-black">
+              {sprintDetails.goal || "No goal defined"}
+            </p>
+          </div>
+
+          <div className="bg-gray-300 rounded-xl p-3">
+            <p className="text-gray-500 text-xs">Tasks</p>
+            <p className="font-semibold text-black">
+              {sprintDetails.issues?.length || 0}
+            </p>
+          </div>
+
+          <div className="bg-gray-300 rounded-xl p-3 col-span-2">
+            <p className="text-gray-500 text-xs">Duration</p>
+            <p className="font-medium text-black">
+              {new Date(sprintDetails.start_date).toLocaleDateString()} →{" "}
+              {new Date(sprintDetails.end_date).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Comments */}
+        <div>
+          <h4 className="text-sm font-semibold text-black mb-2">
+            Sprint Comments
+          </h4>
+
+          <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
+            {comments.length > 0 ? (
+              comments.map((c, i) => (
+                <div
+                  key={i}
+                  className="bg-gray-300 flex  justify-between border border-gray-200 p-3 rounded-xl text-sm text-black"
+                >
+                  <p>
+                    {c.comment || c.text}
+                  </p>
+                  <p>{c.author_name}</p>
+                  
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-gray-400 italic">
+                No comments yet
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Add Comment */}
+        <div className="flex gap-2 pt-2 border-t">
+          <input
+            type="text"
+            className="flex-1 border placeholder:text-black border-gray-300 px-3 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="Add a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <button
+            onClick={handleAddComment}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium"
+          >
+            Add
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+
 
 
 
