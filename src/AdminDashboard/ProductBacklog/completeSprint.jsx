@@ -105,29 +105,38 @@ export default function CompleteSprints({ projectId }) {
             </p>
 
             {/* Completed Issues Table */}
-            <h3 className="text-lg font-semibold text-green-600 mb-2">
-              Completed Issues ({selectedSprint.completed_issues.length})
-            </h3>
+           {/* Completed Issues Table */}
+<h3 className="text-lg font-semibold text-green-600 mb-2">
+  Completed Issues ({selectedSprint.completed_issues.length})
+</h3>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-black">
-                <thead className="bg-gray-600">
-                  <tr>
-                    <th className="px-4 py-2 border text-left">Type</th>
-                    <th className="px-4 py-2 border text-left">Issue Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedSprint.completed_issues.map((issue) => (
-                    <tr key={issue.id} className="even:bg-black">
-                      <td className="px-4 py-2 text-black border-b">{issue.type}</td>
+<div className="overflow-x-auto">
+  <table className="min-w-full border border-black">
+    <thead className="bg-gray-600">
+      <tr>
+        <th className="px-4 py-2 border text-left">Type</th>
+        <th className="px-4 py-2 border text-left">Issue Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {selectedSprint.completed_issues.map((issue) => (
+        <tr
+          key={issue.id}
+          className={
+            issue.type?.toLowerCase() === "task" ? "bg-blue-50" :
+            issue.type?.toLowerCase() === "bug" ? "bg-red-50" :
+            issue.type?.toLowerCase() === "story" ? "bg-green-50" :
+            ""
+          }
+        >
+          <td className="px-4 py-2 border text-black">{issue.type}</td>
+          <td className="px-4 py-2 border text-black">{issue.name}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
-                      <td className="px-4  text-black py-2 border">{issue.name}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
 
             {/* Close Button */}
             <button
