@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import Logo from ""
 import {
   LogOut,
   ChevronDown,
@@ -195,9 +196,6 @@ const Sidebar = ({
         }}
       />
       <div className="mb-10 flex items-center gap-2">
-        <h1 className="bg-blue-600 w-fit px-2 py-0.5 text-white rounded-lg">
-          <h1 className="text-2xl">D</h1>
-        </h1>
         <p className="text-2xl font-semibold">Digitaly</p>
       </div>
 

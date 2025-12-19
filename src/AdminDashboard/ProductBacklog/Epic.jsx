@@ -6,8 +6,8 @@ const Epic = ({
   epics,
   selectedEpic,
   setSelectedEpic,
-  createForm,
-  setCreateForm,
+  epicForm,
+  setEpicForm,
   handleCreateItem,
   handleDeleteEpic,
   handleUpdateEpic,
@@ -34,15 +34,21 @@ const Epic = ({
   };
 
   const saveComment = async () => {
-    try {
-      const res = await epicComments(detailsEpic.id, commentText);
-      console.log(res);
-      setCommentText("");
-      fetchComments(detailsEpic.id);
-    } catch (err) {
-      console.log("Error Saving Comment:", err);
-    }
-  };
+  if (!commentText.trim()) {
+    alert("Comment cannot be empty");
+    return;
+  }
+
+  try {
+    const res = await epicComments(detailsEpic.id, commentText);
+    console.log(res);
+    setCommentText("");
+    fetchComments(detailsEpic.id);
+  } catch (err) {
+    console.log("Error Saving Comment:", err);
+  }
+};
+
 
   const fetchComments = async () => {
     try {
@@ -63,11 +69,11 @@ const Epic = ({
   return (
     <div className="p-4 border border-black rounded-2xl shadow-lg/60">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-black">Epics</h3>
+        <h3 className="text-lg font-semibold text-black  ">Epics</h3>
       </div>
 
       {/* List */}
-      <div className="space-y-2">
+      <div className="space-y-2 h-[40vh] overflow-auto">
         <div
           onClick={() => setSelectedEpic(null)}
           className={`p-2 rounded-lg cursor-pointer ${
@@ -81,26 +87,26 @@ const Epic = ({
             onClick={() =>
               setSelectedEpic((prev) => (prev?.id === e.id ? null : e))
             }
-            className={`p-3 rounded-lg cursor-pointer group ${
+            className={`p-3 rounded-lg cursor-pointer  group ${
               selectedEpic?.id === e.id ? "bg-white" : "hover:bg-white/5"
             }`}
           >
-            <div className="flex items-center border border-black p-2 rounded-2xl bg-gray-300 justify-between relative">
+            <div className="flex items-center  border border-black p-2 rounded-2xl bg-gray-300 justify-between relative">
               <div>
-                <div className="font-medium text-black capitalize">
-                  <p>{e.name}</p>
-                  {/* <p>{e.description}</p> */}
+                <div className="font-medium  text-black capitalize">
+                  <p>Name:<span className="text-blue-700">{e.name}</span> </p>
+                  <p>Description:<span className="text-blue-700">{e.description}</span> </p>
                 </div>
               </div>
 
               {/* Menu */}
-              <div className="relative">
+              <div className="">
                 <button
                   onClick={(ev) => {
                     ev.stopPropagation();
                     setOpenDropdownId(openDropdownId === e.id ? null : e.id);
                   }}
-                  className="p-1 rounded text-black hover:bg-gray-200"
+                  className=" -ml-3 rounded text-black hover:bg-gray-200"
                 >
                   <MoreVertical size={16} />
                 </button>
@@ -163,17 +169,26 @@ const Epic = ({
       <div className="mt-4">
         <input
   placeholder="Epic title"
-  value={createForm.type === "Epic" ? createForm.name : ""}
+  value={epicForm.name}
   onChange={(e) =>
-    setCreateForm((prev) => ({
+    setEpicForm((prev) => ({
       ...prev,
-      type: "Epic",
       name: e.target.value,
     }))
   }
   className="w-full border-black border text-black px-3 py-2 rounded-md text-sm mb-2"
 />
-
+<textarea
+  placeholder="Epic description"
+  value={ epicForm.description}
+  onChange={(e) =>
+    setEpicForm((prev) => ({
+      ...prev,
+      description: e.target.value, // ✅ EPIC DESCRIPTION
+    }))
+  }
+  className="w-full border-black border text-black px-3 py-2 rounded-md text-sm mb-2"
+/>
 
 
         <div className="mt-2 flex justify-between">
@@ -258,6 +273,7 @@ const Epic = ({
               placeholder="Write a comment..."
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
+              required
             />
 
             <div className="flex justify-end gap-2 mt-3">

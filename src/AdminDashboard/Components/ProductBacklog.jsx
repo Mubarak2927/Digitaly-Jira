@@ -48,6 +48,10 @@ export default function ProductBacklog(selectedProject) {
     name: "",
     story_points: "",
   });
+  const [epicForm, setEpicForm] = useState({
+    name:"",
+    description:""
+  })
 
   useEffect(() => {
     loadAllData();
@@ -108,39 +112,41 @@ export default function ProductBacklog(selectedProject) {
 
   console.log(tasks, sprints, "total tasks");
 
-  const createTask = async () => {
+ const createTask = async () => {
   try {
     const type = createForm.type.toLowerCase();
 
     const newTask = {
       name: createForm.title,
+      description: createForm.description, // ✅ TASK DESCRIPTION
       project_id: selectedProject.selectedProject.id,
       type: type,
-      epic_id: createForm.epicId ? createForm.epicId : selectedEpic?.id,
+      epic_id: createForm.epicId || selectedEpic?.id,
       priority: createForm.priority,
-      ...(type === "story" && { story_points: Number(createForm.story_points) }),
+      ...(type === "story" && {
+        story_points: Number(createForm.story_points),
+      }),
     };
 
     await createIssues(newTask);
-
-    toast.success("Task created successfully ");
+    toast.success("Task created successfully");
 
     getTasks();
 
     setCreateForm({
       type: "Task",
       title: "",
-      description: "",
+      description: "", // reset task description
       epicId: null,
-      assignee: "",
       priority: "",
       story_points: "",
+      name: "",
     });
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to create task ❌");
+  } catch (err) {
+    toast.error("Failed to create task");
   }
 };
+
 
 
   const activeSprintIds = useMemo(
@@ -167,27 +173,32 @@ export default function ProductBacklog(selectedProject) {
     `${pfx}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
   const handleCreateItem = async () => {
-    if (createForm.type === "Epic") {
-      const newEpic = {
-        name: createForm.name,
-        project_id: selectedProject.selectedProject.id,
-        description: "All authentication related features",
-      };
-
-      const createEpics = await createEpic(newEpic);
-      toast.success('Epic Created Sucessfully')
-      console.log(createEpics, "created ");
-      await getEpics();
-      setCreateForm({
-        type: "Task",
-        title: "",
-        description: "",
-        epicId: null,
-        assignee: "",
-      });
+  // 🔥 EPIC CREATE
+ 
+    if (!epicForm.name.trim()) {
+      toast.error("Epic name required");
       return;
     }
-  };
+
+    const newEpic = {
+      name: epicForm.name,
+      description: epicForm.description, // ✅ EPIC DESCRIPTION
+      project_id: selectedProject.selectedProject.id,
+    };
+
+    await createEpic(newEpic);
+    toast.success("Epic created successfully");
+
+    await getEpics();
+
+    // 🔄 RESET FORM
+    setEpicForm({
+      description: "", // 🔥 reset epic description
+      name: "",
+    }); 
+  }
+
+
 
   const toggleSelectTaskForSprint = (taskId) => {
     setSelectedTasksForSprint((prev) =>
@@ -282,8 +293,8 @@ export default function ProductBacklog(selectedProject) {
             epics={epics}
             selectedEpic={selectedEpic}
             setSelectedEpic={setSelectedEpic}
-            createForm={createForm}
-            setCreateForm={setCreateForm}
+            epicForm={epicForm}
+            setEpicForm={setEpicForm}
             handleCreateItem={handleCreateItem}
             handleDeleteEpic={handleDeleteEpic}
             handleUpdateEpic={handleUpdateEpic}
