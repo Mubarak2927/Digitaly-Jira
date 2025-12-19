@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import Logo from ""
+import DigitalyLogo from '../../assets/Digitaly.jpeg';
 import {
   LogOut,
   ChevronDown,
@@ -196,6 +196,10 @@ const Sidebar = ({
         }}
       />
       <div className="mb-10 flex items-center gap-2">
+        <div className="">
+      <img src={DigitalyLogo} alt="" className="w-12 rounded-full" />
+
+        </div>
         <p className="text-2xl font-semibold">Digitaly</p>
       </div>
 
