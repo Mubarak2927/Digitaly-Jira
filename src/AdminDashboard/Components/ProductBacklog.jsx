@@ -175,6 +175,7 @@ export default function ProductBacklog(selectedProject) {
       };
 
       const createEpics = await createEpic(newEpic);
+      toast.success('Epic Created Sucessfully')
       console.log(createEpics, "created ");
       await getEpics();
       setCreateForm({

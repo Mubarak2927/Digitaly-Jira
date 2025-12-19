@@ -88,7 +88,8 @@ const Epic = ({
             <div className="flex items-center border border-black p-2 rounded-2xl bg-gray-300 justify-between relative">
               <div>
                 <div className="font-medium text-black capitalize">
-                  {e.name}
+                  <p>{e.name}</p>
+                  {/* <p>{e.description}</p> */}
                 </div>
               </div>
 
@@ -161,17 +162,20 @@ const Epic = ({
       {/* Quick add epic */}
       <div className="mt-4">
         <input
-          placeholder="New epic title"
-          value={createForm.type === "Epic" ? createForm.name : ""}
-          onChange={(e) =>
-            setCreateForm((prev) => ({
-              ...prev,
-              type: "Epic",
-              name: e.target.value,
-            }))
-          }
-          className="w-full border-black border text-black px-3 py-2 rounded-md text-sm"
-        />
+  placeholder="Epic title"
+  value={createForm.type === "Epic" ? createForm.name : ""}
+  onChange={(e) =>
+    setCreateForm((prev) => ({
+      ...prev,
+      type: "Epic",
+      name: e.target.value,
+    }))
+  }
+  className="w-full border-black border text-black px-3 py-2 rounded-md text-sm mb-2"
+/>
+
+
+
         <div className="mt-2 flex justify-between">
           <small className="text-xs text-black">{epics.length} items</small>
           <button
