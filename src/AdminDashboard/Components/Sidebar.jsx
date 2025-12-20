@@ -118,11 +118,9 @@ const Sidebar = ({
         end_date: new Date(sprintForm.endDate).toISOString(),
       };
 
-      // ✅ ONLY ONE API CALL
       await createSprint(payload);
       toast.success("Sprint created successfully ");
 
-      // ✅ Refresh sprint list
       if (selectedId) {
         const data = await getSprint(selectedId);
         setSprints(data);
